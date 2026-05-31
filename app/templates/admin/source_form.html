@@ -1,0 +1,66 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <h3>
+        <a href="{{ url_for('admin.sources_list') }}" class="btn btn-sm btn-outline-secondary me-2">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        {% if source %}Редактировать{% else %}Добавить{% endif %} источник
+    </h3>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="glass-card p-4">
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-600">Название источника</label>
+                    <input type="text" name="name" class="form-control" value="{{ source.name if source else '' }}" required placeholder="Например: Tengrinews">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-600">RSS URL</label>
+                    <input type="url" name="url" class="form-control" value="{{ source.url if source else '' }}" required placeholder="https://example.com/rss">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label fw-600">Язык контента</label>
+                    <select name="language" class="form-select">
+                        <option value="ru" {% if source and source.language == 'ru' %}selected{% endif %}>Русский</option>
+                        <option value="kk" {% if source and source.language == 'kk' %}selected{% endif %}>Қазақша</option>
+                        <option value="en" {% if source and source.language == 'en' %}selected{% endif %}>English</option>
+                    </select>
+                    <div class="form-text">Укажите язык, на котором публикуется лента. AI переведет его.</div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="is_active" id="isActive" {% if not source or source.is_active %}checked{% endif %}>
+                        <label class="form-check-label" for="isActive">Активен (обрабатывать при парсинге)</label>
+                    </div>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary p-2 fw-bold">
+                        <i class="fas fa-save me-2"></i> Сохранить источник
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="alert alert-info">
+            <h5><i class="fas fa-lightbulb me-2"></i> Подсказка</h5>
+            <p>Вы можете добавлять любые RSS ленты. Система автоматически:</p>
+            <ul>
+                <li>Извлечет полный текст статьи.</li>
+                <li>Найдет лучшее изображение.</li>
+                <li>Использует ИИ для перевода на 3 языка (RU, KK, EN).</li>
+                <li>Создаст краткую сводку.</li>
+                <li>Определит подходящую категорию.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <h3><i class="fas fa-cog me-2 text-primary"></i> Настройки сайта</h3>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="glass-card p-4">
+            <form method="POST">
+                <h5 class="mb-4 text-primary">Основное</h5>
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Название портала</label>
+                        <input type="text" name="site_name" class="form-control" value="{{ settings.get('site_name', 'Global News KZ') }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email для связи</label>
+                        <input type="email" name="contact_email" class="form-control" value="{{ settings.get('contact_email', 'admin@example.kz') }}">
+                    </div>
+                </div>
+
+                <h5 class="mb-4 text-primary">SEO & Описание</h5>
+                <div class="mb-3">
+                    <label class="form-label">Заголовок для главной (Title)</label>
+                    <input type="text" name="seo_title" class="form-control" value="{{ settings.get('seo_title', 'Последние новости Казахстана и мира') }}">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Мета-описание</label>
+                    <textarea name="seo_description" class="form-control" rows="3">{{ settings.get('seo_description', 'Мультиязычный новостной агрегатор на базе ИИ.') }}</textarea>
+                </div>
+
+                <h5 class="mb-4 text-primary">Социальные сети и интеграции</h5>
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><i class="fab fa-telegram me-2 text-info"></i> Telegram Link</label>
+                        <input type="text" name="social_telegram" class="form-control" value="{{ settings.get('social_telegram', '') }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><i class="fab fa-instagram me-2 text-danger"></i> Instagram Link</label>
+                        <input type="text" name="social_instagram" class="form-control" value="{{ settings.get('social_instagram', '') }}">
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label"><i class="fab fa-youtube me-2 text-danger"></i> YouTube Live Embed URL (для басты бет)</label>
+                        <input type="text" name="youtube_live_url" class="form-control" placeholder="https://www.youtube.com/embed/XXXXXXX?autoplay=1&mute=1" value="{{ settings.get('youtube_live_url', 'https://www.youtube.com/embed/gCNeDWCI0vo?autoplay=1&mute=1') }}">
+                        <div class="form-text">Оставьте пустым, чтобы скрыть виджет прямой трансляции на главной странице.</div>
+                    </div>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                        <i class="fas fa-check-circle me-2"></i> Сохранить настройки
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="glass-card p-4">
+            <h5 class="mb-3">Информация о системе</h5>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Версия:</span>
+                <span class="fw-bold">v3.0 (Maximum)</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Движок:</span>
+                <span class="fw-bold">Flask + SQLAlchemy</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <span class="text-muted">ИИ Модель:</span>
+                <span class="badge bg-primary">Gemini / GPT</span>
+            </div>
+            <hr>
+            <p class="small text-muted mb-0">
+                <i class="fas fa-info-circle me-1"></i> Сохраненные настройки применяются ко всем разделам сайта мгновенно.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

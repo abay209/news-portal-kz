@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-5 mb-5">
+    <div class="col-lg-8">
+        <div class="glass-card p-5">
+            <div class="text-center mb-5">
+                <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle shadow-sm mb-4" style="width: 80px; height: 80px; font-size: 2rem;">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <h1 class="fw-bold">{{ _('about') }} / NEWSKZ</h1>
+                <p class="text-muted lead">{{ _('site_name') }} – это ваш надежный компас в бесконечном потоке информации.</p>
+            </div>
+            
+            <div class="content text-dark lh-lg">
+                <p>Мы — первый в Казахстане полностью автономный интеллектуальный агрегатор новостей. Наша система ежеминутно анализирует десятки источников, переводит их с помощью нейросетей на казахский, русский и английский языки, и публикует только самое важное.</p>
+                
+                <h4 class="fw-bold mt-5 mb-3">Наша миссия</h4>
+                <p>Обеспечить каждого жителя Казахстана и мира максимально объективной, быстрой и доступной информацией на его родном языке, разрушая языковые барьеры с помощью ИИ.</p>
+
+                <h4 class="fw-bold mt-5 mb-3">Технологии будущего</h4>
+                <p>Наша платформа построена на современных AI-моделях для перевода текста и автоматического рерайтинга. Парсеры способны проходить через сложные защиты, чтобы предоставить вам полную картину событий 24/7.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

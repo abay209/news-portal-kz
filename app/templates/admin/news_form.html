@@ -1,0 +1,72 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="admin-header">
+    <h1>{% if news %}Редактировать новость{% else %}Добавить новость{% endif %}</h1>
+    <a href="{{ url_for('admin.news_list') }}" style="color: #666; text-decoration: none;">&larr; Назад</a>
+</div>
+
+<form method="POST" enctype="multipart/form-data" style="max-width: 800px; display: flex; flex-direction: column; gap: 1.5rem;">
+    
+    <div>
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Категория</label>
+        <select name="category_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+            {% for cat in categories %}
+            <option value="{{ cat.id }}" {% if news and news.category_id == cat.id %}selected{% endif %}>{{ cat.code }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Фото новости (Опционально)</label>
+        {% if news and news.image_filename %}
+        <div style="margin-bottom: 10px;">
+            <img src="{{ url_for('static', filename='images/uploads/' ~ news.image_filename) }}" style="max-height: 100px;">
+        </div>
+        {% endif %}
+        <input type="file" name="image" accept="image/*" style="width: 100%;">
+    </div>
+
+    <!-- KAZAKH -->
+    <fieldset style="border: 1px solid #00AEEF; padding: 1rem; border-radius: 5px;">
+        <legend style="color: #00AEEF; font-weight: bold; padding: 0 10px;">Қазақша (Kazakh)</legend>
+        <div style="margin-bottom: 10px;">
+            <label>Заголовок (KK)</label>
+            <input type="text" name="title_kk" value="{{ news.title_kk if news else '' }}" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        </div>
+        <div>
+            <label>Текст (KK)</label>
+            <textarea name="content_kk" rows="5" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">{{ news.content_kk if news else '' }}</textarea>
+        </div>
+    </fieldset>
+
+    <!-- RUSSIAN -->
+    <fieldset style="border: 1px solid #FFC82E; padding: 1rem; border-radius: 5px;">
+        <legend style="color: #d39e00; font-weight: bold; padding: 0 10px;">Русский (Russian)</legend>
+        <div style="margin-bottom: 10px;">
+            <label>Заголовок (RU)</label>
+            <input type="text" name="title_ru" value="{{ news.title_ru if news else '' }}" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        </div>
+        <div>
+            <label>Текст (RU)</label>
+            <textarea name="content_ru" rows="5" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">{{ news.content_ru if news else '' }}</textarea>
+        </div>
+    </fieldset>
+
+    <!-- ENGLISH -->
+    <fieldset style="border: 1px solid #28a745; padding: 1rem; border-radius: 5px;">
+        <legend style="color: #28a745; font-weight: bold; padding: 0 10px;">English</legend>
+        <div style="margin-bottom: 10px;">
+            <label>Заголовок (EN)</label>
+            <input type="text" name="title_en" value="{{ news.title_en if news else '' }}" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        </div>
+        <div>
+            <label>Текст (EN)</label>
+            <textarea name="content_en" rows="5" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">{{ news.content_en if news else '' }}</textarea>
+        </div>
+    </fieldset>
+
+    <button type="submit" style="background: #00AEEF; color: white; border: none; padding: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 16px;">Сохранить</button>
+
+</form>
+{% endblock %}

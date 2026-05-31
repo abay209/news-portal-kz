@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5 mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="glass-card p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold">{{ _('login') }}</h3>
+                    <p class="text-muted">{{ _('login_desc') }}</p>
+                </div>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} py-2">{{ message }}</div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('auth.login') }}">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold">{{ _('username') }}</label>
+                        <input type="text" name="username" class="form-control form-control-lg bg-light" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">{{ _('password') }}</label>
+                        <input type="password" name="password" class="form-control form-control-lg bg-light" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 btn-lg rounded-pill fw-bold shadow-sm mb-3">
+                        {{ _('login') }}
+                    </button>
+                </form>
+
+                {% if oauth_enabled %}
+                <div class="text-center text-muted my-3 position-relative">
+                    <hr>
+                    <span class="bg-white px-3 position-absolute top-50 start-50 translate-middle text-uppercase small" style="font-size: 0.75rem;">{{ _('or_divider') }}</span>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('auth.login_oauth', provider='google') }}" class="btn btn-outline-dark rounded-pill fw-bold">
+                        <i class="fab fa-google text-danger me-2"></i> {{ _('google_auth') }}
+                    </a>
+                    <a href="{{ url_for('auth.login_oauth', provider='facebook') }}" class="btn btn-outline-primary rounded-pill fw-bold">
+                        <i class="fab fa-facebook-f me-2"></i> {{ _('fb_auth') }}
+                    </a>
+                </div>
+                {% endif %}
+                
+                <div class="text-center mt-4">
+                    <span class="text-muted">{{ _('no_account') }}</span> <a href="{{ url_for('auth.register') }}" class="fw-bold text-primary text-decoration-none">{{ _('register') }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

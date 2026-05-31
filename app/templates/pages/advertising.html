@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-5 mb-5">
+    <div class="col-lg-8">
+        <div class="glass-card p-5">
+            <div class="text-center mb-5">
+                <div class="d-inline-flex align-items-center justify-content-center bg-warning text-dark rounded-circle shadow-sm mb-4" style="width: 80px; height: 80px; font-size: 2rem;">
+                    <i class="fas fa-ad"></i>
+                </div>
+                <h1 class="fw-bold">{{ _('advertising') }}</h1>
+                <p class="text-muted lead">Достигайте самой широкой аудитории вместе с NEWSKZ.</p>
+            </div>
+            
+            <div class="content text-dark lh-lg mb-5">
+                <p>NEWSKZ — это передовой новостной портал с уникальной ИИ-технологией, которая привлекает пользователей со всего региона. Мы предлагаем уникальные форматы рекламы, которые органично интегрируются в дизайн сайта и не раздражают читателей.</p>
+            </div>
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-4 text-center shadow-sm">
+                        <h2 class="fw-bold text-primary mb-2">5M+</h2>
+                        <span class="text-muted small text-uppercase fw-bold">Просмотров в месяц</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-4 text-center shadow-sm">
+                        <h2 class="fw-bold text-success mb-2">3</h2>
+                        <span class="text-muted small text-uppercase fw-bold">Языка вещания</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 border rounded-4 text-center shadow-sm">
+                        <h2 class="fw-bold text-info mb-2">100%</h2>
+                        <span class="text-muted small text-uppercase fw-bold">Мобильная верстка</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-primary border-0 rounded-4 p-4 d-flex align-items-center">
+                <i class="fas fa-handshake fa-3x me-4 opacity-50"></i>
+                <div>
+                    <h5 class="fw-bold mb-1">Готовы к сотрудничеству?</h5>
+                    <p class="mb-0">Запросите актуальный медиакит и прайс-лист для рекламодателей, написав на <a href="mailto:ads@newskz.kz" class="fw-bold text-dark text-decoration-underline">ads@newskz.kz</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

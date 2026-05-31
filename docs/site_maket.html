@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>NewsKZ — Қазақстан жаңалықтары</title>
+    <meta name="description" content="Қазақстанның бірінші интеллектуалды жаңалықтар порталы. Ең маңызды оқиғалар қазақ, орыс және ағылшын тілдерінде.">
+    <meta property="og:site_name" content="NewsKZ">
+    <meta property="og:type" content="website">
+    
+    <link rel="icon" href="/static/images/logo.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- AOS CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --glass: rgba(255, 255, 255, 0.92);
+            --glass-border: rgba(226, 232, 240, 0.8);
+            --bg: #f8fafc;
+            --text: #0f172a;
+            --card-bg: #ffffff;
+        }
+        [data-bs-theme="dark"] {
+            --glass: rgba(15, 23, 42, 0.95);
+            --glass-border: rgba(255,255,255,0.08);
+            --bg: #0f172a;
+            --text: #e2e8f0;
+            --card-bg: #1e293b;
+        }
+        [data-bs-theme="dark"] body { background-color: var(--bg); color: var(--text); }
+        [data-bs-theme="dark"] .glass-card { background: var(--card-bg) !important; border-color: rgba(255,255,255,0.08) !important; color: var(--text); }
+        [data-bs-theme="dark"] .navbar-glass { background: var(--glass) !important; }
+        [data-bs-theme="dark"] footer { background: #020617; }
+        [data-bs-theme="dark"] .text-dark { color: var(--text) !important; }
+        [data-bs-theme="dark"] .bg-white { background-color: var(--card-bg) !important; }
+        [data-bs-theme="dark"] .article-content { color: #cbd5e1 !important; }
+        [data-bs-theme="dark"] .bg-light { background-color: #1e293b !important; color: #cbd5e1 !important; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg, #f8fafc);
+            color: var(--text, #0f172a);
+            padding-top: 80px; /* navbar only */
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ===== READING PROGRESS BAR ===== */
+        #readingProgress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), #a855f7);
+            z-index: 9999;
+            transition: width 0.1s linear;
+        }
+
+
+
+        /* ===== NAVBAR ===== */
+        .navbar-glass {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 0.8rem 0;
+            transition: all 0.3s;
+            top: 0;
+        }
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--primary) !important;
+            letter-spacing: -0.5px;
+        }
+        .nav-link {
+            font-weight: 500;
+            color: #475569 !important;
+            padding: 0.5rem 1rem !important;
+            transition: color 0.2s;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        .nav-link:hover { color: var(--primary) !important; }
+        .nav-link.active { color: var(--primary) !important; font-weight: 700; }
+        
+        .glass-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .search-bar {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            width: 260px;
+            transition: all 0.3s;
+        }
+        .search-bar:focus-within {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            width: 320px;
+        }
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        
+        .lang-switcher .btn {
+            border-radius: 10px;
+            font-weight: 700;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        /* Dark mode toggle */
+        .dark-toggle {
+            background: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            width: 36px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+        .dark-toggle:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            padding: 0.7rem 1.8rem;
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 15px 20px -3px rgba(99, 102, 241, 0.4);
+        }
+
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 5rem 0 2rem;
+            margin-top: 6rem;
+        }
+        footer .brand-text { color: white; font-weight: 800; font-size: 1.5rem; margin-bottom: 1.5rem; display: block; }
+        footer a { color: #cbd5e1; text-decoration: none; transition: color 0.2s; }
+        footer a:hover { color: var(--primary); }
+        footer h6 { color: white; font-weight: 700; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; }
+        
+        .badge { border-radius: 6px; padding: 0.5em 0.8em; font-weight: 600; }
+        .bg-primary { background-color: var(--primary) !important; }
+
+        /* ===== SCROLL TO TOP ===== */
+        #scrollTop {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 24px rgba(99,102,241,0.4);
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        #scrollTop.show { opacity: 1; visibility: visible; }
+        #scrollTop:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(99,102,241,0.5);        }
+        
+        /* ===== PRELOADER REMOVED ===== */
+
+        @media (max-width: 991px) {
+            .search-bar { width: 100%; margin: 1rem 0; }
+            body { padding-top: 80px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Reading Progress Bar -->
+    <div id="readingProgress"></div>
+
+    <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <img src="/static/images/logo.png" alt="NEWSKZ" height="35" class="me-2" style="border-radius: 8px;" onerror="this.style.display='none'">
+                <span>NEWSKZ</span>
+            </a>
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Главная</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link " href="/?category=cat_general">Главное</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link " href="/?category=cat_politics">Политика</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link " href="/?category=cat_sport">Спорт</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link " href="/?category=cat_economy">Экономика</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link " href="/?category=cat_tech">Технологии</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link " href="/?category=cat_auto">Авто</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link " href="/?category=cat_world">В мире</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link " href="/?category=cat_culture">Культура</a>
+                    </li>
+                    
+                </ul>
+                
+                <div class="d-flex align-items-center gap-2 flex-wrap position-relative">
+                    <form action="/" class="search-bar d-flex align-items-center position-relative">
+                        <i class="fas fa-search text-muted me-2"></i>
+                        <input type="text" name="q" id="liveSearchInput" placeholder="Поиск новостей..." value="" autocomplete="off">
+                        
+                        <!-- Live Search Results Dropdown -->
+                        <div id="liveSearchResults" class="position-absolute top-100 start-0 w-100 bg-white rounded shadow mt-2 d-none" style="z-index: 1050; max-height: 300px; overflow-y: auto;">
+                            <!-- Results will be injected here via JS -->
+                        </div>
+                    </form>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button class="dark-toggle" id="themeToggle" title="Күн/Түн режимі">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+
+                    <div class="lang-switcher d-flex gap-1 me-2">
+                        
+                        <a href="/set_lang/kk" class="btn btn-sm bg-white text-dark">KK</a>
+                        <a href="/set_lang/ru" class="btn btn-sm btn-primary">RU</a>
+                        <a href="/set_lang/en" class="btn btn-sm bg-white text-dark">EN</a>
+                    </div>
+                    
+                    <div id="weatherWidget" class="d-flex align-items-center bg-light px-2 py-1 rounded me-2 text-muted" style="font-size: 0.85rem;" title="Алматы ауа-райы">
+                        <i class="fas fa-spinner fa-spin me-1"></i> Жүктелуде...
+                    </div>
+
+                    
+                        <a href="/auth/login" class="btn btn-primary btn-sm rounded-pill fw-bold" style="padding: 0.4rem 1rem;">
+                            <i class="fas fa-sign-in-alt me-1"></i> Войти
+                        </a>
+                    
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Global Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        <div id="liveToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-bold" id="toastMessage">
+                    <!-- Message goes here -->
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center py-4 border-top mt-5 bg-white text-muted">
+        
+            
+        
+        
+<!-- Hero Section (Only on main page) -->
+
+<section class="hero-section mb-5 mt-3">
+    <div class="row g-4">
+        
+        <div class="col-lg-8">
+            <div class="main-news-card glass-card h-100 overflow-hidden">
+                <a href="/news/355" class="text-decoration-none">
+                    <div class="card-img-wrapper position-relative" style="height: 450px;">
+                        
+                        <img src="/static/images/uploads/news_d465a311e966.jpg" class="w-100 h-100 object-fit-cover" alt="">
+                        
+                        <div class="card-img-overlay d-flex flex-column justify-content-end p-4 text-white">
+                            <span class="badge bg-primary mb-2 align-self-start">Политика</span>
+                            <h1 class="display-6 fw-bold mb-2">“Позиции Казахстана и Китая схожи“ - Токаев на встрече с главой парламента КНР</h1>
+                            <p class="mb-0 opacity-80 d-none d-md-block">Касым-Жомарт Токаев принял председателя постоянного комитета Всекитайского собрания народных представителей Чжао Лэцзи, передаёт
+Tengrinews.kz
+со...</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="d-flex flex-column gap-4 h-100">
+                
+                <div class="sub-news-card glass-card flex-fill overflow-hidden position-relative">
+                    <a href="/news/354" class="text-decoration-none">
+                        <div class="card-img-wrapper" style="height: 213px;">
+                            
+                            <img src="/static/images/uploads/news_33770704ab69.png" class="w-100 h-100 object-fit-cover" alt="">
+                            
+                            <div class="card-img-overlay d-flex flex-column justify-content-end p-3 text-white">
+                                <span class="badge bg-info mb-1 align-self-start">В мире</span>
+                                <h5 class="fw-bold mb-0 text-truncate-2">Наездник упал с лошади и чудом уцелел: видео</h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                
+                <div class="sub-news-card glass-card flex-fill overflow-hidden position-relative">
+                    <a href="/news/353" class="text-decoration-none">
+                        <div class="card-img-wrapper" style="height: 213px;">
+                            
+                            <img src="/static/images/uploads/news_713ac0a9d859.jpg" class="w-100 h-100 object-fit-cover" alt="">
+                            
+                            <div class="card-img-overlay d-flex flex-column justify-content-end p-3 text-white">
+                                <span class="badge bg-success mb-1 align-self-start">Экономика</span>
+                                <h5 class="fw-bold mb-0 text-truncate-2">Какие новые производства уже открылись в промышленном кластере Qarmet</h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+
+<!-- Main Grid -->
+<div class="row g-4">
+    <div class="col-lg-9">
+        
+            <!-- Magazine Category Sections -->
+            
+            <div class="category-block mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                    <h3 class="fw-bold mb-0 text-uppercase letter-spacing-1 border-bottom border-primary border-3 pb-1">Главное</h3>
+                    <a href="/?category=cat_general" class="btn btn-sm btn-outline-primary rounded-pill border-2 fw-bold">См. все <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+                <div class="row g-4">
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/318" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_c5ab91b243de.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">По всему Казахстану объявлено штормовое предупреждение</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:04 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/303" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_c388c9b0ecea.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Изобретатель баскского чизкейка планирует уйти на пенсию. Его секрет: он предпочитает шоколад</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 21:44 | NY Times</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/308" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_b945c6f46efb.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Крыша школы полностью сгорела в Аркалыке</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 21:43 | Kursiv.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/230" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_e0eeb84965e9.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Мечтать о работе после 80, или Как мы пытались выведать секрет молодости у врача</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 21:41 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="category-block mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                    <h3 class="fw-bold mb-0 text-uppercase letter-spacing-1 border-bottom border-primary border-3 pb-1">Политика</h3>
+                    <a href="/?category=cat_politics" class="btn btn-sm btn-outline-primary rounded-pill border-2 fw-bold">См. все <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+                <div class="row g-4">
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/355" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_d465a311e966.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">“Позиции Казахстана и Китая схожи“ - Токаев на встрече с главой парламента КНР</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:33 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/350" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_75584c47877c.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Землетрясение, изменение в школах и новые пороги достаточности. Новости Казахстана за 26 мая</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:32 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/348" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_ae495bb2b75d.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">В Кокшетау наградили деятелей культуры</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:32 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/347" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_572ce4b7b237.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Завод по производству серной кислоты запустили в Жамбылской области</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:31 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="category-block mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                    <h3 class="fw-bold mb-0 text-uppercase letter-spacing-1 border-bottom border-primary border-3 pb-1">Спорт</h3>
+                    <a href="/?category=cat_sport" class="btn btn-sm btn-outline-primary rounded-pill border-2 fw-bold">См. все <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+                <div class="row g-4">
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/352" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_07e2cc53490e.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Казахстанцы разглядели нечто неприличное в социальном ролике о клещах</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:32 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/321" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_81e13da83223.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">“Трубу обмотали скотчем“ –  вынесен приговор по делу о смертельном взрыве в Талдыкоргане</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:05 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/317" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_62ad79e37ca9.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">На угольном предприятии “Богатырь Комир“ пресекли попытку выноса алюминиевых изделий</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:03 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/313" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_97b18278bc3c.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Самолет потерпел крушение в Павлодарской области</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 21:44 | Kursiv.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="category-block mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                    <h3 class="fw-bold mb-0 text-uppercase letter-spacing-1 border-bottom border-primary border-3 pb-1">Экономика</h3>
+                    <a href="/?category=cat_economy" class="btn btn-sm btn-outline-primary rounded-pill border-2 fw-bold">См. все <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+                <div class="row g-4">
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/353" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_713ac0a9d859.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Какие новые производства уже открылись в промышленном кластере Qarmet</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:33 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/336" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_a50986819f67.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Инженер по безопасности Google арестован в рамках торговой схемы Polymarket стоимостью в миллион долларов</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:03 | Wired</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/326" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_0f549ddee458.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Сотрудник Google якобы использовал инсайдерскую информацию, чтобы выиграть на Polymarket $1,2 миллиона</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:03 | The Verge</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/312" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_bf2ef383d1fe.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">5 млн тенге на бизнес и кредитные льготы предлагают предпринимателям Алматы</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 21:44 | Kursiv.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="category-block mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                    <h3 class="fw-bold mb-0 text-uppercase letter-spacing-1 border-bottom border-primary border-3 pb-1">Технологии</h3>
+                    <a href="/?category=cat_tech" class="btn btn-sm btn-outline-primary rounded-pill border-2 fw-bold">См. все <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+                <div class="row g-4">
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/345" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_883ff07cfa79.png" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Промокоды и реферальные предложения Rover на июнь 2026 г.</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:06 | Wired</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/344" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_681957a411b2.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Скидка 50% на промокод DoorDash | июнь 2026 г.</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:05 | Wired</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/335" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_de84692819b6.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Руководители технологических компаний, по-видимому, страдают от ИИ-психоза</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:05 | TechCrunch</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/343" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_b407a09f8fd7.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Промокоды Booking.com: скидка 20% | июнь 2026 г.</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:05 | Wired</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="category-block mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                    <h3 class="fw-bold mb-0 text-uppercase letter-spacing-1 border-bottom border-primary border-3 pb-1">Авто</h3>
+                    <a href="/?category=cat_auto" class="btn btn-sm btn-outline-primary rounded-pill border-2 fw-bold">См. все <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+                <div class="row g-4">
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/351" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_c945f5eff4f9.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Тот самый правильный кроссовер: тест-драйв Skoda Karoq</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:32 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/324" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_8584c314cb8e.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">“После защиты диплома забирают в армию“ - казахстанку возмутили действия военкомата</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:05 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/316" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_054201b07f24.png" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Одно из худших в истории страны ДТП произошло в Бельгии с участием школьного автобуса</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:03 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/311" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_af0f7b4e2287.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Новые штрафы и ограничения для самокатчиков: что изменится с 1 июля</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 21:44 | Kursiv.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="category-block mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                    <h3 class="fw-bold mb-0 text-uppercase letter-spacing-1 border-bottom border-primary border-3 pb-1">В мире</h3>
+                    <a href="/?category=cat_world" class="btn btn-sm btn-outline-primary rounded-pill border-2 fw-bold">См. все <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+                <div class="row g-4">
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/354" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_33770704ab69.png" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Наездник упал с лошади и чудом уцелел: видео</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:33 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/323" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_8cfc9dce8106.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Переговоры вновь зашли в тупик - Иран пригрозил США ответными ударами</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:05 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/325" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_6d1d587c0d1b.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Мировые автопроизводители изо всех сил пытаются конкурировать с Китаем</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:03 | BBC World</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/315" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_002ec7fc9f81.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">США намерены существенно сократить военные взносы в НАТО</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:03 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="category-block mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                    <h3 class="fw-bold mb-0 text-uppercase letter-spacing-1 border-bottom border-primary border-3 pb-1">Культура</h3>
+                    <a href="/?category=cat_culture" class="btn btn-sm btn-outline-primary rounded-pill border-2 fw-bold">См. все <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+                <div class="row g-4">
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/349" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_ad68a215503d.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Взрыв разрушил жилой дом в Актобе: под завалами найден труп женщины</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:32 | Tengrinews.kz</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/334" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_31f0e0362975.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">YouTube теперь будет автоматически маркировать видео с искусственным интеллектом</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:05 | TechCrunch</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/338" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_b5888b65374b.jpg" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Обзор Corsair Galleon 100 SD: теперь в комплекте Stream Deck</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:04 | Wired</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="/news/328" class="text-decoration-none text-dark">
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    
+                                    <img src="/static/images/uploads/news_dfe795464dfe.png" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    
+                                </div>
+                                <h6 class="fw-bold mb-2 line-clamp-3">Spotify теперь позволяет «вырезать» моменты из вашего любимого подкаста</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> 23:03 | TechCrunch</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+        
+    </div>
+
+    <div class="col-lg-3">
+        <div class="sticky-top" style="top: 100px;">
+            <!-- Trending List -->
+            <div class="glass-card p-4 mb-4 border-0 shadow-sm">
+                <h5 class="fw-bold mb-4 d-flex align-items-center">
+                    <i class="fas fa-fire me-2 text-warning"></i> СЕЙЧАС ЧИТАЮТ
+                </h5>
+                <div class="trending-list">
+                    
+                    <div class="trending-item mb-3 pb-3 border-bottom">
+                        <a href="/news/355" class="text-decoration-none group">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-3">
+                                    <span class="display-6 fw-bold text-light opacity-50">1</span>
+                                </div>
+                                <div class="col-9">
+                                    <h6 class="fw-bold text-dark mb-0 line-clamp-2 small">“Позиции Казахстана и Китая схожи“ - Токаев на встрече с главой парламента КНР</h6>
+                                    <span class="text-muted x-small d-block mt-1">Tengrinews.kz</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="trending-item mb-3 pb-3 border-bottom">
+                        <a href="/news/354" class="text-decoration-none group">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-3">
+                                    <span class="display-6 fw-bold text-light opacity-50">2</span>
+                                </div>
+                                <div class="col-9">
+                                    <h6 class="fw-bold text-dark mb-0 line-clamp-2 small">Наездник упал с лошади и чудом уцелел: видео</h6>
+                                    <span class="text-muted x-small d-block mt-1">Tengrinews.kz</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="trending-item mb-3 pb-3 border-bottom">
+                        <a href="/news/353" class="text-decoration-none group">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-3">
+                                    <span class="display-6 fw-bold text-light opacity-50">3</span>
+                                </div>
+                                <div class="col-9">
+                                    <h6 class="fw-bold text-dark mb-0 line-clamp-2 small">Какие новые производства уже открылись в промышленном кластере Qarmet</h6>
+                                    <span class="text-muted x-small d-block mt-1">Tengrinews.kz</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="trending-item mb-3 pb-3 border-bottom">
+                        <a href="/news/352" class="text-decoration-none group">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-3">
+                                    <span class="display-6 fw-bold text-light opacity-50">4</span>
+                                </div>
+                                <div class="col-9">
+                                    <h6 class="fw-bold text-dark mb-0 line-clamp-2 small">Казахстанцы разглядели нечто неприличное в социальном ролике о клещах</h6>
+                                    <span class="text-muted x-small d-block mt-1">Tengrinews.kz</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="trending-item mb-3 pb-3 border-bottom">
+                        <a href="/news/351" class="text-decoration-none group">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-3">
+                                    <span class="display-6 fw-bold text-light opacity-50">5</span>
+                                </div>
+                                <div class="col-9">
+                                    <h6 class="fw-bold text-dark mb-0 line-clamp-2 small">Тот самый правильный кроссовер: тест-драйв Skoda Karoq</h6>
+                                    <span class="text-muted x-small d-block mt-1">Tengrinews.kz</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="trending-item mb-3 pb-3 ">
+                        <a href="/news/350" class="text-decoration-none group">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-3">
+                                    <span class="display-6 fw-bold text-light opacity-50">6</span>
+                                </div>
+                                <div class="col-9">
+                                    <h6 class="fw-bold text-dark mb-0 line-clamp-2 small">Землетрясение, изменение в школах и новые пороги достаточности. Новости Казахстана за 26 мая</h6>
+                                    <span class="text-muted x-small d-block mt-1">Tengrinews.kz</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <!-- Newsletter Widget -->
+            <div class="glass-card p-4 border-0 shadow-sm bg-gradient-primary text-white">
+                <h5 class="fw-bold mb-3">Рассылка</h5>
+                <p class="small opacity-80 mb-3">Будьте в курсе самого важного.</p>
+                <div class="input-group mb-2">
+                    <input type="email" class="form-control border-0" placeholder="Ваш Email" style="border-radius: 8px 0 0 8px;">
+                    <button class="btn btn-dark" style="border-radius: 0 8px 8px 0;"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card-img-overlay {
+        background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+        transition: all 0.3s ease;
+    }
+    .shadow-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+    .transition-transform:hover { transform: scale(1.05); }
+    .transition-transform { transition: transform 0.5s ease; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .text-truncate-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .bg-gradient-primary { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
+    .x-small { font-size: 0.75rem; }
+    .letter-spacing-1 { letter-spacing: 1px; }
+</style>
+
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4">
+                    <span class="brand-text d-flex align-items-center mb-3">
+                        <img src="/static/images/logo.png" alt="NEWSKZ" height="35" class="me-2" style="border-radius: 6px;" onerror="this.style.display='none'">
+                        NEWSKZ
+                    </span>
+                    <p>Қазақстанның бірінші интеллектуалды жаңалықтар порталы. Әлемдегі ең маңызды оқиғаларды қазақ, орыс және ағылшын тілдерінде оқыңыз.</p>
+                    <div class="d-flex gap-3 h4 mt-4">
+                        <a href="#" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-2 offset-lg-1">
+                    <h6>Разделы</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="/?category=cat_world">В мире</a></li>
+                        <li><a href="/?category=cat_politics">Политика</a></li>
+                        <li><a href="/?category=cat_tech">Технологии</a></li>
+                        <li><a href="/?category=cat_economy">Экономика</a></li>
+                        <li><a href="/?category=cat_sport">Спорт</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-2">
+                    <h6>Компания</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="/about">О проекте</a></li>
+                        <li><a href="/contacts">Контакты</a></li>
+                        <li><a href="/advertising">Реклама</a></li>
+                        <li><a href="/admin/login">Вход для админа</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3">
+                    <h6>Подписка</h6>
+                    <p class="small">Будьте в курсе самого важного.</p>
+                    <div class="input-group">
+                        <input type="email" class="form-control bg-dark border-secondary text-white" placeholder="Email">
+                        <button class="btn btn-primary"><i class="fas fa-check"></i></button>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-5 opacity-20">
+            <div class="text-center small">
+                &copy; 2026 NewsKZ. Барлық құқықтар қорғалған.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollTop" aria-label="Scroll to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        window.CURRENT_LANG = "ru";
+        window.READ_MORE_TEXT = "Подробнее";
+        window.COPY_LINK_TEXT = "copy_link";
+
+        // ===== DARK MODE =====
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const html = document.documentElement;
+
+        function applyTheme(theme) {
+            html.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('theme', theme);
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+        // Load saved theme
+        applyTheme(localStorage.getItem('theme') || 'light');
+
+        themeToggle.addEventListener('click', () => {
+            const current = html.getAttribute('data-bs-theme');
+            applyTheme(current === 'dark' ? 'light' : 'dark');
+        });
+
+        // ===== SCROLL TOP =====
+        const scrollTopBtn = document.getElementById('scrollTop');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 400) {
+                scrollTopBtn.classList.add('show');
+            } else {
+                scrollTopBtn.classList.remove('show');
+            }
+            // Reading progress
+            const progress = document.getElementById('readingProgress');
+            if (progress) {
+                const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                progress.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+            }
+        });
+        scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // Fetch Weather Data (Almaty)
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('https://api.open-meteo.com/v1/forecast?latitude=43.2567&longitude=76.9286&current_weather=true')
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.current_weather) {
+                        const temp = Math.round(data.current_weather.temperature);
+                        document.getElementById('weatherWidget').innerHTML = `<i class="fas fa-cloud-sun text-primary me-1"></i> ${temp}°C Алматы`;
+                    } else {
+                        document.getElementById('weatherWidget').style.display = 'none';
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('weatherWidget').style.display = 'none';
+                });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ once: true, offset: 20, duration: 400 });
+    </script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

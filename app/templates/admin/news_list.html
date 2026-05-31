@@ -1,0 +1,94 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3><i class="fas fa-newspaper me-2 text-primary"></i> Управление новостями</h3>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('admin.news_fetch_rss') }}" class="btn btn-outline-primary">
+            <i class="fas fa-sync me-1"></i> Обновить RSS
+        </a>
+        <a href="{{ url_for('admin.news_add') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Добавить новость
+        </a>
+    </div>
+</div>
+
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">ID</th>
+                    <th style="width: 40%;">Заголовок (RU)</th>
+                    <th>Категория</th>
+                    <th>Источник</th>
+                    <th>Просмотры</th>
+                    <th>Дата</th>
+                    <th class="text-end pe-4">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in news_pagination.items %}
+                <tr>
+                    <td class="ps-4 text-muted small">#{{ item.id }}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            {% if item.image_filename %}
+                            <img src="{{ url_for('static', filename='images/uploads/' + item.image_filename) }}" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded me-2 bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="fas fa-image text-muted"></i>
+                            </div>
+                            {% endif %}
+                            <div class="fw-bold text-dark text-truncate" style="max-width: 300px;">
+                                {{ item.title_ru }}
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge bg-light text-dark">{{ item.category.code if item.category else 'N/A' }}</span></td>
+                    <td><small class="text-primary">{{ item.source_name }}</small></td>
+                    <td><i class="fas fa-eye me-1 text-muted small"></i> {{ item.views }}</td>
+                    <td class="text-muted small">{{ item.created_at.strftime('%d.%m %H:%M') }}</td>
+                    <td class="text-end pe-4">
+                        <div class="btn-group">
+                            <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                            <a href="{{ url_for('admin.news_edit', news_id=item.id) }}" class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{{ url_for('admin.news_delete', news_id=item.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="p-4 border-top">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item {% if not news_pagination.has_prev %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('admin.news_list', page=news_pagination.prev_num) }}">Назад</a>
+                </li>
+                {% for page_num in news_pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                    {% if page_num %}
+                        <li class="page-item {% if page_num == news_pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('admin.news_list', page=page_num) }}">{{ page_num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                    {% endif %}
+                {% endfor %}
+                <li class="page-item {% if not news_pagination.has_next %}disabled{% endif %}">
+                    <a class="page-link" href="{{ url_for('admin.news_list', page=news_pagination.next_num) }}">Вперед</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}

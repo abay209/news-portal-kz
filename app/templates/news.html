@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% macro cat_placeholder(cat_code, height='100%', font_size='2rem') %}
+{%- set cfg = {
+  'cat_politics':  {'g1': '#1a1a2e', 'g2': '#16213e', 'icon': '&#xf0e3;', 'label': 'Саясат'},
+  'cat_sport':     {'g1': '#0f3460', 'g2': '#533483', 'icon': '&#xf1e3;', 'label': 'Спорт'},
+  'cat_economy':   {'g1': '#134e4a', 'g2': '#065f46', 'icon': '&#xf201;', 'label': 'Экономика'},
+  'cat_tech':      {'g1': '#1e3a5f', 'g2': '#4f46e5', 'icon': '&#xf2d0;', 'label': 'Технологии'},
+  'cat_auto':      {'g1': '#292524', 'g2': '#78350f', 'icon': '&#xf1b9;', 'label': 'Авто'},
+  'cat_world':     {'g1': '#1e1b4b', 'g2': '#312e81', 'icon': '&#xf57d;', 'label': 'Мир'},
+  'cat_culture':   {'g1': '#4a044e', 'g2': '#7e22ce', 'icon': '&#xf4fb;', 'label': 'Мәдениет'},
+  'cat_general':   {'g1': '#1e293b', 'g2': '#334155', 'icon': '&#xf1ea;', 'label': 'Жаңалық'}
+} -%}
+{%- set c = cfg.get(cat_code, cfg['cat_general']) -%}
+<div class="cat-placeholder d-flex flex-column align-items-center justify-content-center w-100"
+     style="height:{{ height }}; background: linear-gradient(135deg, {{ c.g1 }} 0%, {{ c.g2 }} 100%); position:relative; overflow:hidden;">
+  <div style="position:absolute;inset:0;background:url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\") repeat;"></div>
+  <i class="fas" style="font-size:{{ font_size }}; color:rgba(255,255,255,0.25); margin-bottom:0.4rem;">{{ c.icon|safe }}</i>
+  <span style="font-size:0.7rem; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:2px; font-weight:700;">{{ c.label }}</span>
+</div>
+{% endmacro %}
+
+{% block seo %}
+    {% set lang = session.get('lang', 'ru') %}
+    {% set title = news['title_' ~ lang] %}
+    {% set summary = news['summary_' ~ lang] %}
+    <title>{{ title }} | NewsKZ</title>
+    <meta name="description" content="{{ summary[:150] }}...">
+    <meta property="og:title" content="{{ title }}">
+    <meta property="og:description" content="{{ summary[:150] }}...">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ request.url }}">
+    {% if news.image_filename %}
+    <meta property="og:image" content="{{ url_for('static', filename='images/uploads/' + news.image_filename, _external=True) }}">
+    {% endif %}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ title }}">
+    <meta name="twitter:description" content="{{ summary[:150] }}...">
+    {% if news.image_filename %}
+    <meta name="twitter:image" content="{{ url_for('static', filename='images/uploads/' + news.image_filename, _external=True) }}">
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="single-news-card">
+<div class="row g-5">
+    <!-- Main Content -->
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-decoration-none">{{ _('home') }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index', category=news.category.code) }}" class="text-decoration-none">{{ _(news.category.code) }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ _('article') }}</li>
+            </ol>
+        </nav>
+
+        <article class="news-article">
+            <h1 class="display-5 fw-800 mb-4">{{ news['title_' + session.get('lang', 'ru')] }}</h1>
+            
+            <div class="meta-info d-flex align-items-center gap-3 mb-4 py-3 border-top border-bottom flex-wrap">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                        <i class="fas fa-user small"></i>
+                    </div>
+                    <span class="fw-bold small">{{ news.source_name or 'NewsKZ' }}</span>
+                </div>
+                <div class="vr"></div>
+                <span class="text-muted small"><i class="far fa-calendar-alt me-1"></i> {{ news.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                <div class="vr"></div>
+                <span class="text-muted small"><i class="far fa-eye me-1"></i> {{ news.views }}</span>
+                
+                <!-- Social Share Buttons -->
+                <div class="ms-auto d-flex gap-2">
+                    {% set page_url = request.url %}
+                    {% set page_title = news['title_' + session.get('lang', 'ru')] | urlencode %}
+                    <a href="https://t.me/share/url?url={{ page_url }}&text={{ page_title }}"
+                       target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary rounded-circle share-btn" title="Telegram">
+                        <i class="fab fa-telegram-plane"></i>
+                    </a>
+                    <a href="https://wa.me/?text={{ page_title }}%20{{ page_url }}"
+                       target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary rounded-circle share-btn" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ page_url }}"
+                       target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary rounded-circle share-btn" title="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url={{ page_url }}&text={{ page_title }}"
+                       target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary rounded-circle share-btn" title="Twitter / X">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <button onclick="copyLink()" class="btn btn-sm btn-outline-secondary rounded-circle share-btn" title="{{ _('copy_link') }}" id="copyLinkBtn">
+                        <i class="fas fa-link"></i>
+                    </button>
+                </div>
+            </div>
+
+            {% if news.image_filename %}
+            <div class="featured-image mb-4 rounded-4 overflow-hidden shadow">
+                <img src="{{ url_for('static', filename='images/uploads/' + news.image_filename) }}" class="w-100" alt="{{ news['title_' + session.get('lang', 'ru')] }}">
+            </div>
+            {% else %}
+            <div class="featured-image mb-4 rounded-4 overflow-hidden shadow" style="height:320px;">
+                {{ cat_placeholder(news.category.code, '100%', '3rem') }}
+            </div>
+            {% endif %}
+
+            <div class="article-content lead mb-5" style="line-height: 1.8; color: #333;">
+                {{ news['content_' + session.get('lang', 'ru')]|safe }}
+            </div>
+
+            {% if news.original_url %}
+            <div style="margin-top: 20px; font-size: 0.9em; color: #666; border-left: 4px solid var(--primary); padding-left: 15px;">
+                Источник: <a href="{{ news.original_url }}" target="_blank" rel="noopener" style="color: var(--primary); font-weight: 600;">{{ news.source_name }}</a>
+            </div>
+            {% endif %}
+
+            <!-- Interaction Bar -->
+            <div class="d-flex align-items-center justify-content-between mt-4 pb-3 border-bottom">
+                <div class="d-flex gap-3">
+                    <button class="btn btn-light rounded-pill border fw-bold d-flex align-items-center btn-like {% if user_liked %}text-danger border-danger{% else %}text-muted{% endif %}" onclick="toggleLike('{{ news.id }}', this)">
+                        <i class="{% if user_liked %}fas{% else %}far{% endif %} fa-heart me-2 like-icon"></i> 
+                        <span class="like-count">{{ likes_count }}</span>
+                    </button>
+                </div>
+                <div class="d-flex gap-3">
+                    <button class="btn {% if user_bookmarked %}btn-primary text-white{% else %}btn-light text-muted{% endif %} rounded-pill border fw-bold d-flex align-items-center btn-bookmark" onclick="toggleBookmark('{{ news.id }}', this)">
+                        <i class="{% if user_bookmarked %}fas{% else %}far{% endif %} fa-bookmark me-2 bookmark-icon"></i> 
+                        <span class="bookmark-text">{% if user_bookmarked %}{{ _('bookmarked') }}{% else %}{{ _('bookmark') }}{% endif %}</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Share Block (Bottom) -->
+            <div class="share-block mt-5 p-4 rounded-4 text-center" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                <p class="fw-bold mb-3"><i class="fas fa-share-alt me-2 text-primary"></i>{{ _('share_news') }}</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    {% set page_url = request.url %}
+                    {% set page_title = news['title_' + session.get('lang', 'ru')] | urlencode %}
+                    <a href="https://t.me/share/url?url={{ page_url }}&text={{ page_title }}" target="_blank" rel="noopener"
+                       class="btn btn-primary rounded-pill px-4"><i class="fab fa-telegram-plane me-2"></i>Telegram</a>
+                    <a href="https://wa.me/?text={{ page_title }}%20{{ page_url }}" target="_blank" rel="noopener"
+                       class="btn btn-success rounded-pill px-4"><i class="fab fa-whatsapp me-2"></i>WhatsApp</a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ page_url }}" target="_blank" rel="noopener"
+                       class="btn btn-outline-primary rounded-pill px-4"><i class="fab fa-facebook-f me-2"></i>Facebook</a>
+                    <button onclick="copyLink()" class="btn btn-outline-secondary rounded-pill px-4">
+                        <i class="fas fa-copy me-2"></i>{{ _('copy_link') }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="comments-section mt-5 border-top pt-5">
+                <h3 class="mb-4 d-flex align-items-center">
+                    <i class="fas fa-comments me-2 text-primary"></i> {{ _('comments') }} ({{ comments|length }})
+                </h3>
+
+                <!-- Comment Form -->
+                <div class="comment-form-card mb-5 p-4 rounded-4 shadow-sm" style="background: rgba(255,255,255,0.7); backdrop-filter: blur(10px);">
+                    
+                    {% if not current_user.is_authenticated %}
+                    <div class="alert alert-light border border-primary border-opacity-25 d-flex flex-wrap justify-content-between align-items-center rounded-3 p-3 mb-4 shadow-sm">
+                        <div class="d-flex align-items-center text-muted small mb-2 mb-sm-0">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 40px; height: 40px;">
+                                <i class="fas fa-user-secret fs-5"></i>
+                            </div>
+                            <div>
+                                <span class="d-block text-dark" style="line-height: 1.4;">{{ _('anonymous_warning') }}</span>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm text-nowrap flex-shrink-0">
+                            {{ _('login') }} <i class="fas fa-sign-in-alt ms-1"></i>
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <form action="{{ url_for('main.add_comment', news_id=news.id) }}" method="POST">
+                        <div class="mb-3">
+                            <label for="comment-content" class="form-label fw-bold">{{ _('leave_comment') }}</label>
+                            <textarea name="content" id="comment-content" class="form-control rounded-3" rows="3" placeholder="{{ _('comment_placeholder') }}" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill fw-bold shadow-sm">
+                            {{ _('send') }} <i class="fas fa-paper-plane ms-1"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Comments List -->
+                <div class="comments-list">
+                    {% for comment in comments %}
+                    <div class="comment-item mb-4 p-4 rounded-4 bg-white shadow-sm border">
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                                {% if comment.author and comment.author.avatar_url %}
+                                <img src="{{ comment.author.avatar_url }}" class="rounded-circle" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                <i class="fas fa-user-circle text-muted fs-4"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">
+                                    {% if comment.author %}
+                                        {{ comment.author.username }}
+                                    {% else %}
+                                        {{ comment.guest_name or 'Аноним' }}
+                                    {% endif %}
+                                </h6>
+                                <small class="text-muted">{{ comment.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                            </div>
+                        </div>
+                        <div class="comment-text pt-2" style="font-size: 1.05rem;">
+                            {{ comment.content }}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="far fa-comment-dots fs-1 mb-3 d-block"></i>
+                        {{ _('no_comments') }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        <div class="back-link" style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px;">
+            <a href="{{ url_for('main.index') }}" class="read-more-btn" style="font-size: 16px;">
+                <i class="fas fa-arrow-left"></i> {{ _('home') }}
+            </a>
+        </div>
+        </article>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <div class="sticky-top" style="top: 100px;">
+
+            <!-- Trending / Related News -->
+            <div class="glass-card p-4 mb-4 border-0 shadow-sm">
+                <h5 class="fw-bold mb-4 d-flex align-items-center border-bottom pb-3">
+                    <i class="fas fa-fire me-2 text-warning"></i> {{ _('trending') }}
+                </h5>
+                <div class="trending-list">
+                    {% for n in latest_news %}
+                    <div class="trending-item mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}">
+                        <a href="{{ url_for('main.news_detail', news_id=n.id) }}" class="text-decoration-none d-flex gap-3 align-items-start">
+                            <span class="fw-bold text-primary opacity-50 fs-4" style="min-width:28px; line-height:1;">{{ loop.index }}</span>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1 line-clamp-2 small" style="font-size:0.88rem;">
+                                    {{ n['title_' + session.get('lang', 'ru')] }}
+                                </h6>
+                                <span class="text-muted" style="font-size:0.75rem;">
+                                    <i class="far fa-clock me-1"></i>{{ n.created_at.strftime('%d.%m %H:%M') }}
+                                    {% if n.source_name %} · {{ n.source_name }}{% endif %}
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Same Category News -->
+            {% if related_news %}
+            <div class="glass-card p-4 mb-4 border-0 shadow-sm">
+                <h5 class="fw-bold mb-4 d-flex align-items-center border-bottom pb-3">
+                    <i class="fas fa-layer-group me-2 text-primary"></i> {{ _(news.category.code) }}
+                </h5>
+                {% for rn in related_news %}
+                <div class="mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}">
+                    <a href="{{ url_for('main.news_detail', news_id=rn.id) }}" class="text-decoration-none">
+                        <div class="d-flex gap-3 align-items-start">
+                            {% if rn.image_filename %}
+                            <img src="{{ url_for('static', filename='images/uploads/' + rn.image_filename) }}"
+                                 class="rounded-3 flex-shrink-0" style="width:64px; height:48px; object-fit:cover;">
+                            {% else %}
+                            <div class="rounded-3 flex-shrink-0 overflow-hidden" style="width:64px; height:48px;">
+                                {{ cat_placeholder(rn.category.code, '48px', '1rem') }}
+                            </div>
+                            {% endif %}
+                            <h6 class="fw-bold text-dark mb-0 line-clamp-2 small">
+                                {{ rn['title_' + session.get('lang', 'ru')] }}
+                            </h6>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Newsletter Widget -->
+            <div class="glass-card p-4 border-0 shadow-sm" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                <h5 class="fw-bold mb-3 text-white">{{ _('newsletter') }}</h5>
+                <p class="small mb-3 text-white opacity-75">{{ _('sub_desc') }}</p>
+                <div class="input-group mb-2">
+                    <input type="email" class="form-control border-0" placeholder="Email" style="border-radius: 8px 0 0 8px;">
+                    <button class="btn btn-dark" style="border-radius: 0 8px 8px 0;"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+function toggleLike(newsId, btn) {
+    fetch(`/api/news/${newsId}/like`, { method: 'POST' })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === 'error') {
+            alert(data.message);
+            window.location.href = "{{ url_for('auth.login') }}";
+            return;
+        }
+        const icon = btn.querySelector('.like-icon');
+        const count = btn.querySelector('.like-count');
+        if (data.action === 'added') {
+            btn.classList.remove('text-muted');
+            btn.classList.add('text-danger', 'border-danger');
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+            if (window.showToast) window.showToast('Сізге ұнады', 'danger');
+        } else {
+            btn.classList.remove('text-danger', 'border-danger');
+            btn.classList.add('text-muted');
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+        }
+        count.textContent = data.count;
+    });
+}
+
+function toggleBookmark(newsId, btn) {
+    fetch(`/api/news/${newsId}/bookmark`, { method: 'POST' })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === 'error') {
+            alert(data.message);
+            window.location.href = "{{ url_for('auth.login') }}";
+            return;
+        }
+        const icon = btn.querySelector('.bookmark-icon');
+        const text = btn.querySelector('.bookmark-text');
+        if (data.action === 'added') {
+            btn.classList.remove('btn-light', 'text-muted');
+            btn.classList.add('btn-primary', 'text-white');
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+            text.textContent = "{{ _('bookmarked') }}";
+            if (window.showToast) window.showToast("{{ _('bookmarked') }}", 'success');
+        } else {
+            btn.classList.remove('btn-primary', 'text-white');
+            btn.classList.add('btn-light', 'text-muted');
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+            text.textContent = "{{ _('bookmark') }}";
+        }
+    });
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.getElementById('copyLinkBtn');
+        const origHTML = btn ? btn.innerHTML : '';
+        document.querySelectorAll('[onclick="copyLink()"]').forEach(b => {
+            b.innerHTML = b.innerHTML.replace(/fa-copy|fa-link/, 'fa-check') + '';
+            b.classList.add('btn-success');
+            b.classList.remove('btn-outline-secondary');
+        });
+        setTimeout(() => {
+            document.querySelectorAll('[onclick="copyLink()"]').forEach(b => {
+                b.innerHTML = b.innerHTML.replace('fa-check', 'fa-copy');
+                b.classList.remove('btn-success');
+                b.classList.add('btn-outline-secondary');
+            });
+        }, 2000);
+    });
+}
+</script>
+
+<style>
+.share-btn { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; }
+.line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+</style>
+{% endblock %}

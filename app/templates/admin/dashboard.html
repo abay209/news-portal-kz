@@ -1,0 +1,127 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="glass-card stat-card p-4 d-flex align-items-center">
+            <div class="stat-icon bg-primary-soft me-3">
+                <i class="fas fa-newspaper"></i>
+            </div>
+            <div>
+                <h6 class="text-muted mb-1">Всего новостей</h6>
+                <h3 class="mb-0 fw-bold">{{ total_news }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card stat-card p-4 d-flex align-items-center">
+            <div class="stat-icon bg-success-soft me-3">
+                <i class="fas fa-eye"></i>
+            </div>
+            <div>
+                <h6 class="text-muted mb-1">Просмотры</h6>
+                <h3 class="mb-0 fw-bold">{{ total_views }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card stat-card p-4 d-flex align-items-center">
+            <div class="stat-icon bg-info-soft me-3">
+                <i class="fas fa-rss"></i>
+            </div>
+            <div>
+                <h6 class="text-muted mb-1">Источники</h6>
+                <h3 class="mb-0 fw-bold">{{ total_sources }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="glass-card p-4">
+            <h5 class="mb-4 d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-chart-line me-2"></i> Активность парсера (7 дней)</span>
+                <a href="{{ url_for('admin.news_fetch_rss') }}" class="btn btn-sm btn-primary">Обновить сейчас</a>
+            </h5>
+            <canvas id="newsChart" style="height: 300px;"></canvas>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4">
+            <h5 class="mb-4"><i class="fas fa-chart-pie me-2"></i> По категориям</h5>
+            <canvas id="categoryChart" style="height: 300px;"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const newsCtx = document.getElementById('newsChart').getContext('2d');
+    new Chart(newsCtx, {
+        type: 'line',
+        data: {
+            labels: ['6д назад', '5д назад', '4д назад', '3д назад', '2д назад', 'Вчера', 'Сегодня'],
+            datasets: [{
+                label: 'Новые статьи',
+                data: JSON.parse('{{ news_stats | tojson | safe }}'),
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+    }
+    });
+
+    const catCtx = document.getElementById('categoryChart').getContext('2d');
+    const catData = JSON.parse('{{ cat_stats | tojson | safe }}');
+    new Chart(catCtx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(catData),
+            datasets: [{
+                data: Object.values(catData),
+                backgroundColor: [
+                    '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+</script>
+
+<style>
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .bg-primary-soft {
+        background: rgba(99, 102, 241, 0.15);
+        color: #6366f1;
+    }
+
+    .bg-success-soft {
+        background: rgba(16, 185, 129, 0.15);
+        color: #10b981;
+    }
+
+    .bg-info-soft {
+        background: rgba(6, 182, 212, 0.15);
+        color: #06b6d4;
+    }
+</style>
+{% endblock %}

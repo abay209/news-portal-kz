@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section (Only on main page) -->
+{% if not current_cat and not search_query %}
+<section class="hero-section mb-5 mt-3">
+    <div class="row g-4">
+        {% if hero_news %}
+        <div class="col-lg-8">
+            <div class="main-news-card glass-card h-100 overflow-hidden">
+                <a href="{{ url_for('main.news_detail', news_id=hero_news[0].id) }}" class="text-decoration-none">
+                    <div class="card-img-wrapper position-relative" style="height: 450px;">
+                        <img src="{{ url_for('static', filename='images/uploads/' + hero_news[0].image_filename) }}" class="w-100 h-100 object-fit-cover" alt="">
+                        <div class="card-img-overlay d-flex flex-column justify-content-end p-4 text-white">
+                            <span class="badge bg-primary mb-2 align-self-start">{{ _(hero_news[0].category.code) }}</span>
+                            <h1 class="display-6 fw-bold mb-2">{{ hero_news[0]['title_' + session.get('lang', 'ru')] }}</h1>
+                            <p class="mb-0 opacity-80 d-none d-md-block">{{ hero_news[0]['summary_' + session.get('lang', 'ru')] | truncate(150) }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="d-flex flex-column gap-4 h-100">
+                {% if hero_news|length > 1 %}
+                <div class="sub-news-card glass-card flex-fill overflow-hidden position-relative">
+                    <a href="{{ url_for('main.news_detail', news_id=hero_news[1].id) }}" class="text-decoration-none">
+                        <div class="card-img-wrapper" style="height: 213px;">
+                            <img src="{{ url_for('static', filename='images/uploads/' + hero_news[1].image_filename) }}" class="w-100 h-100 object-fit-cover" alt="">
+                            <div class="card-img-overlay d-flex flex-column justify-content-end p-3 text-white">
+                                <span class="badge bg-info mb-1 align-self-start">{{ _(hero_news[1].category.code) }}</span>
+                                <h5 class="fw-bold mb-0 text-truncate-2">{{ hero_news[1]['title_' + session.get('lang', 'ru')] }}</h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+                {% if hero_news|length > 2 %}
+                <div class="sub-news-card glass-card flex-fill overflow-hidden position-relative">
+                    <a href="{{ url_for('main.news_detail', news_id=hero_news[2].id) }}" class="text-decoration-none">
+                        <div class="card-img-wrapper" style="height: 213px;">
+                            <img src="{{ url_for('static', filename='images/uploads/' + hero_news[2].image_filename) }}" class="w-100 h-100 object-fit-cover" alt="">
+                            <div class="card-img-overlay d-flex flex-column justify-content-end p-3 text-white">
+                                <span class="badge bg-success mb-1 align-self-start">{{ _(hero_news[2].category.code) }}</span>
+                                <h5 class="fw-bold mb-0 text-truncate-2">{{ hero_news[2]['title_' + session.get('lang', 'ru')] }}</h5>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Main Grid -->
+<div class="row g-4">
+    <div class="col-lg-9">
+        {% if current_cat or search_query %}
+            <div class="section-badge mb-4">
+                <span class="badge bg-primary px-3 py-2">
+                    {% if current_cat %}{{ _(current_cat) }}{% else %}{{ _('search_results') }}: "{{ search_query }}"{% endif %}
+                </span>
+            </div>
+            <div class="row g-4">
+                {% for item in news_list %}
+                <div class="col-md-6">
+                    <div class="news-card glass-card h-100 shadow-sm overflow-hidden border-0">
+                        <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="text-decoration-none">
+                            {% if item.image_filename %}
+                            <div class="card-img-wrapper position-relative" style="height: 200px;">
+                                <img src="{{ url_for('static', filename='images/uploads/' + item.image_filename) }}" class="w-100 h-100 object-fit-cover" alt="">
+                                <span class="badge bg-primary position-absolute top-0 start-0 m-3 shadow-sm">{{ _(item.category.code) }}</span>
+                            </div>
+                            {% endif %}
+                            <div class="card-body p-4 text-dark">
+                                {% if not item.image_filename %}
+                                <span class="badge bg-primary mb-2 d-inline-block">{{ _(item.category.code) }}</span>
+                                {% endif %}
+                                <h5 class="fw-bold mb-2 line-clamp-2">{{ item['title_' + session.get('lang', 'ru')] }}</h5>
+                                <p class="text-muted small mb-3">{{ item['summary_' + session.get('lang', 'ru')] | truncate(100) }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="small text-muted"><i class="far fa-clock me-1"></i> {{ item.created_at.strftime('%d.%m %H:%M') }}</span>
+                                    <span class="text-primary fw-bold small">{{ _('read_more') }} <i class="fas fa-chevron-right ms-1"></i></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if pagination and pagination.pages > 1 %}
+            <nav aria-label="Page navigation" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                        <a class="page-link rounded-start-4" href="{{ url_for('main.index', page=pagination.prev_num, category=current_cat, q=search_query) if pagination.has_prev else '#' }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    
+                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('main.index', page=page_num, category=current_cat, q=search_query) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                        <a class="page-link rounded-end-4" href="{{ url_for('main.index', page=pagination.next_num, category=current_cat, q=search_query) if pagination.has_next else '#' }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <style>
+                .pagination .page-link { border-radius: 8px; margin: 0 4px; border: none; color: #4f46e5; font-weight: 600; padding: 0.5rem 0.85rem; }
+                .pagination .page-item.active .page-link { background-color: #6366f1; color: white; box-shadow: 0 4px 10px rgba(99,102,241,0.3); }
+                .pagination .page-item.disabled .page-link { color: #cbd5e1; background: transparent; }
+            </style>
+            {% endif %}
+
+        {% else %}
+            <!-- Magazine Category Sections -->
+            {% for cat_code, items in news_by_category.items() if items %}
+            <div class="category-block mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+                    <h3 class="fw-bold mb-0 text-uppercase letter-spacing-1 border-bottom border-primary border-3 pb-1">{{ _(cat_code) }}</h3>
+                    <a href="{{ url_for('main.index', category=cat_code) }}" class="btn btn-sm btn-outline-primary rounded-pill border-2 fw-bold">{{ _('see_all') }} <i class="fas fa-arrow-right ms-1"></i></a>
+                </div>
+                <div class="row g-4">
+                    {% for item in items %}
+                    <div class="col-md-6 col-xl-3">
+                        <div class="news-item-mini h-100">
+                            <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="text-decoration-none text-dark">
+                                {% if item.image_filename %}
+                                <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
+                                    <img src="{{ url_for('static', filename='images/uploads/' + item.image_filename) }}" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                </div>
+                                {% endif %}
+                                <h6 class="fw-bold mb-2 line-clamp-3">{{ item['title_' + session.get('lang', 'ru')] }}</h6>
+                                <span class="text-muted small d-block"><i class="far fa-clock me-1"></i> {{ item.created_at.strftime('%H:%M') }} | {{ item.source_name }}</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="col-lg-3">
+        <div class="sticky-top" style="top: 100px;">
+            <!-- Live Broadcast Widget -->
+            {% if settings.get('youtube_live_url') %}
+            <div class="glass-card p-3 mb-4 border-0 shadow-sm">
+                <h6 class="fw-bold mb-3 d-flex align-items-center text-danger">
+                    <i class="fas fa-satellite-dish me-2 pulse-icon"></i> Тікелей эфир
+                </h6>
+                <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm">
+                    <iframe src="{{ settings.get('youtube_live_url') }}" title="Live Broadcast" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Trending List -->
+            <div class="glass-card p-4 mb-4 border-0 shadow-sm">
+                <h5 class="fw-bold mb-4 d-flex align-items-center">
+                    <i class="fas fa-fire me-2 text-warning"></i> {{ _('trending') }}
+                </h5>
+                <div class="trending-list">
+                    {% for n in news_list[:6] %}
+                    <div class="trending-item mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}">
+                        <a href="{{ url_for('main.news_detail', news_id=n.id) }}" class="text-decoration-none group">
+                            <div class="row g-2 align-items-center">
+                                <div class="col-3">
+                                    <span class="display-6 fw-bold text-light opacity-50">{{ loop.index }}</span>
+                                </div>
+                                <div class="col-9">
+                                    <h6 class="fw-bold text-dark mb-0 line-clamp-2 small">{{ n['title_' + session.get('lang', 'ru')] }}</h6>
+                                    <span class="text-muted x-small d-block mt-1">{{ n.source_name }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Newsletter Widget -->
+            <div class="glass-card p-4 border-0 shadow-sm bg-gradient-primary text-white">
+                <h5 class="fw-bold mb-3">{{ _('newsletter') }}</h5>
+                <p class="small opacity-80 mb-3">{{ _('sub_desc') }}</p>
+                <div class="input-group mb-2">
+                    <input type="email" class="form-control border-0" placeholder="Ваш Email" style="border-radius: 8px 0 0 8px;">
+                    <button class="btn btn-dark" style="border-radius: 0 8px 8px 0;"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card-img-overlay {
+        background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+        transition: all 0.3s ease;
+    }
+    .shadow-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; }
+    .transition-transform:hover { transform: scale(1.05); }
+    .transition-transform { transition: transform 0.5s ease; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .text-truncate-2 { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .bg-gradient-primary { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
+    .x-small { font-size: 0.75rem; }
+    .letter-spacing-1 { letter-spacing: 1px; }
+</style>
+{% endblock %}
