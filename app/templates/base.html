@@ -17,20 +17,22 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --glass: rgba(255, 255, 255, 0.92);
-            --glass-border: rgba(226, 232, 240, 0.8);
-            --bg: #f8fafc;
-            --text: #0f172a;
-            --card-bg: #ffffff;
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --glass: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --bg: #f3f4f6;
+            --text: #111827;
+            --card-bg: rgba(255, 255, 255, 0.95);
         }
         [data-bs-theme="dark"] {
-            --glass: rgba(15, 23, 42, 0.95);
-            --glass-border: rgba(255,255,255,0.08);
-            --bg: #0f172a;
-            --text: #e2e8f0;
-            --card-bg: #1e293b;
+            --primary: #6366f1;
+            --primary-dark: #818cf8;
+            --glass: rgba(17, 24, 39, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --bg: #030712;
+            --text: #f9fafb;
+            --card-bg: rgba(31, 41, 55, 0.95);
         }
         [data-bs-theme="dark"] body { background-color: var(--bg); color: var(--text); }
         [data-bs-theme="dark"] .glass-card { background: var(--card-bg) !important; border-color: rgba(255,255,255,0.08) !important; color: var(--text); }
@@ -43,9 +45,12 @@
 
         body {
             font-family: 'Outfit', sans-serif;
-            background-color: var(--bg, #f8fafc);
-            color: var(--text, #0f172a);
-            padding-top: 80px; /* navbar only */
+            background: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08), transparent 25%),
+                        radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.08), transparent 25%);
+            background-color: var(--bg);
+            background-attachment: fixed;
+            color: var(--text);
+            padding-top: 80px;
             transition: background 0.3s, color 0.3s;
         }
 
@@ -85,22 +90,34 @@
             padding: 0.5rem 1rem !important;
             transition: color 0.2s;
             text-transform: uppercase;
+          .x-small { font-size: 0.75rem; }
+        .letter-spacing-1 { letter-spacing: 1px; }
+
+        /* ===== CURRENCY WIDGET ===== */
+        .currency-widget {
+            font-family: monospace;
             font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            letter-spacing: -0.5px;
+        }
+        .currency-val { font-weight: 700; }
+        .currency-up { color: #10b981; }
+        .currency-down { color: #ef4444; }
         }
         .nav-link:hover { color: var(--primary) !important; }
         .nav-link.active { color: var(--primary) !important; font-weight: 700; }
         
         .glass-card {
-            background: white;
-            border-radius: 24px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
         }
         .glass-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
         }
         
         .search-bar {
@@ -261,13 +278,17 @@
 
                     <div class="lang-switcher d-flex gap-1 me-2">
                         {% set current_l = session.get('lang', 'ru') %}
-                        <a href="{{ url_for('main.set_lang', lang_code='kk') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'kk' else 'bg-white text-dark' }}">KK</a>
-                        <a href="{{ url_for('main.set_lang', lang_code='ru') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'ru' else 'bg-white text-dark' }}">RU</a>
-                        <a href="{{ url_for('main.set_lang', lang_code='en') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'en' else 'bg-white text-dark' }}">EN</a>
+                        <a href="{{ url_for('main.set_lang', lang_code='kk') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'kk' else 'bg-white text-dark shadow-sm border-0' }}">KK</a>
+                        <a href="{{ url_for('main.set_lang', lang_code='ru') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'ru' else 'bg-white text-dark shadow-sm border-0' }}">RU</a>
+                        <a href="{{ url_for('main.set_lang', lang_code='en') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'en' else 'bg-white text-dark shadow-sm border-0' }}">EN</a>
                     </div>
                     
-                    <div id="weatherWidget" class="d-flex align-items-center bg-light px-2 py-1 rounded text-muted" style="font-size: 0.85rem;" title="Алматы ауа-райы">
-                        <i class="fas fa-spinner fa-spin me-1"></i> Жүктелуде...
+                    <div id="currencyWidget" class="d-none d-xl-flex align-items-center bg-light px-3 py-1 rounded-pill shadow-sm text-dark currency-widget me-2" title="Валюта бағамы">
+                        <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
+                    </div>
+
+                    <div id="weatherWidget" class="d-none d-lg-flex align-items-center bg-light px-3 py-1 rounded-pill shadow-sm text-dark" style="font-size: 0.85rem; font-weight: 600;" title="Астана ауа-райы">
+                        <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
                     </div>
                 </div>
 
@@ -423,13 +444,35 @@
                 .then(data => {
                     if (data && data.current_weather) {
                         const temp = Math.round(data.current_weather.temperature);
-                        document.getElementById('weatherWidget').innerHTML = `<i class="fas fa-cloud-sun text-primary me-1"></i> ${temp}°C Астана`;
+                        document.getElementById('weatherWidget').innerHTML = `<i class="fas fa-cloud-sun text-primary me-2"></i> ${temp}°C Астана`;
                     } else {
                         document.getElementById('weatherWidget').style.display = 'none';
                     }
                 })
                 .catch(err => {
                     document.getElementById('weatherWidget').style.display = 'none';
+                });
+
+            // Fetch Currency Rates
+            fetch('https://api.exchangerate-api.com/v4/latest/USD')
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.rates && data.rates.KZT) {
+                        const kztUsd = data.rates.KZT.toFixed(1);
+                        const kztEur = (data.rates.KZT / data.rates.EUR).toFixed(1);
+                        const kztRub = (data.rates.KZT / data.rates.RUB).toFixed(2);
+                        
+                        document.getElementById('currencyWidget').innerHTML = `
+                            <span class="me-3"><i class="fas fa-dollar-sign text-success opacity-75"></i> <span class="currency-val">${kztUsd}</span> ₸</span>
+                            <span class="me-3"><i class="fas fa-euro-sign text-primary opacity-75"></i> <span class="currency-val">${kztEur}</span> ₸</span>
+                            <span><i class="fas fa-ruble-sign text-danger opacity-75"></i> <span class="currency-val">${kztRub}</span> ₸</span>
+                        `;
+                    } else {
+                        document.getElementById('currencyWidget').style.display = 'none';
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('currencyWidget').style.display = 'none';
                 });
         });
     </script>

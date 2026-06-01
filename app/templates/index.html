@@ -161,8 +161,8 @@
             <!-- Live Broadcast Widget -->
             {% if settings.get('youtube_live_url') %}
             <div class="glass-card p-3 mb-4 border-0 shadow-sm">
-                <h6 class="fw-bold mb-3 d-flex align-items-center text-danger">
-                    <i class="fas fa-satellite-dish me-2 pulse-icon"></i> Тікелей эфир
+                <h6 class="fw-bold mb-3 d-flex align-items-center">
+                    <span class="badge bg-danger rounded-pill pulse-icon px-3 py-1 shadow-sm"><i class="fas fa-satellite-dish me-1"></i> LIVE</span>
                 </h6>
                 <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm">
                     <iframe src="{{ settings.get('youtube_live_url') }}" title="Live Broadcast" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
