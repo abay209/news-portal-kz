@@ -159,7 +159,7 @@
     <div class="col-lg-3">
         <div class="sticky-top" style="top: 100px;">
             <!-- Live Broadcast Widget -->
-            {% if settings.get('youtube_live_url') %}
+            {% if settings.get('youtube_live_url') and not request.args.get('category') and not request.args.get('q') %}
             <div class="glass-card p-3 mb-4 border-0 shadow-sm">
                 <h6 class="fw-bold mb-3 d-flex align-items-center">
                     <span class="badge bg-danger rounded-pill pulse-icon px-3 py-1 shadow-sm"><i class="fas fa-satellite-dish me-1"></i> LIVE</span>
