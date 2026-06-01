@@ -41,6 +41,10 @@ def create_app(config_class=Config):
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(auth_bp, url_prefix='/auth')
 
+    # Create database tables if they don't exist
+    with app.app_context():
+        db.create_all()
+
     # Error handlers
     @app.errorhandler(404)
     def page_not_found(e):
