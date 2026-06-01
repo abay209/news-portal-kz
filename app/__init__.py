@@ -44,7 +44,36 @@ def create_app(config_class=Config):
     # Create database tables if they don't exist
     with app.app_context():
         from app import models  # noqa: F401 - ensure all models are imported
+        from app.models import Category, User, Source
         db.create_all()
+        
+        # Init default categories
+        if Category.query.count() == 0:
+            categories = ['cat_general', 'cat_politics', 'cat_sport', 'cat_economy', 'cat_tech', 'cat_world', 'cat_auto', 'cat_culture']
+            for c in categories:
+                db.session.add(Category(code=c))
+            db.session.commit()
+            
+        # Init default admin
+        if User.query.filter_by(username='admin').first() is None:
+            admin_user = User(username='admin', is_admin=True)
+            admin_user.set_password('admin123')
+            db.session.add(admin_user)
+            db.session.commit()
+            
+        # Init default sources
+        if Source.query.count() == 0:
+            initial_sources = [
+                {'name': 'Tengrinews.kz', 'url': 'https://tengrinews.kz/news.rss', 'lang': 'ru'},
+                {'name': 'Nur.kz', 'url': 'https://www.nur.kz/rss/', 'lang': 'ru'},
+                {'name': 'Zakon.kz', 'url': 'https://www.zakon.kz/rss/', 'lang': 'ru'},
+                {'name': 'Inform.kz', 'url': 'https://www.inform.kz/inform.rss', 'lang': 'ru'},
+                {'name': 'BBC World', 'url': 'http://feeds.bbci.co.uk/news/world/rss.xml', 'lang': 'en'},
+                {'name': 'The Verge', 'url': 'https://www.theverge.com/rss/index.xml', 'lang': 'en'}
+            ]
+            for s in initial_sources:
+                db.session.add(Source(name=s['name'], url=s['url'], language=s['lang']))
+            db.session.commit()
 
     # Error handlers
     @app.errorhandler(404)
