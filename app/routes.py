@@ -1,10 +1,23 @@
 from flask import Blueprint, render_template, request, session, redirect, jsonify, url_for
 from flask_login import current_user
-from app.models import News, Category, Comment, Bookmark, Like
+from app.models import News, Category, Comment, Bookmark, Like, Setting
 from app import db
 from sqlalchemy import or_
 
 main = Blueprint('main', __name__)
+
+@main.route('/fix-news')
+def fix_news():
+    # 1. Clear all old news to force re-download of photos
+    News.query.delete()
+    # 2. Add default Live Stream setting
+    if Setting.query.filter_by(key='youtube_live_url').first() is None:
+        db.session.add(Setting(key='youtube_live_url', value='https://www.youtube.com/embed/gCNeDWCI0vo?autoplay=1&mute=1'))
+    db.session.commit()
+    # 3. Fetch fresh news
+    from rss_parser import fetch_rss_feeds
+    fetch_rss_feeds()
+    return "Барлығы жөнделді! Басты бетке қайта беріңіз: <a href='/'>Басты бет</a>"
 
 @main.route('/')
 def index():
