@@ -47,7 +47,6 @@
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            padding-top: 80px;
             transition: background 0.3s, color 0.3s;
         }
 
@@ -220,7 +219,6 @@
 
         @media (max-width: 991px) {
             .search-bar { width: 100%; margin: 1rem 0; }
-            body { padding-top: 80px; }
         }
 
         /* ===== LIVE PULSE ANIMATION ===== */
@@ -238,7 +236,26 @@
     <!-- Reading Progress Bar -->
     <div id="readingProgress"></div>
 
-    <nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+    <div class="bg-dark text-white py-1 d-none d-lg-block" style="font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <div class="container-fluid px-4 px-lg-5 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <div id="weatherWidget" title="Астана ауа-райы" style="font-weight: 600;">
+                    <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
+                </div>
+                <div id="currencyWidget" class="currency-widget" title="Валюта бағамы">
+                    <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
+                </div>
+            </div>
+            <div class="lang-switcher d-flex gap-1">
+                {% set current_l = session.get('lang', 'ru') %}
+                <a href="{{ url_for('main.set_lang', lang_code='kk') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'kk' else 'bg-secondary text-white border-0' }}" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">KK</a>
+                <a href="{{ url_for('main.set_lang', lang_code='ru') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'ru' else 'bg-secondary text-white border-0' }}" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">RU</a>
+                <a href="{{ url_for('main.set_lang', lang_code='en') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'en' else 'bg-secondary text-white border-0' }}" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">EN</a>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-glass sticky-top shadow-sm">
         <div class="container-fluid px-4 px-lg-5">
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
                 <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NEWSKZ" height="35" class="me-2" style="border-radius: 8px;" onerror="this.style.display='none'">
@@ -257,7 +274,7 @@
                 </ul>
                 
                 <div class="d-flex align-items-center gap-2 flex-wrap position-relative">
-                    <form action="{{ url_for('main.index') }}" class="search-bar d-flex align-items-center position-relative">
+                    <form action="{{ url_for('main.index') }}" class="search-bar d-flex align-items-center position-relative mb-0">
                         <i class="fas fa-search text-muted me-2"></i>
                         <input type="text" name="q" id="liveSearchInput" placeholder="{{ _('search_placeholder') }}" value="{{ request.args.get('q', '') }}" autocomplete="off">
                         
@@ -272,19 +289,11 @@
                         <i class="fas fa-moon" id="themeIcon"></i>
                     </button>
 
-                    <div class="lang-switcher d-flex gap-1 me-2">
+                    <!-- Mobile Lang Switcher -->
+                    <div class="lang-switcher d-flex d-lg-none gap-1 ms-2">
                         {% set current_l = session.get('lang', 'ru') %}
-                        <a href="{{ url_for('main.set_lang', lang_code='kk') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'kk' else 'bg-white text-dark shadow-sm border-0' }}">KK</a>
-                        <a href="{{ url_for('main.set_lang', lang_code='ru') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'ru' else 'bg-white text-dark shadow-sm border-0' }}">RU</a>
-                        <a href="{{ url_for('main.set_lang', lang_code='en') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'en' else 'bg-white text-dark shadow-sm border-0' }}">EN</a>
-                    </div>
-                    
-                    <div id="currencyWidget" class="d-none d-xl-flex align-items-center bg-light px-3 py-1 rounded-pill shadow-sm text-dark currency-widget me-2" title="Валюта бағамы">
-                        <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
-                    </div>
-
-                    <div id="weatherWidget" class="d-none d-lg-flex align-items-center bg-light px-3 py-1 rounded-pill shadow-sm text-dark" style="font-size: 0.85rem; font-weight: 600;" title="Астана ауа-райы">
-                        <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
+                        <a href="{{ url_for('main.set_lang', lang_code='kk') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'kk' else 'bg-light text-dark' }}" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">KK</a>
+                        <a href="{{ url_for('main.set_lang', lang_code='ru') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'ru' else 'bg-light text-dark' }}" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">RU</a>
                     </div>
                 </div>
 
