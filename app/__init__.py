@@ -43,6 +43,7 @@ def create_app(config_class=Config):
 
     # Create database tables if they don't exist
     with app.app_context():
+        from app import models  # noqa: F401 - ensure all models are imported
         db.create_all()
 
     # Error handlers
