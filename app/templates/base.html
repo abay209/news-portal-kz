@@ -25,23 +25,7 @@
             --text: #111827;
             --card-bg: #ffffff;
         }
-        [data-bs-theme="dark"] {
-            --primary: #3b82f6;
-            --primary-dark: #60a5fa;
-            --glass: #0f172a;
-            --glass-border: #1e293b;
-            --bg: #020617;
-            --text: #f8fafc;
-            --card-bg: #0f172a;
-        }
-        [data-bs-theme="dark"] body { background-color: var(--bg); color: var(--text); }
-        [data-bs-theme="dark"] .glass-card { background: var(--card-bg) !important; border-color: rgba(255,255,255,0.08) !important; color: var(--text); }
-        [data-bs-theme="dark"] .navbar-glass { background: var(--glass) !important; }
-        [data-bs-theme="dark"] footer { background: #020617; }
-        [data-bs-theme="dark"] .text-dark { color: var(--text) !important; }
-        [data-bs-theme="dark"] .bg-white { background-color: var(--card-bg) !important; }
-        [data-bs-theme="dark"] .article-content { color: #cbd5e1 !important; }
-        [data-bs-theme="dark"] .bg-light { background-color: #1e293b !important; color: #cbd5e1 !important; }
+
 
         body {
             font-family: 'Inter', sans-serif;
@@ -145,22 +129,7 @@
             border: 1px solid #e2e8f0;
         }
         
-        /* Dark mode toggle */
-        .dark-toggle {
-            background: none;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            width: 36px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: #64748b;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-        }
-        .dark-toggle:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
 
         .btn-primary {
             background-color: var(--primary);
@@ -279,10 +248,7 @@
                         </div>
                     </form>
                     
-                    <!-- Dark Mode Toggle -->
-                    <button class="dark-toggle" id="themeToggle" title="Күн/Түн режимі">
-                        <i class="fas fa-moon" id="themeIcon"></i>
-                    </button>
+
 
                     <!-- Mobile Lang Switcher -->
                     <div class="lang-switcher d-flex d-lg-none gap-1 ms-2">
@@ -398,27 +364,7 @@
         window.READ_MORE_TEXT = "{{ _('read_more') }}";
         window.COPY_LINK_TEXT = "{{ _('copy_link') }}";
 
-        // ===== DARK MODE =====
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-        const html = document.documentElement;
 
-        function applyTheme(theme) {
-            html.setAttribute('data-bs-theme', theme);
-            localStorage.setItem('theme', theme);
-            if (theme === 'dark') {
-                themeIcon.className = 'fas fa-sun';
-            } else {
-                themeIcon.className = 'fas fa-moon';
-            }
-        }
-        // Load saved theme
-        applyTheme(localStorage.getItem('theme') || 'light');
-
-        themeToggle.addEventListener('click', () => {
-            const current = html.getAttribute('data-bs-theme');
-            applyTheme(current === 'dark' ? 'light' : 'dark');
-        });
 
         // ===== SCROLL TOP =====
         const scrollTopBtn = document.getElementById('scrollTop');
