@@ -103,6 +103,45 @@
             </div>
             {% endif %}
 
+            <!-- Poll Section -->
+            {% if news.poll %}
+            <div class="glass-card p-4 mb-4 border-0 shadow-sm" style="background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.05) 0%, rgba(var(--bs-info-rgb), 0.05) 100%);">
+                <h5 class="fw-bold mb-3 d-flex align-items-center"><i class="fas fa-poll me-2 text-primary"></i> {{ news.poll.question }}</h5>
+                <div id="poll-container-{{ news.poll.id }}">
+                    {% set total_votes = news.poll.options|sum(attribute='votes') %}
+                    {% if has_voted %}
+                        <div class="poll-results">
+                            {% for opt in news.poll.options %}
+                            {% set percent = (opt.votes / total_votes * 100)|round|int if total_votes > 0 else 0 %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="fw-bold">{{ opt.text }}</span>
+                                    <span class="text-muted">{{ percent }}% ({{ opt.votes }})</span>
+                                </div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: {{ percent }}%;" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            <p class="small text-muted mt-3 mb-0"><i class="fas fa-check-circle text-success me-1"></i> Сіз дауыс бердіңіз. Жалпы дауыс саны: {{ total_votes }}</p>
+                        </div>
+                    {% else %}
+                        <form id="poll-form-{{ news.poll.id }}" class="poll-form" data-poll-id="{{ news.poll.id }}">
+                            {% for opt in news.poll.options %}
+                            <div class="form-check mb-2 custom-radio-wrapper">
+                                <input class="form-check-input" type="radio" name="option_id" id="opt-{{ opt.id }}" value="{{ opt.id }}" required>
+                                <label class="form-check-label w-100 p-2 rounded-3 border bg-white cursor-pointer" for="opt-{{ opt.id }}" style="transition: all 0.2s;">
+                                    {{ opt.text }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                            <button type="submit" class="btn btn-primary rounded-pill px-4 mt-3 fw-bold">Дауыс беру</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Interaction Bar -->
             <div class="d-flex align-items-center justify-content-between mt-4 pb-3 border-bottom">
                 <div class="d-flex gap-3">
