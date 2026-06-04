@@ -1,24 +1,6 @@
 {% extends "base.html" %}
 
-{% macro cat_placeholder(cat_code, height='100%', font_size='2rem') %}
-{%- set cfg = {
-  'cat_politics':  {'g1': '#1a1a2e', 'g2': '#16213e', 'icon': '&#xf0e3;', 'label': 'Саясат'},
-  'cat_sport':     {'g1': '#0f3460', 'g2': '#533483', 'icon': '&#xf1e3;', 'label': 'Спорт'},
-  'cat_economy':   {'g1': '#134e4a', 'g2': '#065f46', 'icon': '&#xf201;', 'label': 'Экономика'},
-  'cat_tech':      {'g1': '#1e3a5f', 'g2': '#4f46e5', 'icon': '&#xf2d0;', 'label': 'Технологии'},
-  'cat_auto':      {'g1': '#292524', 'g2': '#78350f', 'icon': '&#xf1b9;', 'label': 'Авто'},
-  'cat_world':     {'g1': '#1e1b4b', 'g2': '#312e81', 'icon': '&#xf57d;', 'label': 'Мир'},
-  'cat_culture':   {'g1': '#4a044e', 'g2': '#7e22ce', 'icon': '&#xf4fb;', 'label': 'Мәдениет'},
-  'cat_general':   {'g1': '#1e293b', 'g2': '#334155', 'icon': '&#xf1ea;', 'label': 'Жаңалық'}
-} -%}
-{%- set c = cfg.get(cat_code, cfg['cat_general']) -%}
-<div class="cat-placeholder d-flex flex-column align-items-center justify-content-center w-100"
-     style="height:{{ height }}; background: linear-gradient(135deg, {{ c.g1 }} 0%, {{ c.g2 }} 100%); position:relative; overflow:hidden;">
-  <div style="position:absolute;inset:0;background:url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\") repeat;"></div>
-  <i class="fas" style="font-size:{{ font_size }}; color:rgba(255,255,255,0.25); margin-bottom:0.4rem;">{{ c.icon|safe }}</i>
-  <span style="font-size:0.7rem; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:2px; font-weight:700;">{{ c.label }}</span>
-</div>
-{% endmacro %}
+
 
 {% block seo %}
     {% set lang = session.get('lang', 'ru') %}
@@ -65,7 +47,7 @@
                     <span class="fw-bold small">{{ news.source_name or 'NewsKZ' }}</span>
                 </div>
                 <div class="vr"></div>
-                <span class="text-muted small"><i class="far fa-calendar-alt me-1"></i> {{ news.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                <span class="text-muted small"><i class="far fa-calendar-alt me-1"></i> <span class="local-time" data-timestamp="{{ news.created_at.isoformat() }}">{{ news.created_at.strftime('%d.%m.%Y %H:%M') }}</span></span>
                 <div class="vr"></div>
                 <span class="text-muted small"><i class="far fa-eye me-1"></i> {{ news.views }}</span>
                 
@@ -100,8 +82,8 @@
                 <img src="{{ url_for('static', filename='images/uploads/' + news.image_filename) }}" class="w-100" alt="{{ news['title_' + session.get('lang', 'ru')] }}">
             </div>
             {% else %}
-            <div class="featured-image mb-4 rounded-4 overflow-hidden shadow" style="height:320px;">
-                {{ cat_placeholder(news.category.code, '100%', '3rem') }}
+            <div class="featured-image mb-4 rounded-4 overflow-hidden shadow d-flex align-items-center justify-content-center" style="height:320px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" style="opacity: 0.1; height: 100px;">
             </div>
             {% endif %}
 
@@ -205,7 +187,7 @@
                                         {{ comment.guest_name or 'Аноним' }}
                                     {% endif %}
                                 </h6>
-                                <small class="text-muted">{{ comment.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                                <small class="text-muted local-time" data-timestamp="{{ comment.created_at.isoformat() }}">{{ comment.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
                             </div>
                         </div>
                         <div class="comment-text pt-2" style="font-size: 1.05rem;">
@@ -233,6 +215,19 @@
     <div class="col-lg-4">
         <div class="sticky-top" style="top: 100px;">
 
+            <!-- Weather and Currency Widgets (Moved to Sidebar) -->
+            <div class="glass-card p-4 mb-4 border-0 shadow-sm d-flex flex-column gap-3">
+                <h5 class="fw-bold mb-2 d-flex align-items-center">
+                    <i class="fas fa-info-circle me-2 text-primary"></i> Инфо
+                </h5>
+                <div id="weatherWidget" class="p-3 rounded-3" style="background: rgba(var(--bs-primary-rgb), 0.1); font-weight: 600;">
+                    <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
+                </div>
+                <div id="currencyWidget" class="currency-widget p-3 rounded-3 d-flex flex-column gap-2" style="background: rgba(var(--bs-primary-rgb), 0.05);">
+                    <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
+                </div>
+            </div>
+
             <!-- Trending / Related News -->
             <div class="glass-card p-4 mb-4 border-0 shadow-sm">
                 <h5 class="fw-bold mb-4 d-flex align-items-center border-bottom pb-3">
@@ -240,15 +235,15 @@
                 </h5>
                 <div class="trending-list">
                     {% for n in latest_news %}
-                    <div class="trending-item mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}">
-                        <a href="{{ url_for('main.news_detail', news_id=n.id) }}" class="text-decoration-none d-flex gap-3 align-items-start">
-                            <span class="fw-bold text-primary opacity-50 fs-4" style="min-width:28px; line-height:1;">{{ loop.index }}</span>
+                    <div class="trending-item mb-3 p-3 rounded-3 shadow-hover transition-all" style="background-color: var(--card-bg); border: 1px solid var(--glass-border);">
+                        <a href="{{ url_for('main.news_detail', news_id=n.id) }}" class="text-decoration-none d-flex gap-3 align-items-center">
+                            <span class="fw-bold text-primary opacity-25 fs-4" style="min-width:28px; line-height:1;">{{ loop.index }}</span>
                             <div>
                                 <h6 class="fw-bold text-dark mb-1 line-clamp-2 small" style="font-size:0.88rem;">
                                     {{ n['title_' + session.get('lang', 'ru')] }}
                                 </h6>
                                 <span class="text-muted" style="font-size:0.75rem;">
-                                    <i class="far fa-clock me-1"></i>{{ n.created_at.strftime('%d.%m %H:%M') }}
+                                    <i class="far fa-clock me-1"></i><span class="local-time" data-timestamp="{{ n.created_at.isoformat() }}">{{ n.created_at.strftime('%d.%m %H:%M') }}</span>
                                     {% if n.source_name %} · {{ n.source_name }}{% endif %}
                                 </span>
                             </div>
@@ -272,8 +267,8 @@
                             <img src="{{ url_for('static', filename='images/uploads/' + rn.image_filename) }}"
                                  class="rounded-3 flex-shrink-0" style="width:64px; height:48px; object-fit:cover;">
                             {% else %}
-                            <div class="rounded-3 flex-shrink-0 overflow-hidden" style="width:64px; height:48px;">
-                                {{ cat_placeholder(rn.category.code, '48px', '1rem') }}
+                            <div class="rounded-3 flex-shrink-0 overflow-hidden d-flex align-items-center justify-content-center" style="width:64px; height:48px; background: #e2e8f0;">
+                                <i class="fas fa-newspaper text-muted opacity-50"></i>
                             </div>
                             {% endif %}
                             <h6 class="fw-bold text-dark mb-0 line-clamp-2 small">

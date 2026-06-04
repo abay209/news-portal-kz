@@ -121,3 +121,13 @@ class Like(db.Model):
 
     user = db.relationship('User', backref=db.backref('likes', lazy='dynamic', cascade='all, delete-orphan'))
     news = db.relationship('News', backref=db.backref('likes', lazy='dynamic', cascade='all, delete-orphan'))
+
+class ViewHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True) # None for guests
+    session_id = db.Column(db.String(100), nullable=True) # To track guests
+    news_id = db.Column(db.Integer, db.ForeignKey('news.id'), nullable=False)
+    viewed_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    user = db.relationship('User', backref=db.backref('view_histories', lazy='dynamic', cascade='all, delete-orphan'))
+    news = db.relationship('News', backref=db.backref('views_history', lazy='dynamic', cascade='all, delete-orphan'))

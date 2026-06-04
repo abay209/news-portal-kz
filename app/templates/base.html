@@ -239,12 +239,7 @@
     <div class="bg-dark text-white py-1 d-none d-lg-block" style="font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
         <div class="container-fluid px-4 px-lg-5 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-3">
-                <div id="weatherWidget" title="Астана ауа-райы" style="font-weight: 600;">
-                    <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
-                </div>
-                <div id="currencyWidget" class="currency-widget" title="Валюта бағамы">
-                    <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
-                </div>
+                <span class="text-white-50"><i class="fas fa-calendar-day me-2"></i><span class="local-time" id="topDate"></span></span>
             </div>
             <div class="lang-switcher d-flex gap-1">
                 {% set current_l = session.get('lang', 'ru') %}
@@ -479,6 +474,35 @@
                 .catch(err => {
                     document.getElementById('currencyWidget').style.display = 'none';
                 });
+
+            // Format local times
+            const timeElements = document.querySelectorAll('.local-time');
+            timeElements.forEach(el => {
+                const ts = el.getAttribute('data-timestamp');
+                if (ts) {
+                    // ts should be in ISO format: '2023-10-05T14:48:00'
+                    // We append Z if it's missing to treat it as UTC from server
+                    const dateStr = ts.endsWith('Z') ? ts : ts + 'Z';
+                    const d = new Date(dateStr);
+                    if (!isNaN(d.getTime())) {
+                        el.innerHTML = d.toLocaleString(window.CURRENT_LANG === 'en' ? 'en-US' : (window.CURRENT_LANG === 'kk' ? 'kk-KZ' : 'ru-RU'), {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    }
+                }
+            });
+            
+            // Set current top date
+            const topDate = document.getElementById('topDate');
+            if (topDate) {
+                topDate.innerText = new Date().toLocaleDateString(window.CURRENT_LANG === 'en' ? 'en-US' : (window.CURRENT_LANG === 'kk' ? 'kk-KZ' : 'ru-RU'), {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

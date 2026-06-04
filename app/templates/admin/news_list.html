@@ -45,7 +45,7 @@
                             </div>
                         </div>
                     </td>
-                    <td><span class="badge bg-light text-dark">{{ item.category.code if item.category else 'N/A' }}</span></td>
+                    <td><span class="badge bg-light text-dark">{{ _(item.category.code) if item.category else 'N/A' }}</span></td>
                     <td><small class="text-primary">{{ item.source_name }}</small></td>
                     <td><i class="fas fa-eye me-1 text-muted small"></i> {{ item.views }}</td>
                     <td class="text-muted small">{{ item.created_at.strftime('%d.%m %H:%M') }}</td>

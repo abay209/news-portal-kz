@@ -82,6 +82,23 @@ def news_detail(news_id):
     news_item = News.query.get_or_404(news_id)
     # Increment views
     news_item.views += 1
+    
+    # Save view history
+    import uuid
+    from app.models import ViewHistory
+    
+    session_id = session.get('view_session_id')
+    if not session_id:
+        session_id = str(uuid.uuid4())
+        session['view_session_id'] = session_id
+        
+    user_id = current_user.id if current_user.is_authenticated else None
+    
+    # Optional: avoid duplicate views from same user/session for the same news within a short time
+    # For now, let's just insert
+    view_history = ViewHistory(user_id=user_id, session_id=session_id, news_id=news_item.id)
+    db.session.add(view_history)
+    
     db.session.commit()
     
     comments = Comment.query.filter_by(news_id=news_id).order_by(Comment.created_at.desc()).all()

@@ -125,34 +125,67 @@ def source_delete(id):
 def news_add():
     categories = Category.query.all()
     if request.method == 'POST':
-        title_kk = request.form.get('title_kk')
-        title_ru = request.form.get('title_ru')
-        title_en = request.form.get('title_en')
-        content_kk = request.form.get('content_kk')
-        content_ru = request.form.get('content_ru')
-        content_en = request.form.get('content_en')
+        source_lang = request.form.get('source_lang', 'ru')
+        title = request.form.get('title')
+        content = request.form.get('content')
         category_id = request.form.get('category_id')
+        
+        # Initialize translation
+        from deep_translator import GoogleTranslator
+        
+        titles = {'kk': '', 'ru': '', 'en': ''}
+        contents = {'kk': '', 'ru': '', 'en': ''}
+        
+        titles[source_lang] = title
+        contents[source_lang] = content
+        
+        # Translate to other languages
+        for lang in ['kk', 'ru', 'en']:
+            if lang != source_lang:
+                try:
+                    target_lang = 'kk' if lang == 'kk' else ('ru' if lang == 'ru' else 'en')
+                    source_lang_trans = 'kk' if source_lang == 'kk' else ('ru' if source_lang == 'ru' else 'en')
+                    translator = GoogleTranslator(source=source_lang_trans, target=target_lang)
+                    titles[lang] = translator.translate(title)
+                    # Translation of long content might be slow or fail, try-except is good here
+                    # For very long text, one should chunk, but let's assume it works for normal news
+                    contents[lang] = translator.translate(content)
+                except Exception as e:
+                    print(f"Translation error: {e}")
+                    titles[lang] = title + f" ({lang})"
+                    contents[lang] = content + f" ({lang})"
         
         # Handle Image
         image_file = request.files.get('image')
         image_filename = None
-        if image_file and image_file.filename:
+        has_image = request.form.get('has_image')
+        if has_image == 'yes' and image_file and image_file.filename:
             ext = os.path.splitext(image_file.filename)[1]
             image_filename = str(uuid.uuid4()) + ext
             path = os.path.join(current_app.config['UPLOAD_FOLDER'], image_filename)
             image_file.save(path)
             
         new_news = News(
-            title_kk=title_kk, title_ru=title_ru, title_en=title_en,
-            content_kk=content_kk, content_ru=content_ru, content_en=content_en,
+            title_kk=titles['kk'], title_ru=titles['ru'], title_en=titles['en'],
+            content_kk=contents['kk'], content_ru=contents['ru'], content_en=contents['en'],
             category_id=category_id,
             image_filename=image_filename
         )
         db.session.add(new_news)
         db.session.commit()
-        flash('Новость добавлена')
+        flash('Новость добавлена и переведена')
         return redirect(url_for('admin.news_list'))
-    return render_template('admin/news_form.html', categories=categories, news=None)
+        
+    # Translate categories for the dropdown using TRANSLATIONS
+    from app.translations import get_translation
+    translated_categories = []
+    for cat in categories:
+        translated_categories.append({
+            'id': cat.id,
+            'name': get_translation('ru', cat.code)
+        })
+        
+    return render_template('admin/news_form.html', categories=translated_categories, news=None)
 
 @admin_bp.route('/news/edit/<int:news_id>', methods=['GET', 'POST'])
 @admin_required

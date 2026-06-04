@@ -6,27 +6,60 @@
     <a href="{{ url_for('admin.news_list') }}" style="color: #666; text-decoration: none;">&larr; Назад</a>
 </div>
 
-<form method="POST" enctype="multipart/form-data" style="max-width: 800px; display: flex; flex-direction: column; gap: 1.5rem;">
+<form method="POST" enctype="multipart/form-data" style="max-width: 800px; display: flex; flex-direction: column; gap: 1.5rem;" id="newsForm">
     
     <div>
         <label style="font-weight: bold; display: block; margin-bottom: 5px;">Категория</label>
         <select name="category_id" required style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
             {% for cat in categories %}
-            <option value="{{ cat.id }}" {% if news and news.category_id == cat.id %}selected{% endif %}>{{ cat.code }}</option>
+            <option value="{{ cat.id }}" {% if news and news.category_id == cat.id %}selected{% endif %}>{{ cat.name if cat.name else cat.code }}</option>
             {% endfor %}
         </select>
     </div>
 
     <div>
-        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Фото новости (Опционально)</label>
-        {% if news and news.image_filename %}
-        <div style="margin-bottom: 10px;">
-            <img src="{{ url_for('static', filename='images/uploads/' ~ news.image_filename) }}" style="max-height: 100px;">
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Наличие фото</label>
+        <div style="display: flex; gap: 1rem; margin-bottom: 10px;">
+            <label><input type="radio" name="has_image" value="yes" checked onchange="toggleImageInput()"> С фото</label>
+            <label><input type="radio" name="has_image" value="no" onchange="toggleImageInput()"> Без фото</label>
         </div>
-        {% endif %}
-        <input type="file" name="image" accept="image/*" style="width: 100%;">
+        
+        <div id="imageInputContainer">
+            {% if news and news.image_filename %}
+            <div style="margin-bottom: 10px;">
+                <img src="{{ url_for('static', filename='images/uploads/' ~ news.image_filename) }}" style="max-height: 100px;">
+            </div>
+            {% endif %}
+            <input type="file" name="image" id="imageInput" accept="image/*" style="width: 100%;">
+        </div>
     </div>
 
+    {% if not news %}
+    <!-- ADD NEWS (Auto translate) -->
+    <fieldset style="border: 1px solid #ccc; padding: 1rem; border-radius: 5px; background-color: #f9f9f9;">
+        <legend style="color: #333; font-weight: bold; padding: 0 10px;">Основной язык новости</legend>
+        <div style="margin-bottom: 10px;">
+            <label>Выберите язык, на котором будете писать:</label>
+            <select name="source_lang" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px;">
+                <option value="kk">Қазақша (Kazakh)</option>
+                <option value="ru" selected>Русский (Russian)</option>
+                <option value="en">English (English)</option>
+            </select>
+            <small style="color: #666;">Текст будет автоматически переведен на два других языка с помощью Google Translate.</small>
+        </div>
+        
+        <div style="margin-bottom: 10px;">
+            <label>Заголовок</label>
+            <input type="text" name="title" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        </div>
+        <div>
+            <label>Текст новости</label>
+            <textarea name="content" rows="10" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
+        </div>
+    </fieldset>
+    {% else %}
+    <!-- EDIT NEWS (Manual translation fields) -->
+    <input type="hidden" name="has_image" value="yes"> <!-- default to yes for edit, simple workaround -->
     <!-- KAZAKH -->
     <fieldset style="border: 1px solid #00AEEF; padding: 1rem; border-radius: 5px;">
         <legend style="color: #00AEEF; font-weight: bold; padding: 0 10px;">Қазақша (Kazakh)</legend>
@@ -65,8 +98,22 @@
             <textarea name="content_en" rows="5" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">{{ news.content_en if news else '' }}</textarea>
         </div>
     </fieldset>
+    {% endif %}
 
     <button type="submit" style="background: #00AEEF; color: white; border: none; padding: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 16px;">Сохранить</button>
 
 </form>
+
+<script>
+function toggleImageInput() {
+    const hasImage = document.querySelector('input[name="has_image"]:checked').value;
+    const container = document.getElementById('imageInputContainer');
+    if (hasImage === 'no') {
+        container.style.display = 'none';
+        document.getElementById('imageInput').value = ""; // clear file
+    } else {
+        container.style.display = 'block';
+    }
+}
+</script>
 {% endblock %}

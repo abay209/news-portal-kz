@@ -18,3 +18,9 @@ instance/
 
 # Large files
 *.zip
+
+# Uploaded images (Railway-да cloud storage болу керек)
+app/static/images/uploads/
+
+# Deploy scripts
+deploy/
