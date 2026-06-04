@@ -375,72 +375,45 @@ def download_image(image_url, upload_folder, source_url=None):
         print(f"  [Error Image]: {e}")
     return None
 
+import trafilatura
+
 def extract_full_content(url):
     try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-            'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,kk;q=0.6',
-            'Upgrade-Insecure-Requests': '1',
-            'Sec-Ch-Ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
-            'Sec-Ch-Ua-Mobile': '?0',
-            'Sec-Ch-Ua-Platform': '"Windows"',
-            'Referer': 'https://www.google.com/'
-        }
+        downloaded = trafilatura.fetch_url(url)
         
-        # Requests Session for better cookie handling
-        session = requests.Session()
-        response = session.get(url, headers=headers, timeout=20)
-        response.encoding = 'utf-8'
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
+        if not downloaded:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+                'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
+                'Referer': 'https://www.google.com/'
+            }
+            session = requests.Session()
+            response = session.get(url, headers=headers, timeout=20)
+            response.encoding = 'utf-8'
+            if response.status_code == 200:
+                downloaded = response.text
+                
         content = ""
         image_url = None
         
-        # 1. СУРЕТ ІЗДЕУ (OG:IMAGE немесе TWITTER:IMAGE)
-        meta_og = soup.find('meta', property='og:image') or soup.find('meta', attrs={'name': 'og:image'})
-        meta_tw = soup.find('meta', property='twitter:image') or soup.find('meta', attrs={'name': 'twitter:image'})
-        
-        if meta_og and meta_og.get('content'):
-            image_url = meta_og.get('content')
-        elif meta_tw and meta_tw.get('content'):
-            image_url = meta_tw.get('content')
-
-        # 2. МӘТІН ІЗДЕУ
-        # Қажет емес семантикаларды өшіру
-        for s in soup(['script', 'style', 'iframe', 'ins', 'nav', 'header', 'footer', 'aside', 'form', 'button', '.banner', '.advertising']):
-            s.decompose()
-
-        content_selectors = [
-            '.tn-news-content', '.tn-news-text', '.content_main_text', '.article-body', '.article-content',
-            '.full-text', '.content', '.article__text', '.item-text', '.post-content', '.news-text',
-            '.c-entry-content', 'article', '[itemprop="articleBody"]', '.js-mediator-article', '.story-body',
-            '.main-news', '.post', '.detail-text'
-        ]
-        
-        content_div = None
-        for selector in content_selectors:
-            content_div = soup.select_one(selector)
-            if content_div: break
+        if downloaded:
+            # Trafilatura extracts only the main article body perfectly
+            content = trafilatura.extract(downloaded, include_images=False, include_links=False, favor_precision=False, favor_recall=True)
             
-        if content_div:
-            if not image_url:
-                img_tag = content_div.find('img')
-                if img_tag: image_url = img_tag.get('src') or img_tag.get('data-src')
-            content = content_div.get_text(separator='\n', strip=True)
-        else:
-            # Фолбэк: Егер таба алмаса, сайттың негізгі <p> тегтерін жинау
-            paragraphs = soup.find_all('p')
-            good_paragraphs = []
-            for p in paragraphs:
-                text = p.get_text(strip=True)
-                # Өте қысқа немесе сілтемесі көп абзацтарды сүзу
-                if len(text) > 60:
-                    good_paragraphs.append(text)
+            # Still use BeautifulSoup to find the main image from meta tags
+            soup = BeautifulSoup(downloaded, 'html.parser')
+            meta_og = soup.find('meta', property='og:image') or soup.find('meta', attrs={'name': 'og:image'})
+            meta_tw = soup.find('meta', property='twitter:image') or soup.find('meta', attrs={'name': 'twitter:image'})
             
-            if good_paragraphs:
-                content = '\n\n'.join(good_paragraphs)
+            if meta_og and meta_og.get('content'):
+                image_url = meta_og.get('content')
+            elif meta_tw and meta_tw.get('content'):
+                image_url = meta_tw.get('content')
                 
+        if not content:
+            content = ""
+            
         return content, image_url
     except Exception as e:
         print(f"  [Error Scraper]: {e}")
