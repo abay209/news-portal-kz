@@ -118,10 +118,23 @@ def news_detail(news_id):
         News.category_id == news_item.category_id,
         News.id != news_id
     ).order_by(News.created_at.desc()).limit(4).all()
+    # Check poll voted status
+    has_voted = False
+    if news_item.poll:
+        from app.models import PollVote
+        user_ip = request.remote_addr
+        uid = current_user.id if current_user.is_authenticated else None
+        
+        q = PollVote.query.filter_by(poll_id=news_item.poll.id)
+        if uid:
+            has_voted = q.filter_by(user_id=uid).first() is not None
+        else:
+            has_voted = q.filter_by(ip_address=user_ip).first() is not None
+
     return render_template('news.html', news=news_item, comments=comments,
                            latest_news=latest_news, related_news=related_news,
                            user_liked=user_liked, user_bookmarked=user_bookmarked,
-                           likes_count=likes_count)
+                           likes_count=likes_count, has_voted=has_voted)
 
 @main.route('/api/news/<int:news_id>/bookmark', methods=['POST'])
 def toggle_bookmark(news_id):
@@ -259,3 +272,37 @@ def tag_news(tag_name):
     news_list = pagination.items
     
     return render_template('tag.html', tag=tag, news_list=news_list, pagination=pagination)
+
+@main.route('/api/poll/<int:poll_id>/vote', methods=['POST'])
+def poll_vote(poll_id):
+    from app.models import Poll, PollOption, PollVote
+    poll = Poll.query.get_or_404(poll_id)
+    
+    user_ip = request.remote_addr
+    uid = current_user.id if current_user.is_authenticated else None
+    
+    # Check if already voted
+    q = PollVote.query.filter_by(poll_id=poll.id)
+    if uid:
+        already_voted = q.filter_by(user_id=uid).first() is not None
+    else:
+        already_voted = q.filter_by(ip_address=user_ip).first() is not None
+        
+    if already_voted:
+        return jsonify({'status': 'error', 'message': 'Вы уже голосовали'}), 400
+        
+    option_id = request.form.get('option_id')
+    if not option_id:
+        return jsonify({'status': 'error', 'message': 'Выберите вариант'}), 400
+        
+    option = PollOption.query.filter_by(id=option_id, poll_id=poll.id).first()
+    if not option:
+        return jsonify({'status': 'error', 'message': 'Вариант не найден'}), 404
+        
+    # Register vote
+    option.votes += 1
+    new_vote = PollVote(poll_id=poll.id, user_id=uid, ip_address=user_ip)
+    db.session.add(new_vote)
+    db.session.commit()
+    
+    return jsonify({'status': 'success'})

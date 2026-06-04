@@ -82,6 +82,7 @@ class News(db.Model):
     
     comments = db.relationship('Comment', backref='news', lazy='dynamic', cascade='all, delete-orphan')
     tags = db.relationship('Tag', secondary=news_tags, backref=db.backref('news', lazy='dynamic'))
+    poll = db.relationship('Poll', backref='news', uselist=False, cascade='all, delete-orphan')
 
     def to_dict(self):
         return {
@@ -147,3 +148,26 @@ class Subscriber(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
+
+class Poll(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    news_id = db.Column(db.Integer, db.ForeignKey('news.id'), nullable=False)
+    question = db.Column(db.String(300), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    options = db.relationship('PollOption', backref='poll', lazy='dynamic', cascade='all, delete-orphan')
+    votes_record = db.relationship('PollVote', backref='poll', lazy='dynamic', cascade='all, delete-orphan')
+
+class PollOption(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    poll_id = db.Column(db.Integer, db.ForeignKey('poll.id'), nullable=False)
+    text = db.Column(db.String(200), nullable=False)
+    votes = db.Column(db.Integer, default=0)
+
+class PollVote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    poll_id = db.Column(db.Integer, db.ForeignKey('poll.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True) # If logged in
+    ip_address = db.Column(db.String(50), nullable=True) # To prevent duplicate votes for guests
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+

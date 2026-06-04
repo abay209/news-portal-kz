@@ -100,6 +100,19 @@
     </fieldset>
     {% endif %}
 
+    <fieldset style="border: 1px solid #999; padding: 1rem; border-radius: 5px; background-color: #f0f8ff;">
+        <legend style="color: #444; font-weight: bold; padding: 0 10px;">Сауалнама (Міндетті емес)</legend>
+        <div style="margin-bottom: 10px;">
+            <label>Сұрақ:</label>
+            <input type="text" name="poll_question" value="{% if news and news.poll %}{{ news.poll.question }}{% endif %}" placeholder="Мысалы: Бұл жаңалық туралы не ойлайсыз?" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        </div>
+        <div>
+            <label>Жауап нұсқалары (үтірмен бөліп жазыңыз):</label>
+            <input type="text" name="poll_options" value="{% if news and news.poll %}{{ news.poll.options.all()|map(attribute='text')|join(', ') }}{% endif %}" placeholder="Иә, Жоқ, Бәрібір" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+            <small style="color: #666;">Егер сұрақ пен жауаптар бос болса, сауалнама қосылмайды.</small>
+        </div>
+    </fieldset>
+
     <div>
         <label style="font-weight: bold; display: block; margin-bottom: 5px;">Теги (Хэштеги)</label>
         <input type="text" name="tags" value="{% if news %}{{ news.tags|map(attribute='name')|join(', ') }}{% endif %}" placeholder="Спорт, Политика, Алматы (через запятую)" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">

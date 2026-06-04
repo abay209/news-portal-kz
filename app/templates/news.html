@@ -297,6 +297,36 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Poll Submission
+    const pollForms = document.querySelectorAll('.poll-form');
+    pollForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const pollId = this.dataset.pollId;
+            const formData = new FormData(this);
+            
+            fetch(`/api/poll/${pollId}/vote`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    // Reload to show results
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Қате шықты');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Қате шықты');
+            });
+        });
+    });
+});
+
 function toggleLike(newsId, btn) {
     fetch(`/api/news/${newsId}/like`, { method: 'POST' })
     .then(res => res.json())

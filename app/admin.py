@@ -184,6 +184,18 @@ def news_add():
                     db.session.add(tag)
                 new_news.tags.append(tag)
                 
+        # Handle Poll
+        from app.models import Poll, PollOption
+        poll_question = request.form.get('poll_question', '').strip()
+        poll_options_input = request.form.get('poll_options', '')
+        if poll_question and poll_options_input:
+            poll = Poll(question=poll_question, news=new_news)
+            db.session.add(poll)
+            opts = [o.strip() for o in poll_options_input.split(',') if o.strip()]
+            for opt_text in opts:
+                opt = PollOption(text=opt_text, poll=poll)
+                db.session.add(opt)
+                
         db.session.add(new_news)
         db.session.commit()
         flash('Новость добавлена и переведена')
@@ -234,6 +246,30 @@ def news_edit(news_id):
                     tag = Tag(name=t_name)
                     db.session.add(tag)
                 news_item.tags.append(tag)
+                
+        # Handle Poll
+        from app.models import Poll, PollOption
+        poll_question = request.form.get('poll_question', '').strip()
+        poll_options_input = request.form.get('poll_options', '')
+        
+        # If question exists, update or create
+        if poll_question and poll_options_input:
+            if not news_item.poll:
+                news_item.poll = Poll(question=poll_question)
+            else:
+                news_item.poll.question = poll_question
+                # Clear old options to replace
+                for old_opt in news_item.poll.options.all():
+                    db.session.delete(old_opt)
+                    
+            opts = [o.strip() for o in poll_options_input.split(',') if o.strip()]
+            for opt_text in opts:
+                opt = PollOption(text=opt_text, poll=news_item.poll)
+                db.session.add(opt)
+        else:
+            # If empty but poll existed, remove it
+            if news_item.poll:
+                db.session.delete(news_item.poll)
                 
         db.session.commit()
         flash('Новость обновлена')
