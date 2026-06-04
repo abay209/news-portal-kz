@@ -116,6 +116,10 @@
                 class="nav-link {% if 'source' in request.endpoint %}active{% endif %}">
                 <i class="fas fa-satellite"></i> Источники
             </a>
+            <a href="{{ url_for('admin.subscribers_list') }}"
+                class="nav-link {% if 'subscriber' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-users"></i> Подписчики
+            </a>
             <a href="{{ url_for('admin.settings') }}"
                 class="nav-link {% if request.endpoint == 'admin.settings' %}active{% endif %}">
                 <i class="fas fa-cog"></i> Настройки

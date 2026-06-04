@@ -227,3 +227,23 @@ def api_search():
         'title': getattr(n, f'title_{lang}'),
         'date': n.created_at.strftime('%d.%m %H:%M')
     } for n in results])
+
+@main.route('/subscribe', methods=['POST'])
+def subscribe():
+    email = request.form.get('email')
+    if email:
+        email = email.strip().lower()
+        from app.models import Subscriber
+        from flask import flash
+        
+        # Check if already subscribed
+        existing = Subscriber.query.filter_by(email=email).first()
+        if not existing:
+            new_sub = Subscriber(email=email)
+            db.session.add(new_sub)
+            db.session.commit()
+            flash('Сәтті жазылдыңыз! (Вы успешно подписались!)', 'success')
+        else:
+            flash('Бұл пошта тіркеліп қойған. (Этот email уже зарегистрирован.)', 'info')
+            
+    return redirect(request.referrer or url_for('main.index'))

@@ -125,9 +125,15 @@ class Like(db.Model):
 class ViewHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True) # None for guests
-    session_id = db.Column(db.String(100), nullable=True) # To track guests
+    session_id = db.Column(db.String(100), nullable=True) # To track guests over a session
     news_id = db.Column(db.Integer, db.ForeignKey('news.id'), nullable=False)
-    viewed_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    viewed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref=db.backref('view_history', lazy='dynamic', cascade='all, delete-orphan'))
+    news = db.relationship('News', backref=db.backref('view_history', lazy='dynamic', cascade='all, delete-orphan'))
 
-    user = db.relationship('User', backref=db.backref('view_histories', lazy='dynamic', cascade='all, delete-orphan'))
-    news = db.relationship('News', backref=db.backref('views_history', lazy='dynamic', cascade='all, delete-orphan'))
+class Subscriber(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_active = db.Column(db.Boolean, default=True)

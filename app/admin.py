@@ -250,3 +250,21 @@ def settings():
     
     settings = {s.key: s.value for s in Setting.query.all()}
     return render_template('admin/settings.html', settings=settings)
+
+@admin_bp.route('/subscribers')
+@admin_required
+def subscribers_list():
+    from app.models import Subscriber
+    page = request.args.get('page', 1, type=int)
+    subscribers_pagination = Subscriber.query.order_by(Subscriber.created_at.desc()).paginate(page=page, per_page=30)
+    return render_template('admin/subscribers_list.html', subscribers_pagination=subscribers_pagination)
+
+@admin_bp.route('/subscribers/delete/<int:sub_id>')
+@admin_required
+def subscriber_delete(sub_id):
+    from app.models import Subscriber
+    sub = Subscriber.query.get_or_404(sub_id)
+    db.session.delete(sub)
+    db.session.commit()
+    flash('Подписчик удален')
+    return redirect(url_for('admin.subscribers_list'))
