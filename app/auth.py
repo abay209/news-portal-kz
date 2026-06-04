@@ -97,9 +97,14 @@ def logout():
 @auth_bp.route('/profile')
 @login_required
 def profile():
+    from app.models import ViewHistory
     bookmarks = Bookmark.query.filter_by(user_id=current_user.id).order_by(Bookmark.created_at.desc()).all()
     likes = Like.query.filter_by(user_id=current_user.id).order_by(Like.created_at.desc()).all()
-    return render_template('auth/profile.html', bookmarks=bookmarks, likes=likes)
+    
+    # Get the latest 30 viewed news items
+    view_history = ViewHistory.query.filter_by(user_id=current_user.id).order_by(ViewHistory.viewed_at.desc()).limit(30).all()
+    
+    return render_template('auth/profile.html', bookmarks=bookmarks, likes=likes, view_history=view_history)
 
 # OAuth Routes
 @auth_bp.route('/login/<provider>')
