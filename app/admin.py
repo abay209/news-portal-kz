@@ -171,6 +171,19 @@ def news_add():
             category_id=category_id,
             image_filename=image_filename
         )
+        
+        # Handle tags
+        from app.models import Tag
+        tags_input = request.form.get('tags', '')
+        if tags_input:
+            tag_names = [t.strip().lower() for t in tags_input.split(',') if t.strip()]
+            for t_name in tag_names:
+                tag = Tag.query.filter_by(name=t_name).first()
+                if not tag:
+                    tag = Tag(name=t_name)
+                    db.session.add(tag)
+                new_news.tags.append(tag)
+                
         db.session.add(new_news)
         db.session.commit()
         flash('Новость добавлена и переведена')
@@ -209,6 +222,19 @@ def news_edit(news_id):
             image_file.save(path)
             news_item.image_filename = image_filename
             
+        # Handle tags
+        from app.models import Tag
+        tags_input = request.form.get('tags', '')
+        news_item.tags = [] # clear existing
+        if tags_input:
+            tag_names = [t.strip().lower() for t in tags_input.split(',') if t.strip()]
+            for t_name in tag_names:
+                tag = Tag.query.filter_by(name=t_name).first()
+                if not tag:
+                    tag = Tag(name=t_name)
+                    db.session.add(tag)
+                news_item.tags.append(tag)
+                
         db.session.commit()
         flash('Новость обновлена')
         return redirect(url_for('admin.news_list'))

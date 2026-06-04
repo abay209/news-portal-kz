@@ -47,6 +47,15 @@ class Category(db.Model):
     # The name of the category will be handled via translations based on 'code'
     news = db.relationship('News', backref='category', lazy='dynamic')
 
+news_tags = db.Table('news_tags',
+    db.Column('news_id', db.Integer, db.ForeignKey('news.id'), primary_key=True),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'), primary_key=True)
+)
+
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    
 class News(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
@@ -72,6 +81,7 @@ class News(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     
     comments = db.relationship('Comment', backref='news', lazy='dynamic', cascade='all, delete-orphan')
+    tags = db.relationship('Tag', secondary=news_tags, backref=db.backref('news', lazy='dynamic'))
 
     def to_dict(self):
         return {

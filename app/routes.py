@@ -247,3 +247,15 @@ def subscribe():
             flash('Бұл пошта тіркеліп қойған. (Этот email уже зарегистрирован.)', 'info')
             
     return redirect(request.referrer or url_for('main.index'))
+
+@main.route('/tag/<tag_name>')
+def tag_news(tag_name):
+    from app.models import Tag
+    tag = Tag.query.filter_by(name=tag_name.lower()).first_or_404()
+    
+    page = request.args.get('page', 1, type=int)
+    # Get news that have this tag
+    pagination = tag.news.order_by(News.created_at.desc()).paginate(page=page, per_page=12, error_out=False)
+    news_list = pagination.items
+    
+    return render_template('tag.html', tag=tag, news_list=news_list, pagination=pagination)

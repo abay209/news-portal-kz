@@ -100,6 +100,12 @@
     </fieldset>
     {% endif %}
 
+    <div>
+        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Теги (Хэштеги)</label>
+        <input type="text" name="tags" value="{% if news %}{{ news.tags|map(attribute='name')|join(', ') }}{% endif %}" placeholder="Спорт, Политика, Алматы (через запятую)" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+        <small style="color: #666;">Введите теги через запятую.</small>
+    </div>
+
     <button type="submit" style="background: #00AEEF; color: white; border: none; padding: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; font-size: 16px;">Сохранить</button>
 
 </form>
