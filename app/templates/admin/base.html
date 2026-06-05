@@ -1,146 +1,285 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Панель управления - Kz news</title>
+    <title>NewsKZ - Admin Space</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --sidebar-width: 260px;
+            --primary: #0f62fe;
+            --primary-dark: #0043ce;
+            --primary-soft: rgba(15, 98, 254, 0.1);
+            --bg: #f4f6f9;
+            --surface: #ffffff;
+            --surface-border: #e8edf2;
+            --text-main: #0d1117;
+            --text-muted: #5a6475;
+            --sidebar-width: 280px;
+            --sidebar-bg: #ffffff;
+            --topbar-height: 70px;
+        }
+
+        [data-theme="dark"] {
+            --primary: #78a9ff;
+            --primary-dark: #a6c8ff;
+            --primary-soft: rgba(120, 169, 255, 0.1);
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface-border: #30363d;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --sidebar-bg: #161b22;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
+            background-color: var(--bg);
+            color: var(--text-main);
             overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
         }
 
+        /* SIDEBAR */
         .sidebar {
             width: var(--sidebar-width);
             height: 100vh;
             position: fixed;
             left: 0;
             top: 0;
-            background: #fff;
-            border-right: 1px solid #e2e8f0;
-            z-index: 1000;
-            transition: all 0.3s;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--surface-border);
+            z-index: 1040;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
         }
 
-        .main-content {
-            margin-left: var(--sidebar-width);
-            padding: 2rem;
-            min-height: 100vh;
+        .sidebar-header {
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid var(--surface-border);
         }
+
+        .brand-logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .brand-logo i { color: var(--primary); }
+        .brand-logo:hover { color: var(--text-main); }
 
         .nav-link {
-            padding: 0.8rem 1.5rem;
-            color: #64748b;
+            padding: 0.8rem 1.2rem;
+            color: var(--text-muted);
             font-weight: 500;
             display: flex;
             align-items: center;
-            border-radius: 8px;
-            margin: 0.2rem 1rem;
+            border-radius: 10px;
+            margin: 0.3rem 1rem;
             transition: all 0.2s;
+            font-size: 0.95rem;
         }
 
         .nav-link i {
-            width: 20px;
-            margin-right: 0.8rem;
+            width: 24px;
             font-size: 1.1rem;
+            margin-right: 0.5rem;
+            color: inherit;
         }
 
-        .nav-link:hover,
-        .nav-link.active {
-            background-color: rgba(99, 102, 241, 0.08);
+        .nav-link:hover {
+            background-color: var(--primary-soft);
             color: var(--primary);
+            transform: translateX(4px);
         }
 
         .nav-link.active {
             background-color: var(--primary);
-            color: white;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(15, 98, 254, 0.25);
+        }
+        [data-theme="dark"] .nav-link.active { color: #000 !important; }
+
+        /* TOPBAR */
+        .topbar {
+            height: var(--topbar-height);
+            background: var(--surface);
+            border-bottom: 1px solid var(--surface-border);
+            margin-left: var(--sidebar-width);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            transition: margin-left 0.3s;
+        }
+
+        .topbar-right { display: flex; align-items: center; gap: 1rem; }
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--surface-border);
+            color: var(--text-main);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .theme-toggle:hover { background: var(--primary-soft); color: var(--primary); border-color: var(--primary); }
+
+        .admin-profile {
+            display: flex; align-items: center; gap: 0.8rem;
+            padding: 0.4rem; padding-right: 1rem;
+            border-radius: 50px;
+            border: 1px solid var(--surface-border);
+            background: var(--bg);
+        }
+        .admin-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem;}
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 2rem;
+            min-height: calc(100vh - var(--topbar-height));
+            transition: margin-left 0.3s;
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
+            background: var(--surface);
             border-radius: 16px;
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--surface-border);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s;
         }
 
-        .brand {
-            padding: 1.5rem;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
+        .page-header {
+            margin-bottom: 2rem;
+            display: flex; justify-content: space-between; align-items: flex-end;
         }
+        .page-title { font-weight: 800; font-size: 1.75rem; letter-spacing: -0.5px; margin:0; color: var(--text-main); }
+        .page-subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.2rem;}
 
-        .brand i {
-            margin-right: 10px;
-            font-size: 1.5rem;
-        }
+        .btn-primary { background: var(--primary); border: none; padding: 0.5rem 1.2rem; font-weight: 600; border-radius: 8px;}
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px var(--primary-soft); }
+        
+        .alert { border-radius: 12px; border: 1px solid var(--surface-border); background: var(--surface); color: var(--text-main); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--surface-border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-        .alert {
-            border-radius: 12px;
-            border: none;
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content, .topbar { margin-left: 0; }
+            #sidebarToggle { display: block !important; }
         }
     </style>
 </head>
 
 <body>
     {% if current_user.is_authenticated %}
-    <div class="sidebar">
-        <div class="brand">
-            <i class="fas fa-bolt"></i> Admin
-        </div>
-        <div class="nav flex-column">
-            <a href="{{ url_for('admin.dashboard') }}"
-                class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
-                <i class="fas fa-home"></i> Дашборд
+    
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="{{ url_for('admin.dashboard') }}" class="brand-logo">
+                <i class="fas fa-layer-group"></i> NewsKZ Admin
             </a>
-            <a href="{{ url_for('admin.news_list') }}"
-                class="nav-link {% if 'news' in request.endpoint %}active{% endif %}">
+        </div>
+        <div class="nav flex-column mt-3 flex-grow-1">
+            <div class="px-4 pb-2 text-uppercase font-monospace text-muted" style="font-size: 0.7rem; letter-spacing: 1px;">Overview</div>
+            <a href="{{ url_for('admin.dashboard') }}" class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                <i class="fas fa-chart-pie"></i> Дашборд
+            </a>
+            
+            <div class="px-4 pt-3 pb-2 text-uppercase font-monospace text-muted" style="font-size: 0.7rem; letter-spacing: 1px;">Content</div>
+            <a href="{{ url_for('admin.news_list') }}" class="nav-link {% if 'news' in request.endpoint %}active{% endif %}">
                 <i class="fas fa-newspaper"></i> Новости
             </a>
-            <a href="{{ url_for('admin.sources_list') }}"
-                class="nav-link {% if 'source' in request.endpoint %}active{% endif %}">
-                <i class="fas fa-satellite"></i> Источники
+            <a href="{{ url_for('admin.sources_list') }}" class="nav-link {% if 'source' in request.endpoint %}active{% endif %}">
+                <i class="fas fa-satellite-dish"></i> Источники RSS <span class="badge bg-danger ms-auto rounded-pill" style="font-size: 0.6rem;">Auto</span>
             </a>
-            <a href="{{ url_for('admin.subscribers_list') }}"
-                class="nav-link {% if 'subscriber' in request.endpoint %}active{% endif %}">
+            
+            <div class="px-4 pt-3 pb-2 text-uppercase font-monospace text-muted" style="font-size: 0.7rem; letter-spacing: 1px;">Audience</div>
+            <a href="{{ url_for('admin.subscribers_list') }}" class="nav-link {% if 'subscriber' in request.endpoint %}active{% endif %}">
                 <i class="fas fa-users"></i> Подписчики
             </a>
-            <a href="{{ url_for('admin.settings') }}"
-                class="nav-link {% if request.endpoint == 'admin.settings' %}active{% endif %}">
-                <i class="fas fa-cog"></i> Настройки
+            
+            <div class="px-4 pt-3 pb-2 text-uppercase font-monospace text-muted" style="font-size: 0.7rem; letter-spacing: 1px;">System</div>
+            <a href="{{ url_for('admin.settings') }}" class="nav-link {% if request.endpoint == 'admin.settings' %}active{% endif %}">
+                <i class="fas fa-sliders-h"></i> Настройки
             </a>
-            <hr class="mx-4 my-2 opacity-10">
-            <a href="{{ url_for('main.index') }}" class="nav-link" target="_blank">
-                <i class="fas fa-external-link-alt"></i> Перейти на сайт
-            </a>
-            <a href="{{ url_for('admin.logout') }}" class="nav-link text-danger">
-                <i class="fas fa-sign-out-alt"></i> Выход
+        </div>
+        <div class="p-3 border-top" style="border-color: var(--surface-border) !important;">
+            <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary w-100 mb-2" target="_blank" style="border-radius: 8px; font-weight: 500; font-size: 0.9rem;">
+                <i class="fas fa-external-link-alt me-2"></i> Открыть сайт
             </a>
         </div>
     </div>
 
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <button class="btn btn-link text-muted d-none" id="sidebarToggle" style="font-size: 1.2rem;">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="d-none d-md-flex align-items-center gap-3">
+            <span class="text-muted" style="font-size: 0.85rem;"><i class="far fa-calendar-alt me-1"></i> <span id="adminDate"></span></span>
+        </div>
+        
+        <div class="topbar-right">
+            <!-- Quick Action -->
+            <a href="{{ url_for('admin.news_fetch_rss') }}" class="btn btn-sm btn-primary d-none d-sm-inline-flex align-items-center gap-2 rounded-pill px-3">
+                <i class="fas fa-sync-alt"></i> Парсить RSS
+            </a>
+            
+            <!-- Dark Mode Toggle -->
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему">
+                <i class="fas fa-moon"></i>
+            </button>
+            
+            <!-- Profile -->
+            <div class="dropdown">
+                <div class="admin-profile" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <div class="admin-avatar">A</div>
+                    <span class="fw-bold text-main" style="font-size: 0.9rem;">{{ current_user.username }}</span>
+                    <i class="fas fa-chevron-down text-muted ms-1" style="font-size: 0.7rem;"></i>
+                </div>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="background: var(--surface); border-radius: 12px; margin-top: 10px;">
+                    <li><a class="dropdown-item text-main py-2" href="{{ url_for('admin.settings') }}"><i class="fas fa-cog me-2 text-muted"></i> Настройки профиля</a></li>
+                    <li><hr class="dropdown-divider" style="border-color: var(--surface-border);"></li>
+                    <li><a class="dropdown-item text-danger py-2" href="{{ url_for('admin.logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Выйти</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
     <div class="main-content">
-        <div class="container-fluid">
+        <div class="container-fluid p-0">
             {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
             {% for category, message in messages %}
-            <div class="alert alert-{{ 'success' if category == 'success' else 'info' }} shadow-sm mb-4">
-                {{ message }}
+            <div class="alert alert-{{ 'success' if category == 'success' else 'primary' }} alert-dismissible fade show d-flex align-items-center gap-3" role="alert">
+                <i class="fas {{ 'fa-check-circle text-success' if category == 'success' else 'fa-info-circle text-primary' }} fs-4"></i>
+                <div>{{ message }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             {% endfor %}
             {% endif %}
@@ -149,11 +288,62 @@
             {% block content %}{% endblock %}
         </div>
     </div>
+
     {% else %}
-    {% block login %}{% endblock %}
+    <!-- LOGIN PAGE -->
+    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg);">
+        {% block login %}{% endblock %}
+    </div>
     {% endif %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Set date
+        if(document.getElementById('adminDate')) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('adminDate').textContent = new Date().toLocaleDateString('ru-RU', options);
+        }
+
+        // Theme toggler
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            const html = document.documentElement;
+            const icon = themeToggle.querySelector('i');
+            
+            // Check local storage
+            const savedTheme = localStorage.getItem('adminTheme') || 'light';
+            html.setAttribute('data-theme', savedTheme);
+            updateIcon(savedTheme);
+
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('adminTheme', newTheme);
+                updateIcon(newTheme);
+                
+                // Dispatch event for charts
+                window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme }}));
+            });
+
+            function updateIcon(theme) {
+                if (theme === 'dark') {
+                    icon.className = 'fas fa-sun';
+                } else {
+                    icon.className = 'fas fa-moon';
+                }
+            }
+        }
+
+        // Sidebar toggle for mobile
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        if (sidebarToggle && sidebar) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+            });
+        }
+    </script>
 </body>
 
 </html>

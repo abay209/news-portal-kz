@@ -1,52 +1,64 @@
 {% extends "admin/base.html" %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3><i class="fas fa-satellite me-2 text-primary"></i> Источники новостей (RSS)</h3>
-    <a href="{{ url_for('admin.source_add') }}" class="btn btn-primary">
-        <i class="fas fa-plus me-2"></i> Добавить источник
-    </a>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Источники RSS</h1>
+        <p class="page-subtitle">Управление автоматическим сбором новостей</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('admin.source_add') }}" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="fas fa-plus"></i> Добавить источник
+        </a>
+    </div>
 </div>
 
-<div class="glass-card overflow-hidden">
+<div class="glass-card">
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
+        <table class="table table-hover align-middle mb-0 custom-table">
+            <thead>
                 <tr>
                     <th class="ps-4">Название</th>
                     <th>URL</th>
                     <th>Язык</th>
                     <th>Статус</th>
-                    <th>Последнее обновление</th>
+                    <th>Обновление</th>
                     <th class="text-end pe-4">Действия</th>
                 </tr>
             </thead>
             <tbody>
                 {% for source in sources %}
                 <tr>
-                    <td class="ps-4 fw-bold text-dark">{{ source.name }}</td>
-                    <td><code class="small text-muted">{{ source.url }}</code></td>
-                    <td><span class="badge bg-secondary">{{ source.language | upper }}</span></td>
+                    <td class="ps-4 fw-bold text-main">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="bg-primary-soft text-primary rounded d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                <i class="fas fa-rss"></i>
+                            </div>
+                            {{ source.name }}
+                        </div>
+                    </td>
+                    <td><code class="small text-muted bg-secondary bg-opacity-10 px-2 py-1 rounded">{{ source.url }}</code></td>
+                    <td><span class="badge bg-secondary bg-opacity-10 text-main border border-secondary border-opacity-25">{{ source.language | upper }}</span></td>
                     <td>
                         {% if source.is_active %}
-                        <span class="badge bg-success-soft text-success"><i class="fas fa-check-circle me-1"></i> Активен</span>
+                        <span class="badge bg-success-soft text-success border border-success border-opacity-25"><i class="fas fa-check-circle me-1"></i> Активен</span>
                         {% else %}
-                        <span class="badge bg-danger-soft text-danger"><i class="fas fa-times-circle me-1"></i> Откл.</span>
+                        <span class="badge bg-danger-soft text-danger border border-danger border-opacity-25"><i class="fas fa-times-circle me-1"></i> Откл.</span>
                         {% endif %}
                     </td>
                     <td class="text-muted small">
                         {% if source.last_fetched %}
-                        {{ source.last_fetched.strftime('%d.%m.%Y %H:%M') }}
+                        <i class="far fa-clock me-1"></i> {{ source.last_fetched.strftime('%d.%m.%Y %H:%M') }}
                         {% else %}
-                        Никогда
+                        <span class="text-warning"><i class="fas fa-exclamation-circle me-1"></i> Никогда</span>
                         {% endif %}
                     </td>
                     <td class="text-end pe-4">
                         <div class="btn-group">
-                            <a href="{{ url_for('admin.source_edit', id=source.id) }}" class="btn btn-sm btn-outline-info" title="Редактировать">
+                            <a href="{{ url_for('admin.source_edit', id=source.id) }}" class="btn btn-sm btn-outline-primary border-opacity-50" title="Редактировать">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="{{ url_for('admin.source_delete', id=source.id) }}" class="btn btn-sm btn-outline-danger" title="Удалить" onclick="return confirm('Вы уверены?')">
+                            <a href="{{ url_for('admin.source_delete', id=source.id) }}" class="btn btn-sm btn-outline-danger border-opacity-50" title="Удалить" onclick="return confirm('Вы уверены?')">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </div>
@@ -59,8 +71,14 @@
 </div>
 
 <style>
+    /* Table Dark mode fixes */
+    .custom-table { --bs-table-bg: transparent; --bs-table-color: var(--text-main); --bs-table-hover-bg: rgba(0,0,0,0.02); }
+    [data-theme="dark"] .custom-table { --bs-table-hover-bg: rgba(255,255,255,0.02); }
+    .custom-table th { background-color: var(--bg); color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--surface-border); padding-top: 1rem; padding-bottom: 1rem;}
+    .custom-table td { border-bottom: 1px solid var(--surface-border); vertical-align: middle; }
+    
     .bg-success-soft { background: rgba(16, 185, 129, 0.1); }
     .bg-danger-soft { background: rgba(239, 68, 68, 0.1); }
-    .table-hover tbody tr:hover { background-color: rgba(99, 102, 241, 0.02); }
+    .bg-primary-soft { background: var(--primary-soft); }
 </style>
 {% endblock %}

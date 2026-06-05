@@ -1,22 +1,25 @@
 {% extends "admin/base.html" %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3><i class="fas fa-newspaper me-2 text-primary"></i> Управление новостями</h3>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Управление новостями</h1>
+        <p class="page-subtitle">Просмотр, редактирование и удаление публикаций</p>
+    </div>
     <div class="d-flex gap-2">
-        <a href="{{ url_for('admin.news_fetch_rss') }}" class="btn btn-outline-primary">
-            <i class="fas fa-sync me-1"></i> Обновить RSS
+        <a href="{{ url_for('admin.news_fetch_rss') }}" class="btn btn-outline-secondary d-flex align-items-center gap-2" style="border-radius: 8px;">
+            <i class="fas fa-sync"></i> Обновить RSS
         </a>
-        <a href="{{ url_for('admin.news_add') }}" class="btn btn-primary">
-            <i class="fas fa-plus me-1"></i> Добавить новость
+        <a href="{{ url_for('admin.news_add') }}" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="fas fa-plus"></i> Добавить новость
         </a>
     </div>
 </div>
 
 <div class="glass-card">
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
+        <table class="table table-hover align-middle mb-0 custom-table">
+            <thead>
                 <tr>
                     <th class="ps-4">ID</th>
                     <th style="width: 40%;">Заголовок (RU)</th>
@@ -30,34 +33,34 @@
             <tbody>
                 {% for item in news_pagination.items %}
                 <tr>
-                    <td class="ps-4 text-muted small">#{{ item.id }}</td>
+                    <td class="ps-4 text-muted small font-monospace">#{{ item.id }}</td>
                     <td>
                         <div class="d-flex align-items-center">
                             {% if item.image_filename %}
-                            <img src="{{ url_for('static', filename='images/uploads/' + item.image_filename) }}" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                            <img src="{{ url_for('static', filename='images/uploads/' + item.image_filename) }}" class="rounded me-3 shadow-sm" style="width: 44px; height: 44px; object-fit: cover;">
                             {% else %}
-                            <div class="rounded me-2 bg-light d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                <i class="fas fa-image text-muted"></i>
+                            <div class="rounded me-3 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center text-muted shadow-sm" style="width: 44px; height: 44px;">
+                                <i class="fas fa-image"></i>
                             </div>
                             {% endif %}
-                            <div class="fw-bold text-dark text-truncate" style="max-width: 300px;">
+                            <div class="fw-bold text-main text-truncate" style="max-width: 300px;">
                                 {{ item.title_ru }}
                             </div>
                         </div>
                     </td>
-                    <td><span class="badge bg-light text-dark">{{ _(item.category.code) if item.category else 'N/A' }}</span></td>
-                    <td><small class="text-primary">{{ item.source_name }}</small></td>
-                    <td><i class="fas fa-eye me-1 text-muted small"></i> {{ item.views }}</td>
+                    <td><span class="badge bg-secondary bg-opacity-10 text-main border border-secondary border-opacity-25">{{ _(item.category.code) if item.category else 'N/A' }}</span></td>
+                    <td><small class="text-primary fw-medium">{{ item.source_name }}</small></td>
+                    <td><i class="fas fa-eye me-1 text-muted small"></i> <span class="text-main">{{ item.views }}</span></td>
                     <td class="text-muted small">{{ item.created_at.strftime('%d.%m %H:%M') }}</td>
                     <td class="text-end pe-4">
                         <div class="btn-group">
-                            <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                            <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="btn btn-sm btn-outline-secondary border-opacity-50" title="Открыть на сайте" target="_blank">
                                 <i class="fas fa-external-link-alt"></i>
                             </a>
-                            <a href="{{ url_for('admin.news_edit', news_id=item.id) }}" class="btn btn-sm btn-outline-info">
+                            <a href="{{ url_for('admin.news_edit', news_id=item.id) }}" class="btn btn-sm btn-outline-primary border-opacity-50" title="Редактировать">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="{{ url_for('admin.news_delete', news_id=item.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Удалить?')">
+                            <a href="{{ url_for('admin.news_delete', news_id=item.id) }}" class="btn btn-sm btn-outline-danger border-opacity-50" title="Удалить" onclick="return confirm('Удалить?')">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </div>
@@ -69,9 +72,9 @@
     </div>
 
     <!-- Pagination -->
-    <div class="p-4 border-top">
+    <div class="p-3 border-top" style="border-color: var(--surface-border) !important;">
         <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center mb-0">
+            <ul class="pagination justify-content-center mb-0 custom-pagination">
                 <li class="page-item {% if not news_pagination.has_prev %}disabled{% endif %}">
                     <a class="page-link" href="{{ url_for('admin.news_list', page=news_pagination.prev_num) }}">Назад</a>
                 </li>
@@ -81,7 +84,7 @@
                             <a class="page-link" href="{{ url_for('admin.news_list', page=page_num) }}">{{ page_num }}</a>
                         </li>
                     {% else %}
-                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        <li class="page-item disabled"><span class="page-link border-0">...</span></li>
                     {% endif %}
                 {% endfor %}
                 <li class="page-item {% if not news_pagination.has_next %}disabled{% endif %}">
@@ -91,4 +94,18 @@
         </nav>
     </div>
 </div>
+
+<style>
+    /* Table Dark mode fixes */
+    .custom-table { --bs-table-bg: transparent; --bs-table-color: var(--text-main); --bs-table-hover-bg: rgba(0,0,0,0.02); }
+    [data-theme="dark"] .custom-table { --bs-table-hover-bg: rgba(255,255,255,0.02); }
+    .custom-table th { background-color: var(--bg); color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--surface-border); padding-top: 1rem; padding-bottom: 1rem;}
+    .custom-table td { border-bottom: 1px solid var(--surface-border); vertical-align: middle; }
+    
+    /* Pagination Fixes */
+    .custom-pagination .page-link { background-color: var(--surface); border-color: var(--surface-border); color: var(--text-main); }
+    .custom-pagination .page-item.active .page-link { background-color: var(--primary); border-color: var(--primary); color: white; }
+    .custom-pagination .page-item.disabled .page-link { background-color: var(--bg); color: var(--text-muted); border-color: var(--surface-border); }
+    .custom-pagination .page-link:hover:not(.disabled) { background-color: var(--primary-soft); color: var(--primary); }
+</style>
 {% endblock %}

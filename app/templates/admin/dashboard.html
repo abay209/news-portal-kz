@@ -1,37 +1,58 @@
 {% extends "admin/base.html" %}
 
 {% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Дашборд</h1>
+        <p class="page-subtitle">Статистика и аналитика вашей платформы</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('admin.news_fetch_rss') }}" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="fas fa-cloud-download-alt"></i> Принудительный парсинг
+        </a>
+    </div>
+</div>
+
 <div class="row g-4 mb-4">
     <div class="col-md-4">
-        <div class="glass-card stat-card p-4 d-flex align-items-center">
-            <div class="stat-icon bg-primary-soft me-3">
+        <div class="glass-card p-4 d-flex align-items-center position-relative overflow-hidden" style="min-height: 120px;">
+            <div class="position-absolute top-0 end-0 p-3 opacity-25" style="font-size: 5rem; color: var(--primary); transform: translate(20%, -20%);">
                 <i class="fas fa-newspaper"></i>
             </div>
-            <div>
-                <h6 class="text-muted mb-1">Всего новостей</h6>
-                <h3 class="mb-0 fw-bold">{{ total_news }}</h3>
+            <div class="stat-icon bg-primary-soft me-4" style="color: var(--primary);">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div style="z-index: 1;">
+                <h6 class="text-muted mb-1 text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 700;">Всего новостей</h6>
+                <h2 class="mb-0 fw-bold" style="letter-spacing: -1px;">{{ total_news }}</h2>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="glass-card stat-card p-4 d-flex align-items-center">
-            <div class="stat-icon bg-success-soft me-3">
+        <div class="glass-card p-4 d-flex align-items-center position-relative overflow-hidden" style="min-height: 120px;">
+            <div class="position-absolute top-0 end-0 p-3 opacity-25" style="font-size: 5rem; color: #10b981; transform: translate(20%, -20%);">
                 <i class="fas fa-eye"></i>
             </div>
-            <div>
-                <h6 class="text-muted mb-1">Просмотры</h6>
-                <h3 class="mb-0 fw-bold">{{ total_views }}</h3>
+            <div class="stat-icon me-4" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div style="z-index: 1;">
+                <h6 class="text-muted mb-1 text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 700;">Просмотры</h6>
+                <h2 class="mb-0 fw-bold" style="letter-spacing: -1px;">{{ total_views }}</h2>
             </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="glass-card stat-card p-4 d-flex align-items-center">
-            <div class="stat-icon bg-info-soft me-3">
+        <div class="glass-card p-4 d-flex align-items-center position-relative overflow-hidden" style="min-height: 120px;">
+            <div class="position-absolute top-0 end-0 p-3 opacity-25" style="font-size: 5rem; color: #f59e0b; transform: translate(20%, -20%);">
                 <i class="fas fa-rss"></i>
             </div>
-            <div>
-                <h6 class="text-muted mb-1">Источники</h6>
-                <h3 class="mb-0 fw-bold">{{ total_sources }}</h3>
+            <div class="stat-icon me-4" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                <i class="fas fa-satellite-dish"></i>
+            </div>
+            <div style="z-index: 1;">
+                <h6 class="text-muted mb-1 text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 700;">Источники</h6>
+                <h2 class="mb-0 fw-bold" style="letter-spacing: -1px;">{{ total_sources }}</h2>
             </div>
         </div>
     </div>
@@ -39,70 +60,152 @@
 
 <div class="row g-4">
     <div class="col-md-8">
-        <div class="glass-card p-4">
-            <h5 class="mb-4 d-flex justify-content-between align-items-center">
-                <span><i class="fas fa-chart-line me-2"></i> Активность парсера (7 дней)</span>
-                <a href="{{ url_for('admin.news_fetch_rss') }}" class="btn btn-sm btn-primary">Обновить сейчас</a>
+        <div class="glass-card p-4 h-100">
+            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                <i class="fas fa-chart-area text-primary me-2"></i> Активность парсера (7 дней)
             </h5>
-            <canvas id="newsChart" style="height: 300px;"></canvas>
+            <div style="position: relative; height: 320px; width: 100%;">
+                <canvas id="newsChart"></canvas>
+            </div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="glass-card p-4">
-            <h5 class="mb-4"><i class="fas fa-chart-pie me-2"></i> По категориям</h5>
-            <canvas id="categoryChart" style="height: 300px;"></canvas>
+        <div class="glass-card p-4 h-100">
+            <h5 class="fw-bold mb-4 d-flex align-items-center">
+                <i class="fas fa-chart-pie text-primary me-2"></i> Распределение
+            </h5>
+            <div style="position: relative; height: 320px; width: 100%; display: flex; justify-content: center; align-items: center;">
+                <canvas id="categoryChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const newsCtx = document.getElementById('newsChart').getContext('2d');
-    new Chart(newsCtx, {
-        type: 'line',
-        data: {
-            labels: ['6д назад', '5д назад', '4д назад', '3д назад', '2д назад', 'Вчера', 'Сегодня'],
-            datasets: [{
-                label: 'Новые статьи',
-                data: JSON.parse('{{ news_stats | tojson | safe }}'),
-                borderColor: '#6366f1',
-                backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true } }
-    }
-    });
+    // Common Chart settings
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    
+    // Init Charts
+    let newsChart, catChart;
+    const newsDataRaw = JSON.parse('{{ news_stats | tojson | safe }}');
+    const catDataRaw = JSON.parse('{{ cat_stats | tojson | safe }}');
 
-    const catCtx = document.getElementById('categoryChart').getContext('2d');
-    const catData = JSON.parse('{{ cat_stats | tojson | safe }}');
-    new Chart(catCtx, {
-        type: 'doughnut',
-        data: {
-            labels: Object.keys(catData),
-            datasets: [{
-                data: Object.values(catData),
-                backgroundColor: [
-                    '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: { legend: { position: 'bottom' } }
-        }
-    });
+    function getChartColors() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        return {
+            textColor: isDark ? '#8b949e' : '#5a6475',
+            gridColor: isDark ? '#30363d' : '#e8edf2',
+            primaryLine: isDark ? '#78a9ff' : '#0f62fe',
+            primaryFill: isDark ? 'rgba(120, 169, 255, 0.2)' : 'rgba(15, 98, 254, 0.15)'
+        };
+    }
+
+    function renderCharts() {
+        const colors = getChartColors();
+
+        // 1. Line Chart
+        const newsCtx = document.getElementById('newsChart').getContext('2d');
+        if(newsChart) newsChart.destroy();
+        
+        // Gradient fill
+        let gradientFill = newsCtx.createLinearGradient(0, 0, 0, 300);
+        gradientFill.addColorStop(0, colors.primaryFill);
+        gradientFill.addColorStop(1, 'rgba(0,0,0,0)');
+
+        newsChart = new Chart(newsCtx, {
+            type: 'line',
+            data: {
+                labels: ['6д назад', '5д назад', '4д назад', '3д назад', '2д назад', 'Вчера', 'Сегодня'],
+                datasets: [{
+                    label: 'Новые статьи',
+                    data: newsDataRaw,
+                    borderColor: colors.primaryLine,
+                    backgroundColor: gradientFill,
+                    borderWidth: 3,
+                    pointBackgroundColor: colors.primaryLine,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(13, 17, 23, 0.9)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false
+                    }
+                },
+                scales: { 
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: colors.textColor, font: {size: 11} }
+                    },
+                    y: { 
+                        beginAtZero: true,
+                        grid: { color: colors.gridColor, drawBorder: false },
+                        ticks: { color: colors.textColor, font: {size: 11}, padding: 10 }
+                    } 
+                }
+            }
+        });
+
+        // 2. Doughnut Chart
+        const catCtx = document.getElementById('categoryChart').getContext('2d');
+        if(catChart) catChart.destroy();
+
+        catChart = new Chart(catCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(catDataRaw),
+                datasets: [{
+                    data: Object.values(catDataRaw),
+                    backgroundColor: [
+                        '#0f62fe', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4',
+                        '#14b8a6', '#f43f5e', '#84cc16', '#6366f1', '#a855f7'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: { 
+                    legend: { display: false }, // Hide legend to save space, use tooltips
+                    tooltip: {
+                        backgroundColor: 'rgba(13, 17, 23, 0.9)',
+                        padding: 12,
+                        cornerRadius: 8
+                    }
+                }
+            }
+        });
+    }
+
+    // Initial render
+    renderCharts();
+
+    // Re-render when theme changes
+    window.addEventListener('themeChanged', renderCharts);
 </script>
 
 <style>
     .stat-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -110,18 +213,7 @@
     }
 
     .bg-primary-soft {
-        background: rgba(99, 102, 241, 0.15);
-        color: #6366f1;
-    }
-
-    .bg-success-soft {
-        background: rgba(16, 185, 129, 0.15);
-        color: #10b981;
-    }
-
-    .bg-info-soft {
-        background: rgba(6, 182, 212, 0.15);
-        color: #06b6d4;
+        background: var(--primary-soft);
     }
 </style>
 {% endblock %}

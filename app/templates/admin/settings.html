@@ -1,82 +1,139 @@
 {% extends "admin/base.html" %}
 
 {% block content %}
-<div class="mb-4">
-    <h3><i class="fas fa-cog me-2 text-primary"></i> Настройки сайта</h3>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Настройки сайта</h1>
+        <p class="page-subtitle">Глобальные конфигурации портала NewsKZ</p>
+    </div>
 </div>
 
-<div class="row">
-    <div class="col-md-8">
+<div class="row g-4">
+    <div class="col-xl-8">
         <div class="glass-card p-4">
             <form method="POST">
-                <h5 class="mb-4 text-primary">Основное</h5>
-                <div class="row mb-4">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Название портала</label>
-                        <input type="text" name="site_name" class="form-control" value="{{ settings.get('site_name', 'Global News KZ') }}">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Email для связи</label>
-                        <input type="email" name="contact_email" class="form-control" value="{{ settings.get('contact_email', 'admin@example.kz') }}">
+                <div class="mb-5">
+                    <h5 class="fw-bold mb-4 d-flex align-items-center">
+                        <i class="fas fa-sliders-h text-primary me-2"></i> Основное
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Название портала</label>
+                            <input type="text" name="site_name" class="form-control custom-input" value="{{ settings.get('site_name', 'NewsKZ') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Email для связи</label>
+                            <input type="email" name="contact_email" class="form-control custom-input" value="{{ settings.get('contact_email', 'admin@newskz.kz') }}">
+                        </div>
                     </div>
                 </div>
 
-                <h5 class="mb-4 text-primary">SEO & Описание</h5>
-                <div class="mb-3">
-                    <label class="form-label">Заголовок для главной (Title)</label>
-                    <input type="text" name="seo_title" class="form-control" value="{{ settings.get('seo_title', 'Последние новости Казахстана и мира') }}">
+                <div class="mb-5">
+                    <h5 class="fw-bold mb-4 d-flex align-items-center">
+                        <i class="fas fa-search text-primary me-2"></i> SEO & Метаданные
+                    </h5>
+                    <div class="mb-3">
+                        <label class="form-label text-muted small fw-bold text-uppercase">Заголовок (Title)</label>
+                        <input type="text" name="seo_title" class="form-control custom-input" value="{{ settings.get('seo_title', 'Последние новости Казахстана и мира') }}">
+                    </div>
+                    <div>
+                        <label class="form-label text-muted small fw-bold text-uppercase">Мета-описание (Description)</label>
+                        <textarea name="seo_description" class="form-control custom-input" rows="3">{{ settings.get('seo_description', 'Мультиязычный новостной агрегатор.') }}</textarea>
+                    </div>
                 </div>
+
                 <div class="mb-4">
-                    <label class="form-label">Мета-описание</label>
-                    <textarea name="seo_description" class="form-control" rows="3">{{ settings.get('seo_description', 'Мультиязычный новостной агрегатор на базе ИИ.') }}</textarea>
+                    <h5 class="fw-bold mb-4 d-flex align-items-center">
+                        <i class="fas fa-plug text-primary me-2"></i> Интеграции
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase"><i class="fab fa-telegram text-info"></i> Telegram Link</label>
+                            <input type="text" name="social_telegram" class="form-control custom-input" placeholder="https://t.me/..." value="{{ settings.get('social_telegram', '') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold text-uppercase"><i class="fab fa-instagram text-danger"></i> Instagram Link</label>
+                            <input type="text" name="social_instagram" class="form-control custom-input" placeholder="https://instagram.com/..." value="{{ settings.get('social_instagram', '') }}">
+                        </div>
+                        <div class="col-12 mt-3">
+                            <label class="form-label text-muted small fw-bold text-uppercase"><i class="fab fa-youtube text-danger"></i> YouTube Live Widget</label>
+                            <input type="text" name="youtube_live_url" class="form-control custom-input" placeholder="https://www.youtube.com/embed/..." value="{{ settings.get('youtube_live_url', 'https://www.youtube.com/embed/gCNeDWCI0vo?autoplay=1&mute=1') }}">
+                            <div class="form-text mt-2"><i class="fas fa-info-circle"></i> Оставьте пустым, чтобы скрыть стрим с главной страницы.</div>
+                        </div>
+                    </div>
                 </div>
 
-                <h5 class="mb-4 text-primary">Социальные сети и интеграции</h5>
-                <div class="row mb-4">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label"><i class="fab fa-telegram me-2 text-info"></i> Telegram Link</label>
-                        <input type="text" name="social_telegram" class="form-control" value="{{ settings.get('social_telegram', '') }}">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label"><i class="fab fa-instagram me-2 text-danger"></i> Instagram Link</label>
-                        <input type="text" name="social_instagram" class="form-control" value="{{ settings.get('social_instagram', '') }}">
-                    </div>
-                    <div class="col-12 mb-3">
-                        <label class="form-label"><i class="fab fa-youtube me-2 text-danger"></i> YouTube Live Embed URL (для басты бет)</label>
-                        <input type="text" name="youtube_live_url" class="form-control" placeholder="https://www.youtube.com/embed/XXXXXXX?autoplay=1&mute=1" value="{{ settings.get('youtube_live_url', 'https://www.youtube.com/embed/gCNeDWCI0vo?autoplay=1&mute=1') }}">
-                        <div class="form-text">Оставьте пустым, чтобы скрыть виджет прямой трансляции на главной странице.</div>
-                    </div>
-                </div>
-
-                <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-primary btn-lg fw-bold">
-                        <i class="fas fa-check-circle me-2"></i> Сохранить настройки
+                <hr class="my-4" style="border-color: var(--surface-border);">
+                
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary d-flex align-items-center gap-2 px-4 py-2">
+                        <i class="fas fa-save"></i> Сохранить изменения
                     </button>
                 </div>
             </form>
         </div>
     </div>
     
-    <div class="col-md-4">
-        <div class="glass-card p-4">
-            <h5 class="mb-3">Информация о системе</h5>
-            <div class="d-flex justify-content-between mb-2">
-                <span class="text-muted">Версия:</span>
-                <span class="fw-bold">v3.0 (Maximum)</span>
+    <div class="col-xl-4">
+        <div class="glass-card p-4 sticky-top" style="top: 100px;">
+            <h5 class="fw-bold mb-4">Информация о системе</h5>
+            
+            <div class="d-flex align-items-center p-3 mb-3 rounded" style="background: var(--bg); border: 1px solid var(--surface-border);">
+                <div class="bg-primary-soft text-primary rounded d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                    <i class="fas fa-code-branch"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="small text-muted mb-1">Версия портала</div>
+                    <div class="fw-bold">v3.5 (Modern UI)</div>
+                </div>
             </div>
-            <div class="d-flex justify-content-between mb-2">
-                <span class="text-muted">Движок:</span>
-                <span class="fw-bold">Flask + SQLAlchemy</span>
+            
+            <div class="d-flex align-items-center p-3 mb-3 rounded" style="background: var(--bg); border: 1px solid var(--surface-border);">
+                <div class="bg-primary-soft text-primary rounded d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="small text-muted mb-1">Движок</div>
+                    <div class="fw-bold">Flask + SQLAlchemy</div>
+                </div>
             </div>
-            <div class="d-flex justify-content-between mb-3">
-                <span class="text-muted">ИИ Модель:</span>
-                <span class="badge bg-primary">Gemini / GPT</span>
+            
+            <div class="d-flex align-items-center p-3 mb-4 rounded" style="background: var(--bg); border: 1px solid var(--surface-border);">
+                <div class="bg-primary-soft text-primary rounded d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="small text-muted mb-1">ИИ Обработка</div>
+                    <div class="badge bg-primary">Активна (Gemini)</div>
+                </div>
             </div>
-            <hr>
-            <p class="small text-muted mb-0">
-                <i class="fas fa-info-circle me-1"></i> Сохраненные настройки применяются ко всем разделам сайта мгновенно.
-            </p>
+
+            <div class="alert bg-primary-soft border-0 text-primary mb-0 d-flex gap-3">
+                <i class="fas fa-shield-alt fs-4"></i>
+                <div class="small">
+                    <strong>Безопасность:</strong> Все настройки кэшируются. При сохранении данные обновятся мгновенно для всех пользователей.
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Custom Inputs for Dark Mode */
+    .custom-input {
+        background-color: var(--bg);
+        border: 1px solid var(--surface-border);
+        color: var(--text-main);
+        transition: all 0.2s;
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+    }
+    .custom-input:focus {
+        background-color: var(--surface);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px var(--primary-soft);
+        color: var(--text-main);
+    }
+    [data-theme="dark"] .custom-input::placeholder { color: #6e7681; }
+</style>
 {% endblock %}

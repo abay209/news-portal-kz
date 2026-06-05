@@ -1,66 +1,82 @@
 {% extends "admin/base.html" %}
 
 {% block login %}
-<div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #00AEEF 0%, #0056b3 100%); font-family: 'Inter', sans-serif;">
-    <div style="background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); width: 100%; max-width: 450px; margin: 20px;">
-        <div style="text-align: center; margin-bottom: 2rem;">
-            <h2 style="color: #00AEEF; font-weight: 800; margin-bottom: 0.5rem;">Қош келдіңіз!</h2>
-            <p style="color: #666;">Жүйеге кіру жолын таңдаңыз</p>
-        </div>
-        
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <div style="background: #fee; color: #d33; padding: 10px; border-radius: 10px; margin-bottom: 1.5rem; font-size: 14px; text-align: center; border: 1px solid #fcc;">
-                {% for message in messages %}
-                  <div>{{ message }}</div>
-                {% endfor %}
+<div class="container-fluid d-flex align-items-center justify-content-center p-0" style="min-height: 100vh; background: var(--bg);">
+    <div class="row w-100 m-0">
+        <div class="col-12 col-md-8 col-lg-5 col-xl-4 mx-auto p-3">
+            <div class="text-center mb-5">
+                <div class="d-inline-flex align-items-center justify-content-center bg-primary rounded p-3 mb-3 text-white shadow" style="width: 60px; height: 60px;">
+                    <i class="fas fa-layer-group fs-3"></i>
+                </div>
+                <h2 class="fw-bold text-main" style="letter-spacing: -1px;">NewsKZ Admin</h2>
+                <p class="text-muted">Панель управления порталом</p>
             </div>
-          {% endif %}
-        {% endwith %}
 
-        <form method="POST" style="display: flex; flex-direction: column; gap: 1.2rem;">
-            <div>
-                <label style="font-weight: 600; font-size: 14px; color: #444; margin-bottom: 5px; display: block;">Логин</label>
-                <input type="text" name="username" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; outline: none; transition: 0.3s;" placeholder="username">
+            <div class="glass-card p-4 p-sm-5 shadow-lg border-0" style="border-radius: 20px;">
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    <div class="alert bg-danger-soft text-danger border border-danger border-opacity-25 rounded-3 mb-4" style="background: rgba(239, 68, 68, 0.1);">
+                        {% for message in messages %}
+                          <div class="d-flex align-items-center gap-2"><i class="fas fa-exclamation-circle"></i> {{ message }}</div>
+                        {% endfor %}
+                    </div>
+                  {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold text-uppercase">Логин / Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: var(--surface-border);"><i class="fas fa-user"></i></span>
+                            <input type="text" name="username" class="form-control border-start-0 ps-0" style="background: transparent; border-color: var(--surface-border); color: var(--text-main); box-shadow: none;" placeholder="admin" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between">
+                            <label class="form-label text-muted small fw-bold text-uppercase">Пароль</label>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: var(--surface-border);"><i class="fas fa-lock"></i></span>
+                            <input type="password" name="password" class="form-control border-start-0 ps-0" style="background: transparent; border-color: var(--surface-border); color: var(--text-main); box-shadow: none;" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 rounded-3 fw-bold mb-4" style="font-size: 1.1rem; letter-spacing: 0.5px;">
+                        Войти в систему <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </form>
+                
+                <div class="text-center">
+                    <a href="{{ url_for('main.index') }}" class="text-muted text-decoration-none small hover-primary transition">
+                        <i class="fas fa-arrow-left me-1"></i> Вернуться на сайт
+                    </a>
+                </div>
             </div>
-            <div>
-                <label style="font-weight: 600; font-size: 14px; color: #444; margin-bottom: 5px; display: block;">Құпия сөз</label>
-                <input type="password" name="password" required style="width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; outline: none; transition: 0.3s;" placeholder="••••••••">
+            
+            <div class="text-center mt-5 text-muted small">
+                &copy; {{ current_year | default('2024') }} NewsKZ Platform. All rights reserved.
             </div>
-            <button type="submit" style="background: #00AEEF; border: none; padding: 14px; font-weight: bold; color: white; border-radius: 10px; cursor: pointer; font-size: 16px; margin-top: 0.5rem; transition: 0.3s;">Кіру</button>
-        </form>
-
-        <div style="display: flex; align-items: center; margin: 2rem 0; color: #ccc;">
-            <div style="flex: 1; height: 1px; background: #eee;"></div>
-            <div style="margin: 0 1rem; font-size: 12px; font-weight: bold; color: #aaa; text-transform: uppercase;">Немесе</div>
-            <div style="flex: 1; height: 1px; background: #eee;"></div>
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <!-- Google Login (Integration placeholder) -->
-            <a href="#" style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border: 2px solid #eee; border-radius: 10px; text-decoration: none; color: #444; font-weight: 600; transition: 0.3s; background: white;">
-                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="20" height="20">
-                Google арқылы кіру
-            </a>
-
-            <!-- Phone Login (Integration placeholder) -->
-            <a href="#" style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border: 2px solid #eee; border-radius: 10px; text-decoration: none; color: #444; font-weight: 600; transition: 0.3s; background: white;">
-                <i class="fas fa-phone-alt" style="color: #25D366;"></i>
-                Телефон нөмірімен кіру
-            </a>
-        </div>
-
-        <div style="text-align: center; margin-top: 2rem;">
-            <a href="{{ url_for('main.index') }}" style="color: #666; text-decoration: none; font-size: 14px;">
-                <i class="fas fa-arrow-left"></i> Басқы бетке қайту
-            </a>
         </div>
     </div>
 </div>
 
 <style>
-    input:focus { border-color: #00AEEF !important; }
-    button:hover { background: #008cc2 !important; transform: translateY(-2px); }
-    a:hover { background: #f9f9f9 !important; border-color: #ddd !important; }
+    .input-group:focus-within .input-group-text,
+    .input-group:focus-within .form-control {
+        border-color: var(--primary) !important;
+    }
+    .input-group:focus-within .input-group-text i {
+        color: var(--primary) !important;
+    }
+    .form-control::placeholder {
+        color: #6e7681 !important;
+    }
+    .hover-primary:hover {
+        color: var(--primary) !important;
+    }
+    .transition {
+        transition: all 0.2s;
+    }
 </style>
 {% endblock %}
