@@ -383,22 +383,7 @@
         });
         scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-        // Fetch Weather Data (Astana)
         document.addEventListener('DOMContentLoaded', () => {
-            fetch('https://api.open-meteo.com/v1/forecast?latitude=51.1694&longitude=71.4285&current_weather=true')
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.current_weather) {
-                        const temp = Math.round(data.current_weather.temperature);
-                        document.getElementById('weatherWidget').innerHTML = `<i class="fas fa-cloud-sun text-primary me-2"></i> ${temp}°C Астана`;
-                    } else {
-                        document.getElementById('weatherWidget').style.display = 'none';
-                    }
-                })
-                .catch(err => {
-                    document.getElementById('weatherWidget').style.display = 'none';
-                });
-
             // Fetch Currency Rates
             fetch('https://api.exchangerate-api.com/v4/latest/USD')
                 .then(res => res.json())
