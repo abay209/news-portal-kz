@@ -98,18 +98,85 @@ CATEGORY_KEYWORDS = {
         'israel', 'ukraine', 'iran', 'middle east', 'asia', 'africa',
     ],
     'cat_culture': [
-        # Russian
         'культура', 'кино', 'фильм', 'музыка', 'концерт', 'фестиваль', 'театр',
         'выставка', 'искусство', 'звезды', 'шоу-бизнес', 'актер', 'певец',
-        'режиссер', 'книга', 'литература', 'танец', 'живопись', 'скульптура',
-        'мода', 'дизайн', 'фотография', 'аниме', 'игра',
-        # Kazakh
-        'мәдениет', 'кино', 'музыка', 'театр', 'өнер', 'концерт', 'фестиваль',
-        # English
+        'режиссер', 'книга', 'литература', 'танец', 'мода', 'дизайн',
+        'мәдениет', 'кино', 'музыка', 'театр', 'өнер', 'концерт',
         'culture', 'movie', 'film', 'music', 'concert', 'festival', 'theater',
         'exhibition', 'art', 'celebrity', 'actor', 'singer', 'director',
-        'book', 'literature', 'fashion', 'design', 'game', 'award', 'oscar',
-        'grammy', 'netflix', 'spotify',
+        'book', 'literature', 'fashion', 'design', 'award', 'oscar', 'grammy', 'netflix', 'spotify',
+    ],
+    'cat_health': [
+        'здоровье', 'медицина', 'врач', 'больница', 'лечение', 'болезнь', 'вирус',
+        'вакцина', 'пандемия', 'диета', 'фитнес', 'спа', 'психология',
+        'денсаулық', 'дәрігер', 'ауруxана', 'дәрі', 'вакцина',
+        'health', 'medicine', 'doctor', 'hospital', 'treatment', 'disease', 'virus',
+        'vaccine', 'pandemic', 'diet', 'fitness', 'mental health', 'pharmacy', 'drug',
+        'covid', 'surgery', 'cancer', 'diabetes', 'nutrition',
+    ],
+    'cat_science': [
+        'наука', 'исследование', 'открытие', 'космос', 'физика', 'химия',
+        'биология', 'астрономия', 'климат', 'эксперимент', 'ученые',
+        'ғылым', 'зерттеу', 'ашылым', 'ғарыш', 'физика',
+        'science', 'research', 'discovery', 'space', 'physics', 'chemistry',
+        'biology', 'astronomy', 'climate', 'experiment', 'scientists', 'nasa',
+        'spacex', 'study', 'universe', 'dna', 'gene',
+    ],
+    'cat_travel': [
+        'путешествие', 'туризм', 'отдых', 'отпуск', 'виза', 'аэропорт',
+        'отель', 'курорт', 'экскурсия', 'тур', 'авиабилет',
+        'саяхат', 'туризм', 'демалыс', 'виза', 'қонақүй',
+        'travel', 'tourism', 'vacation', 'holiday', 'visa', 'airport',
+        'hotel', 'resort', 'tour', 'flight', 'destination', 'cruise',
+    ],
+    'cat_food': [
+        'еда', 'ресторан', 'кулинария', 'рецепт', 'кухня', 'блюдо', 'напиток',
+        'кафе', 'бар', 'повар', 'гастрономия', 'продукты',
+        'тамақ', 'мейрамхана', 'рецепт', 'ас', 'асхана',
+        'food', 'restaurant', 'recipe', 'cuisine', 'dish', 'drink',
+        'cafe', 'chef', 'gastronomy', 'menu', 'cooking', 'street food',
+    ],
+    'cat_education': [
+        'образование', 'школа', 'университет', 'студент', 'учитель',
+        'наука', 'грант', 'ент', 'егэ', 'диплом', 'профессия',
+        'білім', 'мектеп', 'университет', 'студент', 'ұстаз', 'грант', 'ент',
+        'education', 'school', 'university', 'student', 'teacher',
+        'grant', 'scholarship', 'degree', 'exam', 'college', 'learning',
+    ],
+    'cat_environment': [
+        'экология', 'природа', 'климат', 'загрязнение', 'озеро', 'лес',
+        'зеленая энергия', 'солнечная', 'ветер', 'выброс', 'углерод',
+        'экология', 'табиғат', 'климат', 'ластану', 'орман',
+        'ecology', 'environment', 'nature', 'climate change', 'pollution', 'green',
+        'renewable', 'solar', 'wind', 'emission', 'carbon', 'forest', 'ocean',
+    ],
+    'cat_finance': [
+        'банк', 'кредит', 'депозит', 'ставка', 'ипотека', 'нбрк',
+        'пенсия', 'страхование', 'инвестиция', 'акции', 'фондовый',
+        'банк', 'несие', 'депозит', 'ипотека', 'зейнетақы', 'сақтандыру',
+        'bank', 'credit', 'deposit', 'mortgage', 'pension', 'insurance',
+        'investment', 'stock market', 'bonds', 'interest rate', 'fintech', 'loan',
+    ],
+    'cat_entertainment': [
+        'развлечения', 'игра', 'геймер', 'казино', 'шоу', 'концерт',
+        'видеоигра', 'стриминг', 'youtube', 'tiktok', 'блогер',
+        'ойын-сауық', 'ойын', 'шоу', 'концерт', 'блогер',
+        'entertainment', 'game', 'gamer', 'gaming', 'show', 'streaming',
+        'youtube', 'tiktok', 'blogger', 'influencer', 'esports', 'twitch',
+    ],
+    'cat_society': [
+        'общество', 'социальный', 'молодежь', 'женщины', 'права', 'закон',
+        'миграция', 'демография', 'семья', 'дети', 'пенсионер',
+        'қоғам', 'әлеуметтік', 'жастар', 'әйелдер', 'отбасы', 'балалар',
+        'society', 'social', 'youth', 'women', 'rights', 'law',
+        'migration', 'demographics', 'family', 'children', 'elderly',
+    ],
+    'cat_crime': [
+        'происшествие', 'авария', 'уголовное', 'задержан', 'мошенничество',
+        'ограбление', 'убийство', 'арест', 'суд', 'полиция', 'коррупция',
+        'оқиға', 'авария', 'қылмыс', 'тұтқындалды', 'алаяқтық', 'сот',
+        'crime', 'accident', 'arrest', 'fraud', 'robbery', 'murder',
+        'court', 'police', 'corruption', 'investigation', 'criminal',
     ],
 }
 
@@ -117,12 +184,17 @@ CATEGORY_KEYWORDS = {
 SOURCE_CATEGORY_MAP = {
     'cat_tech': ['verge', 'techcrunch', 'wired', 'ars technica', 'engadget', 'gizmodo',
                  'tech', 'digit', 'habr', 'ict', '4pda'],
-    'cat_auto': ['motor1', 'autoblog', 'auto', 'drive', 'autonews', 'cars', 'avto'],
-    'cat_sport': ['sport', 'чемпионат', 'sovsport', 'sports', 'goal', 'transfermarkt'],
-    'cat_economy': ['finanz', 'bloomberg', 'reuters', 'forbes', 'rbc', 'banki', 'economy'],
-    'cat_world': ['bbc', 'cnn', 'reuters', 'ap news', 'al jazeera', 'euronews'],
-    'cat_culture': ['afisha', 'culture', 'film', 'cinema', 'kinopoisk'],
-    'cat_politics': ['politik', 'politik.kz', 'kapital', 'zakon.kz'],
+    'cat_auto': ['motor1', 'autoblog', 'auto', 'drive', 'autonews', 'cars', 'avto', 'kolesa'],
+    'cat_sport': ['sport', 'чемпионат', 'sovsport', 'sports', 'goal', 'transfermarkt', 'vesti.kz'],
+    'cat_economy': ['finanz', 'bloomberg', 'reuters', 'forbes', 'rbc', 'banki', 'economy', 'kapital', 'lsm'],
+    'cat_world': ['bbc', 'cnn', 'reuters', 'ap news', 'al jazeera', 'euronews', 'vlast'],
+    'cat_culture': ['afisha', 'culture', 'film', 'cinema', 'kinopoisk', 'nur.kz', 'steppe'],
+    'cat_politics': ['politik', 'politik.kz', 'kapital', 'zakon.kz', 'inform.kz'],
+    'cat_health': ['health', 'медицин', 'zdrav', 'med', 'wellness'],
+    'cat_science': ['science', 'nauka', 'nasa', 'space', 'techno'],
+    'cat_finance': ['banki', 'finance', 'invest', 'fond'],
+    'cat_society': ['society', 'social', 'общество'],
+    'cat_crime': ['crime', 'police', 'происшест', 'полиц'],
 }
 
 # RSS category/tag → our category mapping (case-insensitive)
@@ -130,10 +202,20 @@ RSS_TAG_MAP = {
     'cat_politics': ['politics', 'политика', 'government', 'правительство', 'выборы', 'election'],
     'cat_sport': ['sport', 'sports', 'спорт', 'football', 'soccer', 'basketball'],
     'cat_economy': ['economy', 'finance', 'business', 'экономика', 'финансы', 'бизнес', 'money'],
-    'cat_tech': ['technology', 'tech', 'science', 'технологии', 'наука', 'it'],
+    'cat_tech': ['technology', 'tech', 'технологии', 'it'],
     'cat_auto': ['auto', 'cars', 'automotive', 'авто', 'автомобили'],
     'cat_world': ['world', 'international', 'мир', 'международное'],
     'cat_culture': ['culture', 'entertainment', 'arts', 'культура', 'кино', 'музыка'],
+    'cat_health': ['health', 'медицина', 'здоровье', 'medicine'],
+    'cat_science': ['science', 'наука', 'space', 'космос', 'research'],
+    'cat_travel': ['travel', 'туризм', 'tourism', 'путешествия'],
+    'cat_food': ['food', 'еда', 'recipe', 'рецепт'],
+    'cat_education': ['education', 'образование', 'school', 'university'],
+    'cat_environment': ['environment', 'экология', 'climate', 'климат'],
+    'cat_finance': ['finance', 'финансы', 'bank', 'банк', 'invest'],
+    'cat_entertainment': ['entertainment', 'развлечения', 'gaming', 'игры'],
+    'cat_society': ['society', 'общество', 'social'],
+    'cat_crime': ['crime', 'происшествие', 'police', 'полиция'],
 }
 
 
@@ -550,7 +632,20 @@ def fetch_rss_feeds():
             {'name': 'Vlast.kz', 'url': 'https://vlast.kz/rss.xml', 'language': 'ru'},
             {'name': 'The Steppe', 'url': 'https://the-steppe.com/rss', 'language': 'ru'},
             {'name': 'Afisha.ru (Kino)', 'url': 'https://www.afisha.ru/export/rss.xml', 'language': 'ru'},
-            {'name': 'Nur.kz (Showbiz)', 'url': 'https://www.nur.kz/rss/showbiz.xml', 'language': 'ru'}
+            {'name': 'Nur.kz (Showbiz)', 'url': 'https://www.nur.kz/rss/showbiz.xml', 'language': 'ru'},
+            # New sources for new categories
+            {'name': 'Nur.kz Health', 'url': 'https://www.nur.kz/rss/health.xml', 'language': 'ru'},
+            {'name': 'Med.kz', 'url': 'https://med.kz/rss', 'language': 'ru'},
+            {'name': 'Nauka.kz', 'url': 'https://nauka.kz/rss', 'language': 'ru'},
+            {'name': 'National Geographic RU', 'url': 'https://www.nat-geo.ru/rss/all/', 'language': 'ru'},
+            {'name': 'Tengrinews Travel', 'url': 'https://tengrinews.kz/travel/feed/', 'language': 'ru'},
+            {'name': 'Touristan.kz', 'url': 'https://touristan.kz/rss', 'language': 'ru'},
+            {'name': 'Gurman.kz', 'url': 'https://gurman.kz/rss', 'language': 'ru'},
+            {'name': 'KursivMedia', 'url': 'https://kursiv.kz/rss', 'language': 'ru'},
+            {'name': 'Abai.kz Education', 'url': 'https://abai.kz/rss', 'language': 'ru'},
+            {'name': 'Otyrar.kz', 'url': 'https://otyrar.kz/rss', 'language': 'ru'},
+            {'name': 'Bnews.kz', 'url': 'https://bnews.kz/rss', 'language': 'ru'},
+            {'name': 'Сrime.kz', 'url': 'https://crime.kz/rss', 'language': 'ru'},
         ]
         for s in new_sources:
             if not Source.query.filter((Source.url == s['url']) | (Source.name == s['name'])).first():

@@ -85,6 +85,56 @@ TRANSLATIONS = {
         'kk': 'Мәдениет',
         'en': 'Culture'
     },
+    'cat_health': {
+        'ru': 'Здоровье',
+        'kk': 'Денсаулық',
+        'en': 'Health'
+    },
+    'cat_science': {
+        'ru': 'Наука',
+        'kk': 'Ғылым',
+        'en': 'Science'
+    },
+    'cat_travel': {
+        'ru': 'Путешествия',
+        'kk': 'Саяхат',
+        'en': 'Travel'
+    },
+    'cat_food': {
+        'ru': 'Еда',
+        'kk': 'Тамақ',
+        'en': 'Food'
+    },
+    'cat_education': {
+        'ru': 'Образование',
+        'kk': 'Білім',
+        'en': 'Education'
+    },
+    'cat_environment': {
+        'ru': 'Экология',
+        'kk': 'Экология',
+        'en': 'Environment'
+    },
+    'cat_finance': {
+        'ru': 'Финансы',
+        'kk': 'Қаржы',
+        'en': 'Finance'
+    },
+    'cat_entertainment': {
+        'ru': 'Развлечения',
+        'kk': 'Ойын-сауық',
+        'en': 'Entertainment'
+    },
+    'cat_society': {
+        'ru': 'Общество',
+        'kk': 'Қоғам',
+        'en': 'Society'
+    },
+    'cat_crime': {
+        'ru': 'Происшествия',
+        'kk': 'Оқиғалар',
+        'en': 'Incidents'
+    },
     'login_admin': {
         'ru': 'Вход для админа',
         'kk': 'Админ панеліне кіру',
