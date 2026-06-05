@@ -176,8 +176,11 @@
                     <i class="fas fa-info-circle me-2 text-primary"></i> Инфо
                 </h5>
                 <!-- Weather Widget (weatherwidget.io) -->
-                <div class="weather-widget-container rounded-3 overflow-hidden shadow-sm" style="background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%); padding: 2px;">
-                    <a class="weatherwidget-io" href="https://www.google.com/search?q=погода+в+Астане" data-label_1="АСТАНА" data-label_2="Ауа райы" data-font="Inter" data-icons="Climacons Animated" data-theme="clear" >АСТАНА Ауа райы</a>
+                <div class="weather-widget-container rounded-3 overflow-hidden shadow-sm position-relative" style="background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%); padding: 2px;">
+                    <!-- Overlay link to Google Weather -->
+                    <a href="https://www.google.com/search?q=погода+в+Астане" target="_blank" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: block;"></a>
+                    
+                    <a class="weatherwidget-io" href="https://forecast7.com/ru/51d1371d43/astana/" data-label_1="АСТАНА" data-label_2="Ауа райы" data-font="Inter" data-icons="Climacons Animated" data-theme="clear" >АСТАНА Ауа райы</a>
                     <script>
                     !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
                     </script>
