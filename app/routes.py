@@ -28,7 +28,10 @@ def index():
     category_code = request.args.get('category')
     search_query = request.args.get('q')
     
-    query = News.query.order_by(News.created_at.desc())
+    query = News.query.filter(
+        News.image_filename.isnot(None),
+        News.image_filename != ''
+    ).order_by(News.created_at.desc())
     
     if category_code:
         cat = Category.query.filter_by(code=category_code).first()
@@ -60,7 +63,11 @@ def index():
         categories = Category.query.all()
         for cat in categories:
             # Get latest 4 news for each category
-            news_by_category[cat.code] = News.query.filter_by(category_id=cat.id).order_by(News.created_at.desc()).limit(4).all()
+            news_by_category[cat.code] = News.query.filter(
+                News.category_id == cat.id,
+                News.image_filename.isnot(None),
+                News.image_filename != ''
+            ).order_by(News.created_at.desc()).limit(4).all()
     
     # Hero section үшін тек фотолы жаңалықтар
     hero_news = []
