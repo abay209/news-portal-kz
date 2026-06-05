@@ -16,188 +16,260 @@
     <!-- AOS CSS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap');
+
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary: #0f62fe;
+            --primary-dark: #0043ce;
+            --primary-light: #d0e2ff;
+            --accent: #ee5340;
             --glass: #ffffff;
-            --glass-border: #e5e7eb;
-            --bg: #f8fafc;
-            --text: #111827;
+            --glass-border: #e8edf2;
+            --bg: #f4f6f9;
+            --text: #0d1117;
+            --text-muted: #5a6475;
             --card-bg: #ffffff;
+            --nav-height: 64px;
         }
 
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            transition: background 0.3s, color 0.3s;
+            font-size: 15px;
+            line-height: 1.6;
         }
 
         /* ===== READING PROGRESS BAR ===== */
         #readingProgress {
             position: fixed;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             height: 3px;
             width: 0%;
-            background: linear-gradient(90deg, var(--primary), #a855f7);
-            z-index: 9999;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            z-index: 10000;
             transition: width 0.1s linear;
         }
 
-
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            background: #0d1117;
+            color: #8b949e;
+            font-size: 0.75rem;
+            border-bottom: 1px solid #21262d;
+            padding: 0.35rem 0;
+        }
+        .top-bar a { color: #8b949e; text-decoration: none; transition: color 0.2s; }
+        .top-bar a:hover { color: white; }
 
         /* ===== NAVBAR ===== */
         .navbar-glass {
-            background: var(--glass);
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
-            padding: 0.8rem 0;
+            padding: 0;
+            height: var(--nav-height);
             transition: all 0.3s;
-            top: 0;
+        }
+        .navbar-glass.scrolled {
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
         }
         .navbar-brand {
+            font-family: 'Playfair Display', serif;
             font-weight: 800;
-            font-size: 1.5rem;
-            color: var(--primary) !important;
-            letter-spacing: -0.5px;
+            font-size: 1.6rem;
+            color: var(--text) !important;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .navbar-brand .brand-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: inline-block;
+            animation: pulse-animation 2s infinite;
         }
         .nav-link {
             font-weight: 500;
-            color: #475569 !important;
-            padding: 0.5rem 1rem !important;
+            color: var(--text-muted) !important;
+            padding: 0 0.9rem !important;
+            line-height: var(--nav-height);
             transition: color 0.2s;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            font-size: 0.82rem;
+            letter-spacing: 0.3px;
+            position: relative;
         }
-
-        .x-small { font-size: 0.75rem; }
-        .letter-spacing-1 { letter-spacing: 1px; }
-
-        /* ===== CURRENCY WIDGET ===== */
-        .currency-widget {
-            font-family: monospace;
-            font-size: 0.85rem;
-            letter-spacing: -0.5px;
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0.9rem; right: 0.9rem;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.2s;
         }
-        .currency-val { font-weight: 700; }
-        .currency-up { color: #10b981; }
-        .currency-down { color: #ef4444; }
         .nav-link:hover { color: var(--primary) !important; }
+        .nav-link:hover::after { transform: scaleX(1); }
         .nav-link.active { color: var(--primary) !important; font-weight: 700; }
-        
-        .glass-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .glass-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-        }
-        
+        .nav-link.active::after { transform: scaleX(1); }
+
+        /* ===== SEARCH ===== */
         .search-bar {
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 0.5rem 1rem;
-            width: 260px;
+            background: var(--bg);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 0.45rem 1rem;
+            width: 220px;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
         }
         .search-bar:focus-within {
             background: white;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-            width: 320px;
+            box-shadow: 0 0 0 4px rgba(15,98,254,0.1);
+            width: 280px;
         }
         .search-bar input {
             background: transparent;
             border: none;
             outline: none;
             width: 100%;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
+            font-family: 'Inter', sans-serif;
         }
-        
+
+        /* ===== LANG ===== */
         .lang-switcher .btn {
-            border-radius: 10px;
-            font-weight: 700;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.75rem;
-            border: 1px solid #e2e8f0;
-        }
-        
-
-
-        .btn-primary {
-            background-color: var(--primary);
-            border: none;
-            border-radius: 12px;
+            border-radius: 20px;
             font-weight: 600;
-            padding: 0.7rem 1.8rem;
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+            padding: 0.3rem 0.7rem;
+            font-size: 0.72rem;
+            border: 1.5px solid var(--glass-border);
+            transition: all 0.2s;
+        }
+        .lang-switcher .btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* ===== CARDS ===== */
+        .glass-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.08);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            border-radius: 24px;
+            font-weight: 600;
+            padding: 0.65rem 1.6rem;
+            font-size: 0.88rem;
+            letter-spacing: 0.3px;
+            transition: all 0.2s;
         }
         .btn-primary:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 15px 20px -3px rgba(99, 102, 241, 0.4);
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(15,98,254,0.3);
+        }
+        .btn-outline-primary {
+            border-color: var(--primary);
+            color: var(--primary);
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 0.82rem;
+        }
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            border-color: var(--primary);
         }
 
-        footer {
-            background: #0f172a;
-            color: #94a3b8;
-            padding: 5rem 0 2rem;
-            margin-top: 6rem;
+        /* ===== BADGES ===== */
+        .badge {
+            border-radius: 20px;
+            padding: 0.35em 0.8em;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.3px;
         }
-        footer .brand-text { color: white; font-weight: 800; font-size: 1.5rem; margin-bottom: 1.5rem; display: block; }
-        footer a { color: #cbd5e1; text-decoration: none; transition: color 0.2s; }
-        footer a:hover { color: var(--primary); }
-        footer h6 { color: white; font-weight: 700; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; }
-        
-        .badge { border-radius: 6px; padding: 0.5em 0.8em; font-weight: 600; }
         .bg-primary { background-color: var(--primary) !important; }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #0d1117;
+            color: #8b949e;
+            padding: 4rem 0 2rem;
+            margin-top: 5rem;
+            border-top: 1px solid #21262d;
+        }
+        footer .brand-text {
+            font-family: 'Playfair Display', serif;
+            color: white;
+            font-weight: 800;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        footer a { color: #8b949e; text-decoration: none; transition: color 0.2s; font-size: 0.88rem; }
+        footer a:hover { color: var(--primary); }
+        footer h6 {
+            color: #f0f6fc;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-size: 0.75rem;
+        }
+        footer li { margin-bottom: 0.6rem; }
 
         /* ===== SCROLL TO TOP ===== */
         #scrollTop {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 48px;
-            height: 48px;
+            bottom: 28px; right: 28px;
+            width: 44px; height: 44px;
             border-radius: 50%;
             background: var(--primary);
             color: white;
             border: none;
-            box-shadow: 0 8px 24px rgba(99,102,241,0.4);
+            box-shadow: 0 8px 24px rgba(15,98,254,0.4);
             cursor: pointer;
-            opacity: 0;
-            visibility: hidden;
+            opacity: 0; visibility: hidden;
             transition: all 0.3s;
             z-index: 999;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
         #scrollTop.show { opacity: 1; visibility: visible; }
-        #scrollTop:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(99,102,241,0.5);        }
-        
-        /* ===== PRELOADER REMOVED ===== */
+        #scrollTop:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(15,98,254,0.5); }
+
+        /* ===== UTILITIES ===== */
+        .x-small { font-size: 0.72rem; }
+        .letter-spacing-1 { letter-spacing: 1px; }
+        .text-muted { color: var(--text-muted) !important; }
+
+        /* ===== PULSE ===== */
+        @keyframes pulse-animation {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.6; }
+        }
+        .pulse-icon { animation: pulse-animation 1.5s infinite; }
 
         @media (max-width: 991px) {
-            .search-bar { width: 100%; margin: 1rem 0; }
-        }
-
-        /* ===== LIVE PULSE ANIMATION ===== */
-        @keyframes pulse-animation {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.6; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .pulse-icon {
-            animation: pulse-animation 1.5s infinite;
+            .search-bar { width: 100%; margin: 0.75rem 0; }
         }
     </style>
 </head>
@@ -205,16 +277,17 @@
     <!-- Reading Progress Bar -->
     <div id="readingProgress"></div>
 
-    <div class="bg-dark text-white py-1 d-none d-lg-block" style="font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1);">
+    <div class="top-bar d-none d-lg-block">
         <div class="container-fluid px-4 px-lg-5 d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
-                <span class="text-white-50"><i class="fas fa-calendar-day me-2"></i><span class="local-time" id="topDate"></span></span>
+            <div class="d-flex align-items-center gap-4">
+                <span><i class="fas fa-calendar-alt me-1" style="color:#0f62fe"></i> <span id="topDate"></span></span>
+                <span class="d-none d-xl-inline"><i class="fas fa-globe me-1" style="color:#0f62fe"></i> Қазақстан · Астана</span>
             </div>
             <div class="lang-switcher d-flex gap-1">
                 {% set current_l = session.get('lang', 'ru') %}
-                <a href="{{ url_for('main.set_lang', lang_code='kk') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'kk' else 'bg-secondary text-white border-0' }}" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">KK</a>
-                <a href="{{ url_for('main.set_lang', lang_code='ru') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'ru' else 'bg-secondary text-white border-0' }}" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">RU</a>
-                <a href="{{ url_for('main.set_lang', lang_code='en') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'en' else 'bg-secondary text-white border-0' }}" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">EN</a>
+                <a href="{{ url_for('main.set_lang', lang_code='kk') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'kk' else 'btn-outline-secondary border-0 text-secondary' }}" style="font-size: 0.7rem; padding: 0.2rem 0.7rem; border-radius:20px;">ҚАЗ</a>
+                <a href="{{ url_for('main.set_lang', lang_code='ru') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'ru' else 'btn-outline-secondary border-0 text-secondary' }}" style="font-size: 0.7rem; padding: 0.2rem 0.7rem; border-radius:20px;">РУС</a>
+                <a href="{{ url_for('main.set_lang', lang_code='en') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'en' else 'btn-outline-secondary border-0 text-secondary' }}" style="font-size: 0.7rem; padding: 0.2rem 0.7rem; border-radius:20px;">ENG</a>
             </div>
         </div>
     </div>
@@ -222,8 +295,8 @@
     <nav class="navbar navbar-expand-lg navbar-glass sticky-top shadow-sm">
         <div class="container-fluid px-4 px-lg-5">
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NEWSKZ" height="35" class="me-2" style="border-radius: 8px;" onerror="this.style.display='none'">
-                <span>NEWSKZ</span>
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NEWSKZ" height="32" class="me-2" style="border-radius: 6px;" onerror="this.style.display='none'">
+                <span>NewsKZ<span class="brand-dot ms-1"></span></span>
             </a>
             <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <i class="fas fa-bars"></i>
