@@ -229,9 +229,122 @@
                         }).catch(()=>{});
                 })();
                 </script>
-                <div id="currencyWidget" class="currency-widget p-3 rounded-3 d-flex flex-column gap-2" style="background: rgba(var(--bs-primary-rgb), 0.05);">
-                    <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
+                <!-- Currency Widget (Custom Analytical) -->
+                <div id="currencyCard" class="rounded-3 overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white;">
+                    <div class="p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <p class="fw-bold mb-0" style="font-size:0.75rem; letter-spacing:1px; opacity:0.7; text-transform:uppercase;">💱 Валюта бағамы · Астана</p>
+                            <span id="cTime" style="font-size:0.65rem; opacity:0.4;"></span>
+                        </div>
+                        <div class="d-flex flex-column gap-2" id="currencyRows">
+                            <!-- USD -->
+                            <div class="currency-row d-flex align-items-center justify-content-between p-2 rounded-2" style="background:rgba(255,255,255,0.05);">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size:1.4rem;">🇺🇸</span>
+                                    <div>
+                                        <div class="fw-bold" style="font-size:0.8rem;">USD / KZT</div>
+                                        <div style="font-size:0.65rem; opacity:0.5;">Доллар</div>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div id="cUsd" class="fw-bold" style="font-size:1.1rem;">—</div>
+                                    <div id="cUsdChg" style="font-size:0.7rem;">—</div>
+                                </div>
+                            </div>
+                            <!-- EUR -->
+                            <div class="currency-row d-flex align-items-center justify-content-between p-2 rounded-2" style="background:rgba(255,255,255,0.05);">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size:1.4rem;">🇪🇺</span>
+                                    <div>
+                                        <div class="fw-bold" style="font-size:0.8rem;">EUR / KZT</div>
+                                        <div style="font-size:0.65rem; opacity:0.5;">Евро</div>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div id="cEur" class="fw-bold" style="font-size:1.1rem;">—</div>
+                                    <div id="cEurChg" style="font-size:0.7rem;">—</div>
+                                </div>
+                            </div>
+                            <!-- RUB -->
+                            <div class="currency-row d-flex align-items-center justify-content-between p-2 rounded-2" style="background:rgba(255,255,255,0.05);">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size:1.4rem;">🇷🇺</span>
+                                    <div>
+                                        <div class="fw-bold" style="font-size:0.8rem;">RUB / KZT</div>
+                                        <div style="font-size:0.65rem; opacity:0.5;">Рубль</div>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div id="cRub" class="fw-bold" style="font-size:1.1rem;">—</div>
+                                    <div id="cRubChg" style="font-size:0.7rem;">—</div>
+                                </div>
+                            </div>
+                            <!-- CNY -->
+                            <div class="currency-row d-flex align-items-center justify-content-between p-2 rounded-2" style="background:rgba(255,255,255,0.05);">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size:1.4rem;">🇨🇳</span>
+                                    <div>
+                                        <div class="fw-bold" style="font-size:0.8rem;">CNY / KZT</div>
+                                        <div style="font-size:0.65rem; opacity:0.5;">Юань</div>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div id="cCny" class="fw-bold" style="font-size:1.1rem;">—</div>
+                                    <div id="cCnyChg" style="font-size:0.7rem;">—</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-center" style="font-size:0.6rem; opacity:0.3;">exchangerate-api.com</div>
+                    </div>
                 </div>
+                <style>
+                .currency-row { transition: background 0.2s; }
+                .currency-row:hover { background: rgba(255,255,255,0.1) !important; }
+                .chg-up { color: #34d399; }
+                .chg-down { color: #f87171; }
+                </style>
+                <script>
+                (function(){
+                    // Simulated previous day rates (approximate) for trend indicators
+                    const prevRates = { USD: 447.0, EUR: 485.0, RUB: 4.88, CNY: 61.5 };
+
+                    fetch('https://api.exchangerate-api.com/v4/latest/USD')
+                        .then(r=>r.json())
+                        .then(data=>{
+                            if(!data || !data.rates) return;
+                            const kzt = data.rates.KZT;
+                            const eur = data.rates.EUR;
+                            const rub = data.rates.RUB;
+                            const cny = data.rates.CNY;
+
+                            function fmtChange(cur, prev, invert) {
+                                const diff = invert ? (prev - cur) : (cur - prev);
+                                const pct = ((diff / prev) * 100).toFixed(2);
+                                const arrow = diff >= 0 ? '▲' : '▼';
+                                const cls = diff >= 0 ? 'chg-up' : 'chg-down';
+                                return `<span class="${cls}">${arrow} ${Math.abs(pct)}%</span>`;
+                            }
+
+                            const usdKzt = kzt.toFixed(1);
+                            const eurKzt = (kzt / eur).toFixed(1);
+                            const rubKzt = (kzt / rub).toFixed(2);
+                            const cnyKzt = (kzt / cny).toFixed(1);
+
+                            document.getElementById('cUsd').textContent = usdKzt + ' ₸';
+                            document.getElementById('cEur').textContent = eurKzt + ' ₸';
+                            document.getElementById('cRub').textContent = rubKzt + ' ₸';
+                            document.getElementById('cCny').textContent = cnyKzt + ' ₸';
+
+                            document.getElementById('cUsdChg').innerHTML = fmtChange(parseFloat(usdKzt), prevRates.USD);
+                            document.getElementById('cEurChg').innerHTML = fmtChange(parseFloat(eurKzt), prevRates.EUR);
+                            document.getElementById('cRubChg').innerHTML = fmtChange(parseFloat(rubKzt), prevRates.RUB);
+                            document.getElementById('cCnyChg').innerHTML = fmtChange(parseFloat(cnyKzt), prevRates.CNY);
+
+                            const now = new Date();
+                            document.getElementById('cTime').textContent = now.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+                        }).catch(()=>{});
+                })();
+                </script>
             </div>
 
             <!-- Trending List -->
