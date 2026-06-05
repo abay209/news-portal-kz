@@ -423,21 +423,36 @@
 
             // Format local times
             const timeElements = document.querySelectorAll('.local-time');
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const yesterday = today - 86400000;
+
             timeElements.forEach(el => {
                 const ts = el.getAttribute('data-timestamp');
                 if (ts) {
                     // ts should be in ISO format: '2023-10-05T14:48:00'
-                    // We append Z if it's missing to treat it as UTC from server
                     const dateStr = ts.endsWith('Z') ? ts : ts + 'Z';
                     const d = new Date(dateStr);
                     if (!isNaN(d.getTime())) {
-                        el.innerHTML = d.toLocaleString(window.CURRENT_LANG === 'en' ? 'en-US' : (window.CURRENT_LANG === 'kk' ? 'kk-KZ' : 'ru-RU'), {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
+                        const dTime = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+                        
+                        let timeStr = d.toLocaleTimeString(window.CURRENT_LANG === 'en' ? 'en-US' : (window.CURRENT_LANG === 'kk' ? 'kk-KZ' : 'ru-RU'), {
+                            hour: '2-digit', minute: '2-digit'
                         });
+                        
+                        // ID="topDate" is handled differently below, ensure we don't mess up non-news elements if any.
+                        // Actually 'local-time' class is used.
+                        if (dTime === today) {
+                            let label = window.CURRENT_LANG === 'kk' ? 'Бүгін' : (window.CURRENT_LANG === 'en' ? 'Today' : 'Сегодня');
+                            el.innerHTML = label + ', ' + timeStr;
+                        } else if (dTime === yesterday) {
+                            let label = window.CURRENT_LANG === 'kk' ? 'Кеше' : (window.CURRENT_LANG === 'en' ? 'Yesterday' : 'Вчера');
+                            el.innerHTML = label + ', ' + timeStr;
+                        } else {
+                            el.innerHTML = d.toLocaleString(window.CURRENT_LANG === 'en' ? 'en-US' : (window.CURRENT_LANG === 'kk' ? 'kk-KZ' : 'ru-RU'), {
+                                year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                            });
+                        }
                     }
                 }
             });

@@ -527,6 +527,35 @@ def fetch_rss_feeds():
                 db.session.add(Category(code=c_code))
         if not Category.query.filter_by(code='cat_general').first():
             db.session.add(Category(code='cat_general'))
+            
+        # Ensure new sources exist
+        new_sources = [
+            {'name': 'Zakon.kz', 'url': 'https://www.zakon.kz/rss.xml', 'language': 'ru'},
+            {'name': 'Inform.kz Politics', 'url': 'https://www.inform.kz/ru/rss/politics', 'language': 'ru'},
+            {'name': 'Tengrinews Politics', 'url': 'https://tengrinews.kz/news/kazakhstan_news/politics/feed/', 'language': 'ru'},
+            {'name': 'Sports.kz', 'url': 'https://www.sports.kz/rss', 'language': 'ru'},
+            {'name': 'Vesti.kz', 'url': 'https://vesti.kz/rss/', 'language': 'ru'},
+            {'name': 'Prosports.kz', 'url': 'https://prosports.kz/rss', 'language': 'ru'},
+            {'name': 'Kapital.kz', 'url': 'https://kapital.kz/rss', 'language': 'ru'},
+            {'name': 'Forbes.kz', 'url': 'https://forbes.kz/rss', 'language': 'ru'},
+            {'name': 'LSM.kz', 'url': 'https://lsm.kz/rss', 'language': 'ru'},
+            {'name': 'Er10 Tech', 'url': 'https://er10.kz/feed/', 'language': 'ru'},
+            {'name': 'Profit.kz', 'url': 'https://profit.kz/rss/', 'language': 'ru'},
+            {'name': 'Bluescreen', 'url': 'https://bluescreen.kz/rss/', 'language': 'ru'},
+            {'name': 'Kolesa.kz', 'url': 'https://kolesa.kz/read/news/feed/', 'language': 'ru'},
+            {'name': 'Auto.mail.ru', 'url': 'https://auto.mail.ru/rss/news/', 'language': 'ru'},
+            {'name': 'Motor.ru', 'url': 'https://motor.ru/export/rss.xml', 'language': 'ru'},
+            {'name': 'Tengrinews World', 'url': 'https://tengrinews.kz/world_news/feed/', 'language': 'ru'},
+            {'name': 'Informburo', 'url': 'https://informburo.kz/xml/rss.xml', 'language': 'ru'},
+            {'name': 'Vlast.kz', 'url': 'https://vlast.kz/rss.xml', 'language': 'ru'},
+            {'name': 'The Steppe', 'url': 'https://the-steppe.com/rss', 'language': 'ru'},
+            {'name': 'Afisha.ru (Kino)', 'url': 'https://www.afisha.ru/export/rss.xml', 'language': 'ru'},
+            {'name': 'Nur.kz (Showbiz)', 'url': 'https://www.nur.kz/rss/showbiz.xml', 'language': 'ru'}
+        ]
+        for s in new_sources:
+            if not Source.query.filter((Source.url == s['url']) | (Source.name == s['name'])).first():
+                db.session.add(Source(name=s['name'], url=s['url'], language=s['language'], is_active=True))
+                
         db.session.commit()
         
         sources = Source.query.filter_by(is_active=True).all()
