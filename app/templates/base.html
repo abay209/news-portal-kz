@@ -339,23 +339,32 @@
 
     <nav class="navbar navbar-expand-lg navbar-glass sticky-top shadow-sm">
         <div class="container-fluid px-4 px-lg-5">
-            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NEWSKZ" height="32" class="me-2" style="border-radius: 6px;" onerror="this.style.display='none'">
-                <span>NewsKZ<span class="brand-dot ms-1"></span></span>
-            </a>
+            <div class="d-flex align-items-center gap-3">
+                <!-- Hamburger Menu Button to open Offcanvas -->
+                <button class="btn btn-link text-dark p-0 border-0 fs-4 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#categoriesOffcanvas" aria-controls="categoriesOffcanvas" aria-label="Toggle categories" style="outline: none; box-shadow: none;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <a class="navbar-brand d-flex align-items-center m-0" href="{{ url_for('main.index') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NEWSKZ" height="32" class="me-2" style="border-radius: 6px;" onerror="this.style.display='none'">
+                    <span>NewsKZ<span class="brand-dot ms-1"></span></span>
+                </a>
+            </div>
+
+            <!-- Important Categories on top bar for desktop -->
+            <ul class="navbar-nav d-none d-lg-flex flex-row gap-1 ms-4 me-auto mb-0" style="font-size: 0.8rem;">
+                {% for cat in categories[:5] %}
+                <li class="nav-item">
+                    <a class="nav-link {% if current_cat == cat.code %}active{% endif %}" href="{{ url_for('main.index', category=cat.code) }}" style="padding: 0.35rem 0.75rem !important; line-height: normal;">{{ _(cat.code) }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+
             <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <i class="fas fa-bars"></i>
+                <i class="fas fa-ellipsis-v"></i>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-lg-none">
-                    {% for cat in categories %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if current_cat == cat.code %}active{% endif %}" href="{{ url_for('main.index', category=cat.code) }}">{{ _(cat.code) }}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
-                
-                <div class="d-flex align-items-center gap-2 flex-wrap position-relative ms-lg-auto">
+                <div class="d-flex align-items-center gap-2 flex-wrap position-relative ms-auto">
                     <form action="{{ url_for('main.index') }}" class="search-bar d-flex align-items-center position-relative mb-0">
                         <i class="fas fa-search text-muted me-2"></i>
                         <input type="text" name="q" id="liveSearchInput" placeholder="{{ _('search_placeholder') }}" value="{{ request.args.get('q', '') }}" autocomplete="off">
@@ -366,8 +375,6 @@
                         </div>
                     </form>
                     
-
-
                     <!-- Mobile Lang Switcher -->
                     <div class="lang-switcher d-flex d-lg-none gap-1 ms-2">
                         {% set current_l = session.get('lang', 'ru') %}
@@ -392,48 +399,44 @@
         </div>
     </nav>
 
-    <div class="{% if hide_sidebar | default(false) %}container{% else %}container-fluid px-4 px-lg-5{% endif %} py-4">
-        <div class="row g-4">
-            <!-- Left Sidebar Menu (Categories) -->
-            <aside class="col-lg-3 col-xl-2 {% if hide_sidebar | default(false) %}d-none{% else %}d-none d-lg-block{% endif %}">
-                <div class="sticky-top" style="top: calc(var(--nav-height) + 20px); z-index: 100;">
-                    <div class="glass-card p-3 border-0 shadow-sm category-sidebar">
-                        <h6 class="fw-bold mb-3 px-2 text-uppercase text-muted letter-spacing-1" style="font-size: 0.75rem;">
-                            <i class="fas fa-th-large me-2 text-primary"></i> {{ _('sections') }}
-                        </h6>
-                        <ul class="nav flex-column gap-1">
-                            <li class="nav-item">
-                                <a class="nav-link sidebar-link {% if not current_cat %}active-sidebar{% endif %}" href="{{ url_for('main.index') }}">
-                                    <i class="fas fa-globe me-2"></i> {{ _('all_news') }}
-                                </a>
-                            </li>
-                            {% for cat in categories %}
-                            <li class="nav-item">
-                                <a class="nav-link sidebar-link {% if current_cat == cat.code %}active-sidebar{% endif %}" href="{{ url_for('main.index', category=cat.code) }}">
-                                    <i class="fas fa-hashtag me-2"></i> {{ _(cat.code) }}
-                                </a>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+    <main class="container pb-5">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'info' }} alert-dismissible fade show mt-3 rounded-4 shadow-sm" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-            </aside>
-            
-            <!-- Main Content Area -->
-            <main class="{% if hide_sidebar | default(false) %}col-12{% else %}col-lg-9 col-xl-10{% endif %} pb-5">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                        <div class="alert alert-{{ 'success' if category == 'success' else 'info' }} alert-dismissible fade show mt-3 rounded-4 shadow-sm" role="alert">
-                            <i class="fas fa-info-circle me-2"></i>{{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-                
-                {% block content %}{% endblock %}
-            </main>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Offcanvas Sidebar for All Categories -->
+    <div class="offcanvas offcanvas-start border-0" tabindex="-1" id="categoriesOffcanvas" aria-labelledby="categoriesOffcanvasLabel" style="width: 280px; background: var(--bg); backdrop-filter: blur(20px);">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold" id="categoriesOffcanvasLabel">
+                <i class="fas fa-th-large text-primary me-2"></i> {{ _('sections') }}
+            </h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-3">
+            <ul class="nav flex-column gap-1">
+                <li class="nav-item">
+                    <a class="nav-link sidebar-link {% if not current_cat %}active-sidebar{% endif %}" href="{{ url_for('main.index') }}">
+                        <i class="fas fa-globe me-2"></i> {{ _('all_news') }}
+                    </a>
+                </li>
+                {% for cat in categories %}
+                <li class="nav-item">
+                    <a class="nav-link sidebar-link {% if current_cat == cat.code %}active-sidebar{% endif %}" href="{{ url_for('main.index', category=cat.code) }}">
+                        <i class="fas fa-hashtag me-2"></i> {{ _(cat.code) }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 
