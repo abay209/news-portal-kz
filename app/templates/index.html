@@ -175,16 +175,60 @@
                 <h5 class="fw-bold mb-2 d-flex align-items-center">
                     <i class="fas fa-info-circle me-2 text-primary"></i> Инфо
                 </h5>
-                <!-- Weather Widget (weatherwidget.io) -->
-                <div class="weather-widget-container rounded-3 overflow-hidden shadow-sm position-relative" style="background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%); padding: 2px;">
-                    <!-- Overlay link to Google Weather -->
-                    <a href="https://www.google.com/search?q=погода+в+Астане" target="_blank" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; display: block;"></a>
-                    
-                    <a class="weatherwidget-io" href="https://forecast7.com/ru/51d1371d43/astana/" data-label_1="АСТАНА" data-label_2="Ауа райы" data-font="Inter" data-icons="Climacons Animated" data-theme="clear" >АСТАНА Ауа райы</a>
-                    <script>
-                    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
-                    </script>
-                </div>
+                <!-- Weather Widget (Custom Animated) -->
+                <a href="https://www.google.com/search?q=погода+в+Астане" target="_blank" class="text-decoration-none d-block" id="weatherWidgetLink">
+                    <div id="weatherCard" class="rounded-3 overflow-hidden position-relative" style="background: linear-gradient(135deg, #1a6fd4 0%, #0ea5e9 50%, #38bdf8 100%); min-height: 120px; cursor: pointer; transition: all 0.3s;">
+
+                        <!-- Animated clouds -->
+                        <div class="weather-cloud weather-cloud-1" style="position:absolute; top:12px; left:15px; width:70px; height:22px; background:rgba(255,255,255,0.3); border-radius:50px; animation: cloudFloat 5s ease-in-out infinite;"></div>
+                        <div class="weather-cloud weather-cloud-2" style="position:absolute; top:6px; left:35px; width:45px; height:16px; background:rgba(255,255,255,0.25); border-radius:50px; animation: cloudFloat 5s ease-in-out infinite 0.5s;"></div>
+                        <div class="weather-cloud weather-cloud-3" style="position:absolute; bottom:30px; right:10px; width:55px; height:18px; background:rgba(255,255,255,0.15); border-radius:50px; animation: cloudFloat 6s ease-in-out infinite 1s;"></div>
+
+                        <!-- Content -->
+                        <div class="p-3 position-relative" style="z-index:2;">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <div>
+                                    <p class="text-white fw-bold mb-0" style="font-size:0.75rem; letter-spacing:1px; opacity:0.85;">🏙️ АСТАНА</p>
+                                    <p id="wTemp" class="text-white fw-bold mb-0" style="font-size:2.6rem; line-height:1; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">—°</p>
+                                </div>
+                                <div class="text-end">
+                                    <span id="wIcon" style="font-size:3rem; line-height:1; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));">⛅</span>
+                                </div>
+                            </div>
+                            <p id="wDesc" class="text-white mb-1" style="font-size:0.82rem; opacity:0.9;">Жүктелуде...</p>
+                            <div class="d-flex gap-3 mt-1" style="font-size:0.75rem; color:rgba(255,255,255,0.8);">
+                                <span>💧 <span id="wHumidity">—</span>%</span>
+                                <span>💨 <span id="wWind">—</span> м/с</span>
+                                <span>🌡️ Сезіледі: <span id="wFeels">—</span>°</span>
+                            </div>
+                        </div>
+                        <div style="position:absolute; bottom:8px; right:10px; font-size:0.6rem; color:rgba(255,255,255,0.5);">Google Weather ↗</div>
+                    </div>
+                </a>
+                <style>
+                @keyframes cloudFloat {
+                    0%, 100% { transform: translateX(0px); }
+                    50% { transform: translateX(8px); }
+                }
+                #weatherCard:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(14,165,233,0.35) !important; }
+                </style>
+                <script>
+                (function() {
+                    const wmo = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'🌨️',73:'🌨️',75:'❄️',77:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',85:'🌨️',86:'❄️',95:'⛈️',96:'⛈️',99:'⛈️'};
+                    const desc = {0:'Ашық',1:'Аздап бұлтты',2:'Жартылай бұлтты',3:'Бұлтты',45:'Тұман',48:'Мұзды тұман',51:'Жаңбырлы',53:'Жаңбырлы',55:'Жаңбырлы',61:'Жаңбыр',63:'Орташа жаңбыр',65:'Күшті жаңбыр',71:'Қар',73:'Орташа қар',75:'Күшті қар',77:'Қар дәні',80:'Жауын-шашын',81:'Күшті жауын',82:'Дауыл',95:'Найзағай',96:'Найзағаймен бөрткен қар',99:'Күшті найзағай'};
+                    fetch('https://api.open-meteo.com/v1/forecast?latitude=51.18&longitude=71.45&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&timezone=Asia%2FAlmaty')
+                        .then(r=>r.json())
+                        .then(data=>{
+                            const c = data.current;
+                            document.getElementById('wTemp').textContent = Math.round(c.temperature_2m) + '°';
+                            document.getElementById('wIcon').textContent = wmo[c.weather_code] || '⛅';
+                            document.getElementById('wDesc').textContent = desc[c.weather_code] || '';
+                            document.getElementById('wHumidity').textContent = c.relative_humidity_2m;
+                            document.getElementById('wWind').textContent = Math.round(c.wind_speed_10m/3.6);
+                            document.getElementById('wFeels').textContent = Math.round(c.apparent_temperature) + '°';
+                        }).catch(()=>{});
+                })();
+                </script>
                 <div id="currencyWidget" class="currency-widget p-3 rounded-3 d-flex flex-column gap-2" style="background: rgba(var(--bs-primary-rgb), 0.05);">
                     <i class="fas fa-spinner fa-spin me-1 text-muted"></i>
                 </div>
