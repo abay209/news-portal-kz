@@ -96,6 +96,12 @@ body {
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Smooth links */
+a {
+    transition: color 0.25s ease, opacity 0.25s ease;
 }
 
 /* Background Glow Effect */
@@ -417,7 +423,7 @@ body {
 
 .news-card:hover {
     transform: translateY(-8px) scale(1.01);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+    box-shadow: 0 32px 64px rgba(0,0,0,0.13);
 }
 
 .news-card::after {
@@ -1034,20 +1040,21 @@ body {
 
 /* Scrollbar Modern */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--bg-base);
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #ccc;
+    background: rgba(15, 98, 254, 0.25);
     border-radius: 10px;
+    transition: background 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #aaa;
+    background: rgba(15, 98, 254, 0.5);
 }
 
 /* AI Highlights Block */

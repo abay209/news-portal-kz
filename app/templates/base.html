@@ -34,13 +34,24 @@
 
         *, *::before, *::after { box-sizing: border-box; }
 
+        /* ===== SMOOTH PAGE TRANSITIONS ===== */
+        html { scroll-behavior: smooth; }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
             color: var(--text);
             font-size: 15px;
             line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
+
+        /* Page-load fade in */
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        main { animation: pageFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
         /* ===== READING PROGRESS BAR ===== */
         #readingProgress {
@@ -51,31 +62,101 @@
             background: linear-gradient(90deg, var(--primary), var(--accent));
             z-index: 10000;
             transition: width 0.1s linear;
+            border-radius: 0 2px 2px 0;
         }
 
-        /* ===== TOP BAR ===== */
+        /* ===== TOP BAR — REDESIGNED ===== */
         .top-bar {
-            background: #0d1117;
+            background: linear-gradient(90deg, #0a0e1a 0%, #0d1117 50%, #0a0e1a 100%);
             color: #8b949e;
             font-size: 0.75rem;
-            border-bottom: 1px solid #21262d;
-            padding: 0.35rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 0;
+            height: 38px;
+            display: flex;
+            align-items: center;
         }
-        .top-bar a { color: #8b949e; text-decoration: none; transition: color 0.2s; }
-        .top-bar a:hover { color: white; }
+        .top-bar a { color: #8b949e; text-decoration: none; transition: color 0.25s; }
+        .top-bar a:hover { color: #fff; }
+
+        /* Date chip */
+        .top-bar .date-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 3px 12px;
+            font-size: 0.72rem;
+            letter-spacing: 0.3px;
+            transition: background 0.2s;
+        }
+        .top-bar .date-chip i { color: var(--primary); font-size: 0.7rem; }
+        .top-bar .date-chip:hover { background: rgba(255,255,255,0.09); }
+
+        /* Region chip */
+        .top-bar .region-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.45);
+            letter-spacing: 0.3px;
+        }
+        .top-bar .region-chip i { color: #4ade80; font-size: 0.65rem; }
+
+        /* Lang switcher redesigned */
+        .top-lang-switcher {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 3px 5px;
+        }
+        .top-lang-switcher .lang-btn-pill {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 18px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.45);
+            text-decoration: none;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            white-space: nowrap;
+        }
+        .top-lang-switcher .lang-btn-pill:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+        }
+        .top-lang-switcher .lang-btn-pill.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(15,98,254,0.4);
+        }
+        .top-lang-switcher .lang-btn-pill .flag {
+            font-size: 0.9rem;
+            line-height: 1;
+        }
 
         /* ===== NAVBAR ===== */
         .navbar-glass {
             background: rgba(255,255,255,0.97);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border-bottom: 1px solid var(--glass-border);
             padding: 0;
             height: var(--nav-height);
-            transition: all 0.3s;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .navbar-glass.scrolled {
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+            background: rgba(255,255,255,0.99);
         }
         .navbar-brand {
             font-family: 'Playfair Display', serif;
@@ -86,20 +167,16 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            transition: opacity 0.2s;
         }
-        .navbar-brand .brand-dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--accent);
-            display: inline-block;
-            animation: pulse-animation 2s infinite;
-        }
+        .navbar-brand:hover { opacity: 0.85; }
+
         .nav-link {
             font-weight: 500;
             color: var(--text-muted) !important;
             padding: 0 0.9rem !important;
             line-height: var(--nav-height);
-            transition: color 0.2s;
+            transition: color 0.25s ease;
             font-size: 0.82rem;
             letter-spacing: 0.3px;
             position: relative;
@@ -109,14 +186,39 @@
             position: absolute;
             bottom: 0; left: 0.9rem; right: 0.9rem;
             height: 2px;
-            background: var(--primary);
+            background: linear-gradient(90deg, var(--primary), #6366f1);
             transform: scaleX(0);
-            transition: transform 0.2s;
+            transform-origin: center;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 2px 2px 0 0;
         }
         .nav-link:hover { color: var(--primary) !important; }
         .nav-link:hover::after { transform: scaleX(1); }
         .nav-link.active { color: var(--primary) !important; font-weight: 700; }
         .nav-link.active::after { transform: scaleX(1); }
+
+        /* Hamburger button */
+        .cat-menu-btn {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            background: var(--bg);
+            border: 1.5px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            flex-shrink: 0;
+        }
+        .cat-menu-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.08);
+            box-shadow: 0 4px 16px rgba(15,98,254,0.3);
+        }
 
         /* ===== SEARCH ===== */
         .search-bar {
@@ -125,7 +227,7 @@
             border-radius: 24px;
             padding: 0.45rem 1rem;
             width: 220px;
-            transition: all 0.3s;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
         }
@@ -144,14 +246,14 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* ===== LANG ===== */
+        /* ===== MOBILE LANG ===== */
         .lang-switcher .btn {
             border-radius: 20px;
             font-weight: 600;
             padding: 0.3rem 0.7rem;
             font-size: 0.72rem;
             border: 1.5px solid var(--glass-border);
-            transition: all 0.2s;
+            transition: all 0.25s;
         }
         .lang-switcher .btn:hover { border-color: var(--primary); color: var(--primary); }
 
@@ -161,11 +263,11 @@
             border-radius: 16px;
             border: 1px solid var(--glass-border);
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
         }
         .glass-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 16px 32px rgba(0,0,0,0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.09);
         }
 
         /* ===== BUTTONS ===== */
@@ -177,12 +279,12 @@
             padding: 0.65rem 1.6rem;
             font-size: 0.88rem;
             letter-spacing: 0.3px;
-            transition: all 0.2s;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .btn-primary:hover {
             background: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 8px 20px rgba(15,98,254,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(15,98,254,0.35);
         }
         .btn-outline-primary {
             border-color: var(--primary);
@@ -190,10 +292,12 @@
             border-radius: 24px;
             font-weight: 600;
             font-size: 0.82rem;
+            transition: all 0.25s;
         }
         .btn-outline-primary:hover {
             background: var(--primary);
             border-color: var(--primary);
+            transform: translateY(-1px);
         }
 
         /* ===== BADGES ===== */
@@ -222,7 +326,7 @@
             margin-bottom: 1rem;
             display: block;
         }
-        footer a { color: #8b949e; text-decoration: none; transition: color 0.2s; font-size: 0.88rem; }
+        footer a { color: #8b949e; text-decoration: none; transition: color 0.25s; font-size: 0.88rem; }
         footer a:hover { color: var(--primary); }
         footer h6 {
             color: #f0f6fc;
@@ -238,15 +342,15 @@
         #scrollTop {
             position: fixed;
             bottom: 28px; right: 28px;
-            width: 44px; height: 44px;
+            width: 46px; height: 46px;
             border-radius: 50%;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #6366f1);
             color: white;
             border: none;
             box-shadow: 0 8px 24px rgba(15,98,254,0.4);
             cursor: pointer;
             opacity: 0; visibility: hidden;
-            transition: all 0.3s;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 999;
             display: flex;
             align-items: center;
@@ -254,7 +358,7 @@
             font-size: 0.9rem;
         }
         #scrollTop.show { opacity: 1; visibility: visible; }
-        #scrollTop:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(15,98,254,0.5); }
+        #scrollTop:hover { transform: translateY(-5px) scale(1.08); box-shadow: 0 16px 36px rgba(15,98,254,0.5); }
 
         /* ===== UTILITIES ===== */
         .x-small { font-size: 0.72rem; }
@@ -264,7 +368,7 @@
         /* ===== PULSE ===== */
         @keyframes pulse-animation {
             0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.6; }
+            50% { transform: scale(1.4); opacity: 0.5; }
         }
         .pulse-icon { animation: pulse-animation 1.5s infinite; }
 
@@ -272,49 +376,126 @@
             .search-bar { width: 100%; margin: 0.75rem 0; }
         }
 
-        /* ===== CATEGORY SIDEBAR ===== */
-        .category-sidebar {
-            background: var(--card-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 1.25rem;
-            transition: all 0.3s ease;
+        /* ===== OFFCANVAS CATEGORY MENU ===== */
+        #categoriesOffcanvas {
+            width: 300px !important;
+            background: #0d1117 !important;
+            border-right: 1px solid rgba(255,255,255,0.06) !important;
         }
+        .offcanvas-header {
+            border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+            padding: 1.25rem 1.5rem;
+        }
+        .offcanvas-title {
+            color: #fff !important;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem !important;
+        }
+        .btn-close {
+            filter: invert(1);
+            opacity: 0.5;
+            transition: opacity 0.2s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+        .btn-close:hover { opacity: 1; transform: rotate(90deg) scale(1.1); }
+        .offcanvas-body { padding: 1rem 0.75rem !important; }
+
+        /* Sidebar category links */
         .sidebar-link {
             font-weight: 500;
-            color: var(--text-muted) !important;
-            padding: 0.75rem 1rem !important;
+            color: rgba(255,255,255,0.55) !important;
+            padding: 0.7rem 1rem !important;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            transition: all 0.25s ease;
-            font-size: 0.88rem;
+            gap: 0.85rem;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-size: 0.875rem;
             border-radius: 12px;
             margin-bottom: 2px;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
         }
-        .sidebar-link i {
-            font-size: 1rem;
-            transition: transform 0.25s ease;
-            width: 20px;
-            text-align: center;
+        .sidebar-link::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--primary), #6366f1);
+            border-radius: 0 3px 3px 0;
+            transform: scaleY(0);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .sidebar-icon-wrap {
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.5);
         }
         .sidebar-link:hover {
-            color: var(--primary) !important;
-            background: rgba(15, 98, 254, 0.08);
+            color: #fff !important;
+            background: rgba(255,255,255,0.06);
             transform: translateX(4px);
         }
-        .sidebar-link:hover i {
-            transform: scale(1.2);
+        .sidebar-link:hover::before { transform: scaleY(1); }
+        .sidebar-link:hover .sidebar-icon-wrap {
+            background: var(--primary);
+            color: #fff;
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(15,98,254,0.4);
         }
         .sidebar-link.active-sidebar {
-            color: white !important;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+            color: #fff !important;
+            background: rgba(15,98,254,0.18) !important;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(15, 98, 254, 0.25);
         }
-        .sidebar-link.active-sidebar i {
-            color: white !important;
+        .sidebar-link.active-sidebar::before { transform: scaleY(1); }
+        .sidebar-link.active-sidebar .sidebar-icon-wrap {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(15,98,254,0.35);
+        }
+
+        /* Sidebar section header */
+        .sidebar-section-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.25);
+            padding: 0.75rem 1rem 0.4rem;
+            display: block;
+        }
+
+        /* Sidebar item stagger animation */
+        @keyframes sideSlideIn {
+            from { opacity: 0; transform: translateX(-16px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .offcanvas.show .sidebar-link {
+            animation: sideSlideIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .offcanvas.show .sidebar-link:nth-child(1)  { animation-delay: 0.03s; }
+        .offcanvas.show .sidebar-link:nth-child(2)  { animation-delay: 0.06s; }
+        .offcanvas.show .sidebar-link:nth-child(3)  { animation-delay: 0.09s; }
+        .offcanvas.show .sidebar-link:nth-child(4)  { animation-delay: 0.12s; }
+        .offcanvas.show .sidebar-link:nth-child(5)  { animation-delay: 0.15s; }
+        .offcanvas.show .sidebar-link:nth-child(6)  { animation-delay: 0.18s; }
+        .offcanvas.show .sidebar-link:nth-child(7)  { animation-delay: 0.21s; }
+        .offcanvas.show .sidebar-link:nth-child(8)  { animation-delay: 0.24s; }
+        .offcanvas.show .sidebar-link:nth-child(9)  { animation-delay: 0.27s; }
+        .offcanvas.show .sidebar-link:nth-child(10) { animation-delay: 0.30s; }
+        .offcanvas.show .sidebar-link:nth-child(11) { animation-delay: 0.33s; }
+        .offcanvas.show .sidebar-link:nth-child(12) { animation-delay: 0.36s; }
+
+        /* ===== FLASH ALERTS ===== */
+        .alert {
+            animation: pageFadeIn 0.4s ease both;
         }
     </style>
 </head>
@@ -322,17 +503,31 @@
     <!-- Reading Progress Bar -->
     <div id="readingProgress"></div>
 
-    <div class="top-bar d-none d-lg-block">
-        <div class="container-fluid px-4 px-lg-5 d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-4">
-                <span><i class="fas fa-calendar-alt me-1" style="color:#0f62fe"></i> <span id="topDate"></span></span>
-                <span class="d-none d-xl-inline"><i class="fas fa-globe me-1" style="color:#0f62fe"></i> Қазақстан · Астана</span>
+    <div class="top-bar d-none d-lg-flex align-items-center w-100">
+        <div class="container-fluid px-4 px-lg-5 d-flex justify-content-between align-items-center w-100">
+            <!-- Left: Date + Region -->
+            <div class="d-flex align-items-center gap-3">
+                <span class="date-chip">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="topDate">...</span>
+                </span>
+                <span class="region-chip d-none d-xl-flex">
+                    <i class="fas fa-circle" style="font-size:0.45rem; animation: pulse-animation 2s infinite; color:#4ade80;"></i>
+                    🇰🇿 Қазақстан &nbsp;·&nbsp; 🏙️ Астана
+                </span>
             </div>
-            <div class="lang-switcher d-flex gap-1">
-                {% set current_l = session.get('lang', 'ru') %}
-                <a href="{{ url_for('main.set_lang', lang_code='kk') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'kk' else 'btn-outline-secondary border-0 text-secondary' }}" style="font-size: 0.7rem; padding: 0.2rem 0.7rem; border-radius:20px;">ҚАЗ</a>
-                <a href="{{ url_for('main.set_lang', lang_code='ru') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'ru' else 'btn-outline-secondary border-0 text-secondary' }}" style="font-size: 0.7rem; padding: 0.2rem 0.7rem; border-radius:20px;">РУС</a>
-                <a href="{{ url_for('main.set_lang', lang_code='en') }}" class="btn btn-sm {{ 'btn-primary' if current_l == 'en' else 'btn-outline-secondary border-0 text-secondary' }}" style="font-size: 0.7rem; padding: 0.2rem 0.7rem; border-radius:20px;">ENG</a>
+            <!-- Right: Language Switcher -->
+            {% set current_l = session.get('lang', 'ru') %}
+            <div class="top-lang-switcher">
+                <a href="{{ url_for('main.set_lang', lang_code='kk') }}" class="lang-btn-pill {% if current_l == 'kk' %}active{% endif %}">
+                    <span class="flag">🇰🇿</span> ҚАЗ
+                </a>
+                <a href="{{ url_for('main.set_lang', lang_code='ru') }}" class="lang-btn-pill {% if current_l == 'ru' %}active{% endif %}">
+                    <span class="flag">🇷🇺</span> РУС
+                </a>
+                <a href="{{ url_for('main.set_lang', lang_code='en') }}" class="lang-btn-pill {% if current_l == 'en' %}active{% endif %}">
+                    <span class="flag">🇬🇧</span> ENG
+                </a>
             </div>
         </div>
     </div>
@@ -341,13 +536,13 @@
         <div class="container-fluid px-4 px-lg-5">
             <div class="d-flex align-items-center gap-3">
                 <!-- Hamburger Menu Button to open Offcanvas -->
-                <button class="btn btn-link text-dark p-0 border-0 fs-4 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#categoriesOffcanvas" aria-controls="categoriesOffcanvas" aria-label="Toggle categories" style="outline: none; box-shadow: none;">
+                <button class="cat-menu-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#categoriesOffcanvas" aria-controls="categoriesOffcanvas" aria-label="Toggle categories">
                     <i class="fas fa-bars"></i>
                 </button>
                 
                 <a class="navbar-brand d-flex align-items-center m-0" href="{{ url_for('main.index') }}">
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="NEWSKZ" height="32" class="me-2" style="border-radius: 6px;" onerror="this.style.display='none'">
-                    <span>NewsKZ<span class="brand-dot ms-1"></span></span>
+                    <span>NewsKZ</span>
                 </a>
             </div>
 
@@ -415,24 +610,47 @@
     </main>
 
     <!-- Offcanvas Sidebar for All Categories -->
-    <div class="offcanvas offcanvas-start border-0" tabindex="-1" id="categoriesOffcanvas" aria-labelledby="categoriesOffcanvasLabel" style="width: 280px; background: var(--bg); backdrop-filter: blur(20px);">
-        <div class="offcanvas-header border-bottom">
-            <h5 class="offcanvas-title fw-bold" id="categoriesOffcanvasLabel">
-                <i class="fas fa-th-large text-primary me-2"></i> {{ _('sections') }}
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="categoriesOffcanvas" aria-labelledby="categoriesOffcanvasLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="categoriesOffcanvasLabel">
+                <i class="fas fa-layer-group me-2" style="color: var(--primary);"></i> {{ _('sections') }}
             </h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body p-3">
-            <ul class="nav flex-column gap-1">
+        <div class="offcanvas-body">
+            <span class="sidebar-section-label">{{ _('all_news') }}</span>
+            <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link sidebar-link {% if not current_cat %}active-sidebar{% endif %}" href="{{ url_for('main.index') }}">
-                        <i class="fas fa-globe me-2"></i> {{ _('all_news') }}
+                    <a class="sidebar-link {% if not current_cat %}active-sidebar{% endif %}" href="{{ url_for('main.index') }}">
+                        <span class="sidebar-icon-wrap"><i class="fas fa-globe"></i></span>
+                        <span>{{ _('all_news') }}</span>
                     </a>
                 </li>
+            </ul>
+
+            <span class="sidebar-section-label mt-2">{{ _('sections') }}</span>
+            <ul class="nav flex-column">
+                {% set cat_icons = {
+                    'cat_world': 'fa-earth-americas',
+                    'cat_politics': 'fa-landmark',
+                    'cat_economy': 'fa-chart-line',
+                    'cat_tech': 'fa-microchip',
+                    'cat_sport': 'fa-futbol',
+                    'cat_culture': 'fa-masks-theater',
+                    'cat_society': 'fa-users',
+                    'cat_science': 'fa-flask',
+                    'cat_health': 'fa-heart-pulse',
+                    'cat_auto': 'fa-car',
+                    'cat_travel': 'fa-plane',
+                    'cat_entertainment': 'fa-film'
+                } %}
                 {% for cat in categories %}
                 <li class="nav-item">
-                    <a class="nav-link sidebar-link {% if current_cat == cat.code %}active-sidebar{% endif %}" href="{{ url_for('main.index', category=cat.code) }}">
-                        <i class="fas fa-hashtag me-2"></i> {{ _(cat.code) }}
+                    <a class="sidebar-link {% if current_cat == cat.code %}active-sidebar{% endif %}" href="{{ url_for('main.index', category=cat.code) }}">
+                        <span class="sidebar-icon-wrap">
+                            <i class="fas {{ cat_icons.get(cat.code, 'fa-hashtag') }}"></i>
+                        </span>
+                        <span>{{ _(cat.code) }}</span>
                     </a>
                 </li>
                 {% endfor %}
@@ -516,15 +734,27 @@
         window.READ_MORE_TEXT = "{{ _('read_more') }}";
         window.COPY_LINK_TEXT = "{{ _('copy_link') }}";
 
-
+        // ===== NAVBAR SCROLL SHADOW =====
+        const navbar = document.querySelector('.navbar-glass');
+        window.addEventListener('scroll', () => {
+            if (navbar) {
+                if (window.scrollY > 10) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            }
+        }, { passive: true });
 
         // ===== SCROLL TOP =====
         const scrollTopBtn = document.getElementById('scrollTop');
         window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 400) {
-                scrollTopBtn.classList.add('show');
-            } else {
-                scrollTopBtn.classList.remove('show');
+            if (scrollTopBtn) {
+                if (window.pageYOffset > 400) {
+                    scrollTopBtn.classList.add('show');
+                } else {
+                    scrollTopBtn.classList.remove('show');
+                }
             }
             // Reading progress
             const progress = document.getElementById('readingProgress');
@@ -532,8 +762,11 @@
                 const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 progress.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
             }
-        });
-        scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        }, { passive: true });
+
+        if (scrollTopBtn) {
+            scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             // Fetch Currency Rates
@@ -546,7 +779,6 @@
                             const kztUsd = data.rates.KZT.toFixed(1);
                             const kztEur = (data.rates.KZT / data.rates.EUR).toFixed(1);
                             const kztRub = (data.rates.KZT / data.rates.RUB).toFixed(2);
-                            
                             curWidget.innerHTML = `
                                 <span class="me-3"><i class="fas fa-dollar-sign text-success opacity-75"></i> <span class="currency-val">${kztUsd}</span> ₸</span>
                                 <span class="me-3"><i class="fas fa-euro-sign text-primary opacity-75"></i> <span class="currency-val">${kztEur}</span> ₸</span>
@@ -556,9 +788,7 @@
                             curWidget.style.display = 'none';
                         }
                     })
-                    .catch(err => {
-                        curWidget.style.display = 'none';
-                    });
+                    .catch(() => { if(curWidget) curWidget.style.display = 'none'; });
             }
 
             // Format local times
@@ -566,43 +796,43 @@
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
             const yesterday = today - 86400000;
+            const locale = window.CURRENT_LANG === 'en' ? 'en-US' : (window.CURRENT_LANG === 'kk' ? 'kk-KZ' : 'ru-RU');
 
             timeElements.forEach(el => {
                 const ts = el.getAttribute('data-timestamp');
                 if (ts) {
-                    // ts should be in ISO format: '2023-10-05T14:48:00'
                     const dateStr = ts.endsWith('Z') ? ts : ts + 'Z';
                     const d = new Date(dateStr);
                     if (!isNaN(d.getTime())) {
                         const dTime = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-                        
-                        let timeStr = d.toLocaleTimeString(window.CURRENT_LANG === 'en' ? 'en-US' : (window.CURRENT_LANG === 'kk' ? 'kk-KZ' : 'ru-RU'), {
-                            hour: '2-digit', minute: '2-digit'
-                        });
-                        
-                        // ID="topDate" is handled differently below, ensure we don't mess up non-news elements if any.
-                        // Actually 'local-time' class is used.
+                        const timeStr = d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
                         if (dTime === today) {
-                            let label = window.CURRENT_LANG === 'kk' ? 'Бүгін' : (window.CURRENT_LANG === 'en' ? 'Today' : 'Сегодня');
+                            const label = window.CURRENT_LANG === 'kk' ? 'Бүгін' : (window.CURRENT_LANG === 'en' ? 'Today' : 'Сегодня');
                             el.innerHTML = label + ', ' + timeStr;
                         } else if (dTime === yesterday) {
-                            let label = window.CURRENT_LANG === 'kk' ? 'Кеше' : (window.CURRENT_LANG === 'en' ? 'Yesterday' : 'Вчера');
+                            const label = window.CURRENT_LANG === 'kk' ? 'Кеше' : (window.CURRENT_LANG === 'en' ? 'Yesterday' : 'Вчера');
                             el.innerHTML = label + ', ' + timeStr;
                         } else {
-                            el.innerHTML = d.toLocaleString(window.CURRENT_LANG === 'en' ? 'en-US' : (window.CURRENT_LANG === 'kk' ? 'kk-KZ' : 'ru-RU'), {
+                            el.innerHTML = d.toLocaleString(locale, {
                                 year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
                             });
                         }
                     }
                 }
             });
-            
-            // Set current top date
+
+            // Set current top date — beautifully formatted
             const topDate = document.getElementById('topDate');
             if (topDate) {
-                topDate.innerText = new Date().toLocaleDateString(window.CURRENT_LANG === 'en' ? 'en-US' : (window.CURRENT_LANG === 'kk' ? 'kk-KZ' : 'ru-RU'), {
-                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                const locale = window.CURRENT_LANG === 'en' ? 'en-US' : (window.CURRENT_LANG === 'kk' ? 'kk-KZ' : 'ru-RU');
+                const dateNow = new Date();
+                // E.g.: "Дүйсенбі, 8 маусым 2026" or "Понедельник, 8 июня 2026"
+                let dateStr = dateNow.toLocaleDateString(locale, {
+                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
                 });
+                // Capitalize first letter
+                dateStr = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+                topDate.textContent = dateStr;
             }
         });
     </script>
@@ -610,7 +840,13 @@
     <!-- AOS JS -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({ once: true, offset: 20, duration: 400 });
+        AOS.init({
+            once: true,
+            offset: 30,
+            duration: 550,
+            easing: 'ease-out-cubic',
+            delay: 0
+        });
     </script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
