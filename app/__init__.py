@@ -2,6 +2,7 @@ from flask import Flask, session, request, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import Config
+from werkzeug.middleware.proxy_fix import ProxyFix
 import os
 
 db = SQLAlchemy()
@@ -12,6 +13,11 @@ login_manager.login_message = "Пожалуйста, войдите, чтобы 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    # Fix HTTPS detection behind Railway/Render reverse proxy
+    # This ensures url_for generates https:// links for OAuth redirect URIs
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
 
     db.init_app(app)
     login_manager.init_app(app)
