@@ -340,8 +340,8 @@ def poll_vote(poll_id):
 def get_news_tts(news_id, lang):
     import os
     import re
+    import asyncio
     from flask import current_app, send_file
-    from gtts import gTTS
     
     news_item = News.query.get_or_404(news_id)
     text = getattr(news_item, f'content_{lang}', None) or getattr(news_item, f'title_{lang}', '')
@@ -355,13 +355,21 @@ def get_news_tts(news_id, lang):
     audio_dir = os.path.join(current_app.root_path, 'static', 'audio')
     os.makedirs(audio_dir, exist_ok=True)
     
-    filename = f"news_{news_id}_{lang}.mp3"
+    filename = f"news_{news_id}_{lang}_edge.mp3"
     filepath = os.path.join(audio_dir, filename)
     
     if not os.path.exists(filepath):
         try:
-            tts = gTTS(text=clean_text, lang=lang)
-            tts.save(filepath)
+            import edge_tts
+            if lang == 'kk':
+                voice = 'kk-KZ-AigulNeural'
+            elif lang == 'en':
+                voice = 'en-US-AriaNeural'
+            else:
+                voice = 'ru-RU-SvetlanaNeural'
+                
+            communicate = edge_tts.Communicate(clean_text, voice)
+            asyncio.run(communicate.save(filepath))
         except Exception as e:
             return jsonify({"error": str(e)}), 500
             
