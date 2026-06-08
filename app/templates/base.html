@@ -562,19 +562,6 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- TOAST NOTIFICATION CONTAINER -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
-        <div id="welcomeToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" style="border-radius: 12px;">
-            <div class="toast-header border-0 bg-primary text-white" style="border-radius: 12px 12px 0 0;">
-                <i class="fas fa-bell me-2"></i>
-                <strong class="me-auto">NewsKZ</strong>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body bg-white text-dark" style="border-radius: 0 0 12px 12px;">
-                NewsKZ порталына қош келдіңіз! Ең соңғы жаңалықтардан хабардар болыңыз.
-            </div>
-        </div>
-    </div>
 
     <!-- Offcanvas Sidebar for All Categories -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="categoriesOffcanvas" aria-labelledby="categoriesOffcanvasLabel">
@@ -810,22 +797,29 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Welcome Toast logic
-        if (!sessionStorage.getItem('welcomeShown')) {
+        // Urgent News Toast logic
+        if (!sessionStorage.getItem('urgentShown')) {
             setTimeout(() => {
-                const welcomeToastEl = document.getElementById('welcomeToast');
-                if (welcomeToastEl) {
-                    const toast = new bootstrap.Toast(welcomeToastEl, { delay: 6000 });
-                    toast.show();
-                    sessionStorage.setItem('welcomeShown', 'true');
-                }
-            }, 1000);
+                fetch('/api/news/urgent')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.title) {
+                            const msg = `🔥 Срочная новость / Маңызды жаңалық:<br><a href="${data.url}" class="text-white fw-bold text-decoration-underline d-block mt-1" style="font-size: 1.1rem;">${data.title}</a>`;
+                            window.showToast(msg, 'danger', 6000);
+                        } else {
+                            window.showToast("NewsKZ порталына қош келдіңіз! Ең соңғы жаңалықтардан хабардар болыңыз.", 'primary', 4000);
+                        }
+                        sessionStorage.setItem('urgentShown', 'true');
+                    })
+                    .catch(err => console.error(err));
+            }, 2000);
         }
 
-        window.showToast = function(msg, type='success') {
+        window.showToast = function(msg, type='success', delayMs=4000) {
             const container = document.querySelector('.toast-container') || document.body;
             let div = document.createElement('div');
             div.className = `toast align-items-center text-white bg-${type} border-0 mb-2 shadow-lg`;
+            div.style.borderRadius = '12px';
             div.setAttribute('role', 'alert');
             div.setAttribute('aria-live', 'assertive');
             div.setAttribute('aria-atomic', 'true');
@@ -836,7 +830,7 @@
                 </div>
             `;
             container.appendChild(div);
-            new bootstrap.Toast(div, { delay: 4000 }).show();
+            new bootstrap.Toast(div, { delay: delayMs }).show();
             div.addEventListener('hidden.bs.toast', () => div.remove());
         };
     });

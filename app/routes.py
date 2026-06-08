@@ -231,6 +231,28 @@ def api_latest_news():
     except Exception as e:
         return jsonify([])
 
+@main.route('/api/news/urgent')
+def api_urgent_news():
+    """
+    Returns the most viewed news of the last 48 hours for urgent toast notifications.
+    """
+    from datetime import datetime, timedelta
+    lang = session.get('lang', 'ru')
+    
+    two_days_ago = datetime.utcnow() - timedelta(days=2)
+    urgent_news = News.query.filter(News.created_at >= two_days_ago).order_by(News.views.desc()).first()
+    
+    if not urgent_news:
+        urgent_news = News.query.order_by(News.created_at.desc()).first()
+        
+    if urgent_news:
+        return jsonify({
+            'id': urgent_news.id,
+            'title': getattr(urgent_news, f'title_{lang}', urgent_news.title_ru),
+            'url': url_for('main.news_detail', news_id=urgent_news.id)
+        })
+    return jsonify(None)
+
 @main.route('/api/search')
 def api_search():
     q = request.args.get('q', '').strip()
