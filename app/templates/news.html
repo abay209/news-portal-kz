@@ -432,17 +432,14 @@ function copyLink() {
 }
 
 let isPlaying = false;
-let speech = null;
+let audioObj = null;
 
 function readArticle() {
     const btn = document.getElementById('ttsBtn');
-    if (!('speechSynthesis' in window)) {
-        alert("Кешіріңіз, сіздің браузеріңіз озвучка функциясын қолдамайды.");
-        return;
-    }
     
-    if (isPlaying) {
-        window.speechSynthesis.cancel();
+    if (isPlaying && audioObj) {
+        audioObj.pause();
+        audioObj.currentTime = 0;
         isPlaying = false;
         btn.innerHTML = '<i class="fas fa-volume-up me-2"></i> Тыңдау / Озвучка';
         btn.classList.remove('btn-primary', 'text-white');
@@ -450,26 +447,37 @@ function readArticle() {
         return;
     }
     
-    const textToRead = document.getElementById('articleText').innerText;
-    speech = new SpeechSynthesisUtterance(textToRead);
-    
-    // Setup voice preference
-    const lang = "{{ session.get('lang', 'ru') }}";
-    speech.lang = lang === 'kk' ? 'kk-KZ' : (lang === 'en' ? 'en-US' : 'ru-RU');
-    speech.rate = 1.0;
-    
-    speech.onend = function() {
-        isPlaying = false;
-        btn.innerHTML = '<i class="fas fa-volume-up me-2"></i> Тыңдау / Озвучка';
-        btn.classList.remove('btn-primary', 'text-white');
-        btn.classList.add('btn-outline-primary');
-    };
-    
-    window.speechSynthesis.speak(speech);
-    isPlaying = true;
-    btn.innerHTML = '<i class="fas fa-stop-circle me-2"></i> Тоқтату';
-    btn.classList.remove('btn-outline-primary');
-    btn.classList.add('btn-primary', 'text-white');
+    if (!audioObj) {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Дайындалуда (3-5 сек)...';
+        const lang = "{{ session.get('lang', 'ru') }}";
+        const url = `/api/news/{{ news.id }}/tts/${lang}`;
+        audioObj = new Audio(url);
+        
+        audioObj.onended = function() {
+            isPlaying = false;
+            btn.innerHTML = '<i class="fas fa-volume-up me-2"></i> Тыңдау / Озвучка';
+            btn.classList.remove('btn-primary', 'text-white');
+            btn.classList.add('btn-outline-primary');
+        };
+        
+        audioObj.play().then(() => {
+            isPlaying = true;
+            btn.innerHTML = '<i class="fas fa-stop-circle me-2"></i> Тоқтату';
+            btn.classList.remove('btn-outline-primary');
+            btn.classList.add('btn-primary', 'text-white');
+        }).catch(err => {
+            console.error(err);
+            alert("Аудионы жүктеуде қате шықты немесе байланыс үзілді.");
+            btn.innerHTML = '<i class="fas fa-volume-up me-2"></i> Тыңдау / Озвучка';
+            audioObj = null; // reset to try again
+        });
+    } else {
+        audioObj.play();
+        isPlaying = true;
+        btn.innerHTML = '<i class="fas fa-stop-circle me-2"></i> Тоқтату';
+        btn.classList.remove('btn-outline-primary');
+        btn.classList.add('btn-primary', 'text-white');
+    }
 }
 </script>
 

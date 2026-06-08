@@ -335,3 +335,34 @@ def poll_vote(poll_id):
     db.session.commit()
     
     return jsonify({'status': 'success'})
+
+@main.route('/api/news/<int:news_id>/tts/<lang>')
+def get_news_tts(news_id, lang):
+    import os
+    import re
+    from flask import current_app, send_file
+    from gtts import gTTS
+    
+    news_item = News.query.get_or_404(news_id)
+    text = getattr(news_item, f'content_{lang}', None) or getattr(news_item, f'title_{lang}', '')
+    
+    # Strip HTML tags
+    clean_text = re.sub(r'<[^>]+>', '', text)
+    if not clean_text.strip():
+        clean_text = "Текст отсутствует"
+        
+    # Setup audio dir
+    audio_dir = os.path.join(current_app.root_path, 'static', 'audio')
+    os.makedirs(audio_dir, exist_ok=True)
+    
+    filename = f"news_{news_id}_{lang}.mp3"
+    filepath = os.path.join(audio_dir, filename)
+    
+    if not os.path.exists(filepath):
+        try:
+            tts = gTTS(text=clean_text, lang=lang)
+            tts.save(filepath)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+            
+    return send_file(filepath, mimetype="audio/mpeg")
