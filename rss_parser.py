@@ -480,16 +480,26 @@ def extract_full_content(url):
         image_url = None
         
         if downloaded:
-            # Trafilatura extract as HTML to keep images and structure
-            html_content = trafilatura.extract(downloaded, output_format='html', include_images=True, include_links=True, favor_precision=False, favor_recall=True)
-            if html_content:
-                content = html_content
-            else:
-                # Fallback to plain text if HTML extraction fails
-                content = trafilatura.extract(downloaded, include_images=False, include_links=False, favor_precision=False, favor_recall=True)
-            
-            # Use BeautifulSoup to find the main image and any YouTube iframes
             soup = BeautifulSoup(downloaded, 'html.parser')
+            
+            # Custom Extraction for Tengrinews to preserve their specific formatting (blue notes)
+            if 'tengrinews.kz' in url:
+                article_div = soup.find('div', class_='tn-news-text')
+                if article_div:
+                    for s in article_div.select('script, style, .tn-social-share'):
+                        s.extract()
+                    content = str(article_div)
+            
+            if not content:
+                # Trafilatura extract as HTML to keep images and structure
+                html_content = trafilatura.extract(downloaded, output_format='html', include_images=True, include_links=True, favor_precision=False, favor_recall=True)
+                if html_content:
+                    content = html_content
+                else:
+                    # Fallback to plain text if HTML extraction fails
+                    content = trafilatura.extract(downloaded, include_images=False, include_links=False, favor_precision=False, favor_recall=True)
+            
+            # Find the main image from meta tags
             meta_og = soup.find('meta', property='og:image') or soup.find('meta', attrs={'name': 'og:image'})
             meta_tw = soup.find('meta', property='twitter:image') or soup.find('meta', attrs={'name': 'twitter:image'})
             

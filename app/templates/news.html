@@ -487,5 +487,25 @@ function readArticle() {
 <style>
 .share-btn { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; }
 .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Custom Formatting for Important Moments (Tengrinews notes, blockquotes) */
+.article-content .tn-news-text-note,
+.article-content blockquote {
+    background-color: rgba(15, 98, 254, 0.05); /* Light blue background */
+    border-left: 4px solid var(--primary); /* Blue left border */
+    padding: 15px 20px;
+    margin: 20px 0;
+    border-radius: 4px 8px 8px 4px;
+    font-weight: 500;
+    color: #1a1a1a;
+}
+.article-content .tn-news-text-note p:last-child,
+.article-content blockquote p:last-child {
+    margin-bottom: 0;
+}
+.article-content a {
+    color: var(--primary);
+    text-decoration: underline;
+}
 </style>
 {% endblock %}
