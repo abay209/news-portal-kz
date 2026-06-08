@@ -135,4 +135,21 @@ function toggleImageInput() {
     }
 }
 </script>
+
+<!-- TinyMCE Editor for Rich Text Formatting (Allows adding Blockquotes for "Important Moments") -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+  tinymce.init({
+    selector: 'textarea',
+    menubar: false,
+    plugins: 'lists link image code media',
+    toolbar: 'undo redo | blocks | bold italic | blockquote | alignleft aligncenter alignright | bullist numlist | link image media | code',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px } blockquote { background-color: rgba(15, 98, 254, 0.05); border-left: 4px solid #0f62fe; padding: 15px; margin: 10px 0; border-radius: 4px 8px 8px 4px; }',
+    setup: function (editor) {
+        editor.on('change', function () {
+            editor.save();
+        });
+    }
+  });
+</script>
 {% endblock %}
