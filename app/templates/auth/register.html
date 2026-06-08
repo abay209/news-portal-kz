@@ -2,63 +2,200 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-5 mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="glass-card p-4 p-md-5">
-                <div class="text-center mb-4">
-                    <h3 class="fw-bold">{{ _('register') }}</h3>
-                    <p class="text-muted">{{ _('register_desc') }}</p>
-                </div>
-                
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                  {% if messages %}
-                    {% for category, message in messages %}
-                      <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} py-2">{{ message }}</div>
-                    {% endfor %}
-                  {% endif %}
-                {% endwith %}
+<style>
+    .auth-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 0;
+    }
+    .auth-card {
+        background: #fff;
+        border-radius: 24px;
+        box-shadow: 0 24px 80px rgba(0,0,0,0.10);
+        padding: 2.5rem 2.8rem;
+        width: 100%;
+        max-width: 440px;
+        animation: authFadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        border: 1px solid #eef0f4;
+    }
+    @keyframes authFadeIn {
+        from { opacity: 0; transform: translateY(24px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .auth-logo {
+        font-family: 'Playfair Display', serif;
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--text);
+        letter-spacing: -0.5px;
+        text-decoration: none;
+    }
+    .auth-logo:hover { color: var(--primary); }
+    .auth-title { font-size: 1.55rem; font-weight: 800; color: #0d1117; margin-bottom: 0.3rem; }
+    .auth-sub   { font-size: 0.88rem; color: #6b7280; margin-bottom: 0; }
 
-                <form method="POST" action="{{ url_for('auth.register') }}">
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">{{ _('username') }}</label>
-                        <input type="text" name="username" class="form-control form-control-lg bg-light" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted small fw-bold">{{ _('email_optional') }}</label>
-                        <input type="email" name="email" class="form-control form-control-lg bg-light">
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label text-muted small fw-bold">{{ _('password') }}</label>
-                        <input type="password" name="password" class="form-control form-control-lg bg-light" required>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary w-100 btn-lg rounded-pill fw-bold shadow-sm mb-3">
-                        {{ _('register') }}
-                    </button>
-                </form>
+    .form-label { font-size: 0.78rem; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; }
+    .form-control {
+        border: 1.5px solid #e8edf2;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.25s;
+        background: #f9fafb;
+    }
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(15,98,254,0.1);
+        background: #fff;
+        outline: none;
+    }
+    .btn-login {
+        background: linear-gradient(135deg, #0f62fe 0%, #0043ce 100%);
+        color: white;
+        border: none;
+        border-radius: 14px;
+        padding: 0.85rem 1.5rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        width: 100%;
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        letter-spacing: 0.3px;
+    }
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(15,98,254,0.35);
+        color: white;
+    }
+    .divider {
+        position: relative;
+        text-align: center;
+        margin: 1.5rem 0;
+    }
+    .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%; left: 0; right: 0;
+        height: 1px;
+        background: #e8edf2;
+    }
+    .divider span {
+        background: #fff;
+        padding: 0 0.9rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+    }
 
-                {% if oauth_enabled %}
-                <div class="text-center text-muted my-3 position-relative">
-                    <hr>
-                    <span class="bg-white px-3 position-absolute top-50 start-50 translate-middle text-uppercase small" style="font-size: 0.75rem;">{{ _('or_divider') }}</span>
-                </div>
-                
-                <div class="d-grid gap-2">
-                    <a href="{{ url_for('auth.login_oauth', provider='google') }}" class="btn btn-outline-dark rounded-pill fw-bold">
-                        <i class="fab fa-google text-danger me-2"></i> {{ _('google_auth') }}
-                    </a>
-                    <a href="{{ url_for('auth.login_oauth', provider='facebook') }}" class="btn btn-outline-primary rounded-pill fw-bold">
-                        <i class="fab fa-facebook-f me-2"></i> {{ _('fb_auth') }}
-                    </a>
-                </div>
-                {% endif %}
-                
-                <div class="text-center mt-4">
-                    <span class="text-muted">{{ _('have_account') }}</span> <a href="{{ url_for('auth.login') }}" class="fw-bold text-primary text-decoration-none">{{ _('login') }}</a>
-                </div>
-            </div>
+    /* OAuth buttons */
+    .btn-oauth {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.7rem;
+        width: 100%;
+        padding: 0.75rem 1.2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1.5px solid #e8edf2;
+        background: #fff;
+        color: #1a1a2e;
+        text-decoration: none;
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+    }
+    .btn-oauth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        color: #1a1a2e;
+        border-color: #d1d5db;
+    }
+    .btn-oauth-google:hover { border-color: #ea4335; box-shadow: 0 8px 20px rgba(234,67,53,0.15); }
+    .btn-oauth-facebook { background: #1877f2; color: white; border-color: #1877f2; }
+    .btn-oauth-facebook:hover { background: #166fe5; color: white; border-color: #166fe5; box-shadow: 0 8px 20px rgba(24,119,242,0.35); }
+
+    .btn-oauth .oauth-icon {
+        width: 22px; height: 22px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1rem;
+    }
+
+    .auth-footer-link { font-size: 0.88rem; color: #6b7280; }
+    .auth-footer-link a { color: var(--primary); font-weight: 700; text-decoration: none; }
+    .auth-footer-link a:hover { text-decoration: underline; }
+</style>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <!-- Logo -->
+        <div class="text-center mb-4">
+            <a href="{{ url_for('main.index') }}" class="auth-logo">NewsKZ</a>
         </div>
+
+        <div class="mb-4">
+            <h1 class="auth-title">{{ _('register') }}</h1>
+            <p class="auth-sub">{{ _('register_desc') }}</p>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} rounded-3 py-2 mb-3 small">
+                <i class="fas fa-{{ 'exclamation-circle' if category == 'error' else 'check-circle' }} me-1"></i>
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- OAuth Buttons — quick signup -->
+        {% if oauth_enabled %}
+        <div class="d-flex flex-column gap-2 mb-3">
+            <a href="{{ url_for('auth.login_oauth', provider='google') }}" class="btn-oauth btn-oauth-google">
+                <span class="oauth-icon">
+                    <svg viewBox="0 0 48 48" width="20" height="20"><path fill="#EA4335" d="M24 9.5c3.5 0 6.5 1.2 8.9 3.2l6.6-6.6C35.6 2.5 30.2 0 24 0 14.7 0 6.7 5.5 2.8 13.5l7.7 6C12.4 13.1 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.6 24.5c0-1.7-.1-3.3-.4-4.9H24v9.3h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.2-10 7.2-17.4z"/><path fill="#FBBC05" d="M10.5 28.5c-.6-1.7-.9-3.5-.9-5.5s.3-3.8.9-5.5l-7.7-6C1 14.5 0 19.1 0 24s1 9.5 2.8 13.5l7.7-6z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.2-7.7 2.2-6.2 0-11.5-4.2-13.4-9.9l-7.7 6C6.7 42.5 14.7 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+                </span>
+                {{ _('google_auth') }}
+            </a>
+            <a href="{{ url_for('auth.login_oauth', provider='facebook') }}" class="btn-oauth btn-oauth-facebook">
+                <span class="oauth-icon">
+                    <i class="fab fa-facebook-f" style="font-size:1.1rem;"></i>
+                </span>
+                {{ _('fb_auth') }}
+            </a>
+        </div>
+
+        <div class="divider"><span>{{ _('or_divider') }}</span></div>
+        {% endif %}
+
+        <!-- Registration form -->
+        <form method="POST" action="{{ url_for('auth.register') }}">
+            <div class="mb-3">
+                <label class="form-label">{{ _('username') }}</label>
+                <input type="text" name="username" class="form-control" placeholder="username" required autocomplete="username">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">{{ _('email_optional') }}</label>
+                <input type="email" name="email" class="form-control" placeholder="email@example.com" autocomplete="email">
+            </div>
+            <div class="mb-4">
+                <label class="form-label">{{ _('password') }}</label>
+                <input type="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+            </div>
+            <button type="submit" class="btn-login">
+                {{ _('register') }} <i class="fas fa-arrow-right ms-2"></i>
+            </button>
+        </form>
+
+        <p class="auth-footer-link text-center mt-4 mb-0">
+            {{ _('have_account') }} <a href="{{ url_for('auth.login') }}">{{ _('login') }}</a>
+        </p>
     </div>
 </div>
 {% endblock %}
