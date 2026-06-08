@@ -115,11 +115,10 @@ def news_detail(news_id):
     likes_count = Like.query.filter_by(news_id=news_id).count()
     # Sidebar: latest 6 news (trending)
     latest_news = News.query.filter(News.id != news_id).order_by(News.views.desc()).limit(6).all()
-    # Sidebar: related news from same category (exclude current)
     related_news = News.query.filter(
         News.category_id == news_item.category_id,
         News.id != news_id
-    ).order_by(News.created_at.desc()).limit(4).all()
+    ).order_by(News.created_at.desc()).limit(6).all()
     # Check poll voted status
     has_voted = False
     if news_item.poll:
