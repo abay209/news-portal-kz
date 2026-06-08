@@ -600,6 +600,18 @@ def process_source(source_data, app, cats):
                     print(f"    ! AI Error: {ai_e}")
                     continue
 
+                import calendar
+                import datetime as dt
+
+                pub_date = dt.datetime.utcnow()
+                try:
+                    if hasattr(entry, 'published_parsed') and entry.published_parsed:
+                        pub_date = dt.datetime.utcfromtimestamp(calendar.timegm(entry.published_parsed))
+                    elif hasattr(entry, 'updated_parsed') and entry.updated_parsed:
+                        pub_date = dt.datetime.utcfromtimestamp(calendar.timegm(entry.updated_parsed))
+                except Exception:
+                    pass
+
                 item_dict = {
                     'category_id': cat_id,
                     'title_ru': ai_data['title_ru'],
@@ -614,7 +626,7 @@ def process_source(source_data, app, cats):
                     'source_name': source_data['name'],
                     'original_url': link,
                     'image_filename': local_img,
-                    'created_at': datetime.utcnow()
+                    'created_at': pub_date
                 }
                 news_items.append(item_dict)
                 processed += 1
