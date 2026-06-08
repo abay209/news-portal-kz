@@ -517,7 +517,60 @@ def extract_full_content(url):
                     if content and src not in content:
                         iframe_html = f'<div class="ratio ratio-16x9 my-4"><iframe src="{src}" allowfullscreen></iframe></div>'
                         content += iframe_html
+        if content:
+            soup_clean = BeautifulSoup(content, 'html.parser')
+            
+            # Remove bad tags completely
+            for s in soup_clean(['script', 'style', 'meta', 'link', 'noscript', 'header', 'footer', 'nav', 'aside', 'form', 'button', 'svg', 'table']):
+                s.decompose()
+                
+            # Unwrap layout tags that are unnecessary but keep their content
+            for tag in soup_clean.find_all(['div', 'span', 'article', 'section', 'main', 'time']):
+                tag.unwrap()
+                
+            # Allow only these tags
+            allowed_tags = ['p', 'b', 'strong', 'i', 'em', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'img', 'figure', 'figcaption', 'iframe', 'a', 'q']
+            
+            for tag in soup_clean.find_all(True):
+                if tag.name not in allowed_tags:
+                    tag.unwrap()
+                else:
+                    # Clean attributes
+                    attrs = {}
+                    if tag.name == 'img':
+                        # Handle src and lazy loading
+                        src = tag.get('src') or tag.get('data-src') or ''
+                        if src:
+                            attrs['src'] = src
+                        if tag.has_attr('alt'):
+                            attrs['alt'] = tag['alt']
+                        # Add bootstrap styling for uniform images
+                        attrs['class'] = 'img-fluid rounded my-3 w-100 shadow-sm'
+                    elif tag.name == 'iframe':
+                        if tag.has_attr('src'):
+                            attrs['src'] = tag['src']
+                        attrs['allowfullscreen'] = 'true'
+                        attrs['class'] = 'w-100 rounded my-3'
+                        attrs['style'] = 'min-height: 400px;'
+                    elif tag.name == 'a':
+                        if tag.has_attr('href'):
+                            attrs['href'] = tag['href']
+                        attrs['target'] = '_blank'
+                    elif tag.name == 'figcaption':
+                        attrs['class'] = 'text-muted small text-center mt-2 fst-italic'
+                    elif tag.name == 'blockquote':
+                        attrs['class'] = 'border-start border-4 border-primary ps-3 my-4 py-2 bg-light rounded-end fst-italic'
                         
+                    tag.attrs = attrs
+                    
+            import re
+            clean_html = str(soup_clean)
+            # Remove empty paragraphs
+            clean_html = re.sub(r'<p>\s*</p>', '', clean_html)
+            # Add ratio for iframe if not wrapped (trafilatura sometimes keeps iframe alone)
+            
+            content = clean_html
+            
         if not content:
             content = ""
             
@@ -553,7 +606,7 @@ def process_source(source_data, app, cats):
                     # 1. RSS-тің ішіндегі жасырын толық контентті көру ("content:encoded")
                     if 'content' in entry and len(entry.content) > 0:
                         rss_content = entry.content[0].value
-                        cleaned_rss = BeautifulSoup(rss_content, "html.parser").get_text(separator='\n', strip=True)
+                        cleaned_rss = BeautifulSoup(rss_content, "html.parser").get_text(separator='\n\n', strip=True)
                         if len(cleaned_rss) > 150:
                             full_text = cleaned_rss
                     
@@ -561,7 +614,16 @@ def process_source(source_data, app, cats):
                     if not full_text or len(full_text) < 150:
                         summary_text = entry.get('summary', '') or entry.get('description', '') or ""
                         if summary_text:
-                            full_text = BeautifulSoup(summary_text, "html.parser").get_text(separator='\n', strip=True)
+                            full_text = BeautifulSoup(summary_text, "html.parser").get_text(separator='\n\n', strip=True)
+
+                # Make sure the fallback text is also formatted uniformly
+                if full_text and not full_text.startswith('<p>') and not full_text.startswith('<'):
+                    lines = [line.strip() for line in full_text.split('\n') if line.strip()]
+                    clean_html = ""
+                    for line in lines:
+                        if len(line) > 2:
+                            clean_html += f"<p>{line}</p>\n"
+                    full_text = clean_html
 
                 if not full_text:
                     print(f"    ! Skipping: Content is empty.")
@@ -603,14 +665,8 @@ def process_source(source_data, app, cats):
                 import calendar
                 import datetime as dt
 
+                # Fix: Always use current time so that newly scraped news is always at the top of the main page!
                 pub_date = dt.datetime.utcnow()
-                try:
-                    if hasattr(entry, 'published_parsed') and entry.published_parsed:
-                        pub_date = dt.datetime.utcfromtimestamp(calendar.timegm(entry.published_parsed))
-                    elif hasattr(entry, 'updated_parsed') and entry.updated_parsed:
-                        pub_date = dt.datetime.utcfromtimestamp(calendar.timegm(entry.updated_parsed))
-                except Exception:
-                    pass
 
                 item_dict = {
                     'category_id': cat_id,
