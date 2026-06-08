@@ -157,7 +157,7 @@
     </div>
 
     <div class="col-lg-3">
-        <div>
+        <div class="sticky-top" style="top: 85px; z-index: 10;">
             <!-- Live Broadcast Widget -->
             {% if settings.get('youtube_live_url') and not request.args.get('category') and not request.args.get('q') %}
             <div class="glass-card p-3 mb-4 border-0 shadow-sm">
@@ -369,18 +369,6 @@
                     </div>
                     {% endfor %}
                 </div>
-            </div>
-            
-            <!-- Newsletter Widget -->
-            <div class="glass-card p-4 border-0 shadow-sm bg-gradient-primary text-white">
-                <h5 class="fw-bold mb-3">{{ _('newsletter') }}</h5>
-                <p class="small opacity-80 mb-3">{{ _('sub_desc') }}</p>
-                <form action="{{ url_for('main.subscribe') }}" method="POST">
-                    <div class="input-group mb-2">
-                        <input type="email" name="email" class="form-control border-0" placeholder="Ваш Email" required style="border-radius: 8px 0 0 8px;">
-                        <button type="submit" class="btn btn-dark" style="border-radius: 0 8px 8px 0;"><i class="fas fa-paper-plane"></i></button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>

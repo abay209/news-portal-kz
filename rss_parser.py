@@ -480,10 +480,15 @@ def extract_full_content(url):
         image_url = None
         
         if downloaded:
-            # Trafilatura extracts only the main article body perfectly
-            content = trafilatura.extract(downloaded, include_images=False, include_links=False, favor_precision=False, favor_recall=True)
+            # Trafilatura extract as HTML to keep images and structure
+            html_content = trafilatura.extract(downloaded, output_format='html', include_images=True, include_links=True, favor_precision=False, favor_recall=True)
+            if html_content:
+                content = html_content
+            else:
+                # Fallback to plain text if HTML extraction fails
+                content = trafilatura.extract(downloaded, include_images=False, include_links=False, favor_precision=False, favor_recall=True)
             
-            # Still use BeautifulSoup to find the main image from meta tags
+            # Use BeautifulSoup to find the main image and any YouTube iframes
             soup = BeautifulSoup(downloaded, 'html.parser')
             meta_og = soup.find('meta', property='og:image') or soup.find('meta', attrs={'name': 'og:image'})
             meta_tw = soup.find('meta', property='twitter:image') or soup.find('meta', attrs={'name': 'twitter:image'})
@@ -493,6 +498,16 @@ def extract_full_content(url):
             elif meta_tw and meta_tw.get('content'):
                 image_url = meta_tw.get('content')
                 
+            # Extract YouTube iframes and append them to the content if they are missing
+            iframes = soup.find_all('iframe')
+            for iframe in iframes:
+                src = iframe.get('src', '')
+                if 'youtube.com' in src or 'youtu.be' in src:
+                    # Check if it's already in the content
+                    if content and src not in content:
+                        iframe_html = f'<div class="ratio ratio-16x9 my-4"><iframe src="{src}" allowfullscreen></iframe></div>'
+                        content += iframe_html
+                        
         if not content:
             content = ""
             

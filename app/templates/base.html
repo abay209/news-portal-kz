@@ -65,35 +65,29 @@
             border-radius: 0 2px 2px 0;
         }
 
-        /* ===== TOP BAR — REDESIGNED ===== */
+        /* ===== TOP BAR (Minimalist) ===== */
         .top-bar {
-            background: linear-gradient(90deg, #0a0e1a 0%, #0d1117 50%, #0a0e1a 100%);
-            color: #8b949e;
+            background: transparent;
+            color: var(--text-muted);
             font-size: 0.75rem;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid var(--glass-border);
             padding: 0;
             height: 38px;
             display: flex;
             align-items: center;
         }
-        .top-bar a { color: #8b949e; text-decoration: none; transition: color 0.25s; }
-        .top-bar a:hover { color: #fff; }
+        .top-bar a { color: var(--text-muted); text-decoration: none; transition: color 0.25s; }
+        .top-bar a:hover { color: var(--text); }
 
         /* Date chip */
         .top-bar .date-chip {
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            padding: 3px 12px;
             font-size: 0.72rem;
             letter-spacing: 0.3px;
-            transition: background 0.2s;
         }
         .top-bar .date-chip i { color: var(--primary); font-size: 0.7rem; }
-        .top-bar .date-chip:hover { background: rgba(255,255,255,0.09); }
 
         /* Region chip */
         .top-bar .region-chip {
@@ -101,7 +95,7 @@
             align-items: center;
             gap: 6px;
             font-size: 0.72rem;
-            color: rgba(255,255,255,0.45);
+            color: var(--text-muted);
             letter-spacing: 0.3px;
         }
         .top-bar .region-chip i { color: #4ade80; font-size: 0.65rem; }
@@ -110,38 +104,24 @@
         .top-lang-switcher {
             display: flex;
             align-items: center;
-            gap: 4px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px;
-            padding: 3px 5px;
+            gap: 15px;
         }
         .top-lang-switcher .lang-btn-pill {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 10px;
-            border-radius: 18px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: rgba(255,255,255,0.45);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
             text-decoration: none;
-            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-            white-space: nowrap;
+            transition: color 0.2s;
         }
         .top-lang-switcher .lang-btn-pill:hover {
-            color: #fff;
-            background: rgba(255,255,255,0.1);
+            color: var(--text);
         }
         .top-lang-switcher .lang-btn-pill.active {
-            background: var(--primary);
-            color: #fff;
-            box-shadow: 0 2px 10px rgba(15,98,254,0.4);
+            color: var(--primary);
+            font-weight: 700;
         }
         .top-lang-switcher .lang-btn-pill .flag {
-            font-size: 0.9rem;
-            line-height: 1;
+            display: none;
         }
 
         /* ===== NAVBAR ===== */
@@ -379,96 +359,69 @@
         /* ===== OFFCANVAS CATEGORY MENU ===== */
         #categoriesOffcanvas {
             width: 300px !important;
-            background: #0d1117 !important;
-            border-right: 1px solid rgba(255,255,255,0.06) !important;
+            background: var(--card-bg) !important;
+            border-right: 1px solid var(--glass-border) !important;
         }
         .offcanvas-header {
-            border-bottom: 1px solid rgba(255,255,255,0.07) !important;
+            border-bottom: 1px solid var(--glass-border) !important;
             padding: 1.25rem 1.5rem;
         }
         .offcanvas-title {
-            color: #fff !important;
+            color: var(--text) !important;
             font-family: 'Playfair Display', serif;
-            font-size: 1.1rem !important;
+            font-size: 1.3rem !important;
+            font-weight: 800;
         }
         .btn-close {
-            filter: invert(1);
-            opacity: 0.5;
-            transition: opacity 0.2s, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+            filter: none;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
         }
-        .btn-close:hover { opacity: 1; transform: rotate(90deg) scale(1.1); }
+        .btn-close:hover { transform: rotate(90deg) scale(1.1); }
         .offcanvas-body { padding: 1rem 0.75rem !important; }
 
         /* Sidebar category links */
         .sidebar-link {
-            font-weight: 500;
-            color: rgba(255,255,255,0.55) !important;
-            padding: 0.7rem 1rem !important;
+            font-weight: 600;
+            color: var(--text) !important;
+            padding: 0.75rem 1.5rem !important;
             display: flex;
             align-items: center;
-            gap: 0.85rem;
-            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-            font-size: 0.875rem;
-            border-radius: 12px;
-            margin-bottom: 2px;
+            transition: background 0.2s;
+            font-size: 0.9rem;
             text-decoration: none;
-            position: relative;
-            overflow: hidden;
-        }
-        .sidebar-link::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 3px;
-            background: linear-gradient(180deg, var(--primary), #6366f1);
-            border-radius: 0 3px 3px 0;
-            transform: scaleY(0);
-            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .sidebar-icon-wrap {
-            width: 34px; height: 34px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
+            width: 32px;
+            display: inline-flex;
             justify-content: center;
-            font-size: 0.9rem;
-            flex-shrink: 0;
-            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-            background: rgba(255,255,255,0.06);
-            color: rgba(255,255,255,0.5);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-right: 12px;
         }
         .sidebar-link:hover {
-            color: #fff !important;
-            background: rgba(255,255,255,0.06);
-            transform: translateX(4px);
+            background: rgba(0,0,0,0.03);
+            color: var(--text) !important;
         }
-        .sidebar-link:hover::before { transform: scaleY(1); }
         .sidebar-link:hover .sidebar-icon-wrap {
-            background: var(--primary);
-            color: #fff;
-            transform: scale(1.08);
-            box-shadow: 0 4px 12px rgba(15,98,254,0.4);
+            color: var(--primary);
         }
         .sidebar-link.active-sidebar {
-            color: #fff !important;
-            background: rgba(15,98,254,0.18) !important;
-            font-weight: 600;
+            background: rgba(var(--bs-primary-rgb), 0.08) !important;
+            color: var(--primary) !important;
+            border-left: 3px solid var(--primary);
         }
-        .sidebar-link.active-sidebar::before { transform: scaleY(1); }
         .sidebar-link.active-sidebar .sidebar-icon-wrap {
-            background: var(--primary);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(15,98,254,0.35);
+            color: var(--primary);
         }
 
         /* Sidebar section header */
         .sidebar-section-label {
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 700;
             letter-spacing: 1.5px;
             text-transform: uppercase;
-            color: rgba(255,255,255,0.25);
-            padding: 0.75rem 1rem 0.4rem;
+            color: var(--text-muted);
+            padding: 1.5rem 1.5rem 0.5rem;
             display: block;
         }
 
@@ -609,6 +562,20 @@
         {% block content %}{% endblock %}
     </main>
 
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
+        <div id="welcomeToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" style="border-radius: 12px;">
+            <div class="toast-header border-0 bg-primary text-white" style="border-radius: 12px 12px 0 0;">
+                <i class="fas fa-bell me-2"></i>
+                <strong class="me-auto">NewsKZ</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body bg-white text-dark" style="border-radius: 0 0 12px 12px;">
+                NewsKZ порталына қош келдіңіз! Ең соңғы жаңалықтардан хабардар болыңыз.
+            </div>
+        </div>
+    </div>
+
     <!-- Offcanvas Sidebar for All Categories -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="categoriesOffcanvas" aria-labelledby="categoriesOffcanvasLabel">
         <div class="offcanvas-header">
@@ -660,14 +627,6 @@
 
     <!-- Global Toast Container -->
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-        <div id="liveToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body fw-bold" id="toastMessage">
-                    <!-- Message goes here -->
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
     </div>
 
     <footer>
@@ -849,5 +808,38 @@
         });
     </script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Welcome Toast logic
+        if (!sessionStorage.getItem('welcomeShown')) {
+            setTimeout(() => {
+                const welcomeToastEl = document.getElementById('welcomeToast');
+                if (welcomeToastEl) {
+                    const toast = new bootstrap.Toast(welcomeToastEl, { delay: 6000 });
+                    toast.show();
+                    sessionStorage.setItem('welcomeShown', 'true');
+                }
+            }, 1000);
+        }
+
+        window.showToast = function(msg, type='success') {
+            const container = document.querySelector('.toast-container') || document.body;
+            let div = document.createElement('div');
+            div.className = `toast align-items-center text-white bg-${type} border-0 mb-2 shadow-lg`;
+            div.setAttribute('role', 'alert');
+            div.setAttribute('aria-live', 'assertive');
+            div.setAttribute('aria-atomic', 'true');
+            div.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${msg}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            container.appendChild(div);
+            new bootstrap.Toast(div, { delay: 4000 }).show();
+            div.addEventListener('hidden.bs.toast', () => div.remove());
+        };
+    });
+    </script>
 </body>
 </html>
