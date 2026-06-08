@@ -1,131 +1,531 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container py-5 mt-4">
-    <div class="row">
-        <!-- Content Area -->
-        <div class="col-lg-8">
-            <!-- Tabs -->
-            <ul class="nav nav-pills mb-4 gap-2" id="profileTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active rounded-pill px-4 fw-bold shadow-sm" id="bookmarks-tab" data-bs-toggle="pill" data-bs-target="#bookmarks" type="button" role="tab">
-                        <i class="fas fa-bookmark me-2"></i> {{ _('saved_news') }}
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link rounded-pill px-4 fw-bold shadow-sm" id="likes-tab" data-bs-toggle="pill" data-bs-target="#likes" type="button" role="tab">
-                        <i class="fas fa-heart me-2"></i> {{ _('liked_news') }}
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link rounded-pill px-4 fw-bold shadow-sm" id="history-tab" data-bs-toggle="pill" data-bs-target="#history" type="button" role="tab">
-                        <i class="fas fa-history me-2"></i> История просмотров
-                    </button>
-                </li>
-            </ul>
+<style>
+    /* ===== FACEBOOK-STYLE FONT & BASE ===== */
+    :root {
+        --fb-blue: #1877f2;
+        --fb-bg: #f0f2f5;
+        --fb-card: #ffffff;
+        --fb-text: #050505;
+        --fb-muted: #65676b;
+        --fb-border: #dddfe2;
+        --fb-radius: 16px;
+    }
 
-            <div class="tab-content" id="profileTabsContent">
-                <!-- Bookmarks Tab -->
-                <div class="tab-pane fade show active" id="bookmarks" role="tabpanel">
-                    <div class="glass-card p-4">
-                        <h5 class="fw-bold mb-4 border-bottom pb-2">{{ _('saved_news') }} ({{ bookmarks|length }})</h5>
-                        {% if bookmarks %}
-                            <div class="list-group list-group-flush">
-                            {% for b in bookmarks %}
-                                {% if b.news %}
-                                <a href="{{ url_for('main.news_detail', news_id=b.news.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 px-0 border-bottom border-light text-decoration-none">
-                                    <div class="pe-3">
-                                        <h6 class="mb-1 text-dark fw-bold">{{ b.news['title_' + session.get('lang', 'ru')] }}</h6>
-                                        <small class="text-muted"><i class="far fa-clock me-1"></i> {{ b.created_at.strftime('%d.%m.%Y') }}</small>
-                                    </div>
-                                    <i class="fas fa-chevron-right text-muted small"></i>
-                                </a>
-                                {% endif %}
-                            {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="text-center text-muted py-5">
-                                <i class="far fa-bookmark fs-1 mb-3 d-block text-black-50"></i>
-                                {{ _('nothing_saved') }}
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
+    body, .profile-page * {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif !important;
+    }
 
-                <!-- Likes Tab -->
-                <div class="tab-pane fade" id="likes" role="tabpanel">
-                    <div class="glass-card p-4">
-                        <h5 class="fw-bold mb-4 border-bottom pb-2">{{ _('liked_news') }} ({{ likes|length }})</h5>
-                        {% if likes %}
-                            <div class="list-group list-group-flush">
-                            {% for l in likes %}
-                                {% if l.news %}
-                                <a href="{{ url_for('main.news_detail', news_id=l.news.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 px-0 border-bottom border-light text-decoration-none">
-                                    <div class="pe-3">
-                                        <h6 class="mb-1 text-dark fw-bold">{{ l.news['title_' + session.get('lang', 'ru')] }}</h6>
-                                        <small class="text-muted"><i class="fas fa-heart text-danger me-1"></i> {{ l.created_at.strftime('%d.%m.%Y') }}</small>
-                                    </div>
-                                    <i class="fas fa-chevron-right text-muted small"></i>
-                                </a>
-                                {% endif %}
-                            {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="text-center text-muted py-5">
-                                <i class="far fa-heart fs-1 mb-3 d-block text-black-50"></i>
-                                {{ _('nothing_liked') }}
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
+    .profile-page {
+        background: var(--fb-bg);
+        min-height: 100vh;
+        padding: 2rem 0 4rem;
+    }
 
-                <!-- History Tab -->
-                <div class="tab-pane fade" id="history" role="tabpanel">
-                    <div class="glass-card p-4">
-                        <h5 class="fw-bold mb-4 border-bottom pb-2">{{ _('read_history') if _('read_history') else 'Оқылған жаңалықтар' }} ({{ view_history|length }})</h5>
-                        {% if view_history %}
-                            <div class="list-group list-group-flush">
-                            {% for h in view_history %}
-                                {% if h.news %}
-                                <a href="{{ url_for('main.news_detail', news_id=h.news.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 px-0 border-bottom border-light text-decoration-none">
-                                    <div class="pe-3">
-                                        <h6 class="mb-1 text-dark fw-bold">{{ h.news['title_' + session.get('lang', 'ru')] }}</h6>
-                                        <small class="text-muted"><i class="fas fa-eye text-primary me-1"></i> {{ h.viewed_at.strftime('%d.%m.%Y %H:%M') }}</small>
-                                    </div>
-                                    <i class="fas fa-chevron-right text-muted small"></i>
-                                </a>
-                                {% endif %}
-                            {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="text-center text-muted py-5">
-                                <i class="fas fa-history fs-1 mb-3 d-block text-black-50"></i>
-                                Сіз әлі ештеңе оқыған жоқсыз
-                            </div>
-                        {% endif %}
-                    </div>
+    /* ===== COVER + AVATAR CARD ===== */
+    .profile-header-card {
+        background: var(--fb-card);
+        border-radius: var(--fb-radius);
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 4px 24px rgba(0,0,0,0.06);
+        margin-bottom: 1.25rem;
+    }
+    .profile-cover {
+        height: 180px;
+        background: linear-gradient(135deg, #1877f2 0%, #42b883 40%, #8b5cf6 100%);
+        position: relative;
+    }
+    .profile-avatar-wrap {
+        position: absolute;
+        bottom: -48px;
+        left: 28px;
+    }
+    .profile-avatar {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        object-fit: cover;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .profile-avatar-placeholder {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        background: linear-gradient(135deg, #1877f2, #6366f1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        font-size: 2.2rem;
+        color: white;
+        font-weight: 700;
+    }
+    .profile-info-row {
+        padding: 60px 28px 20px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .profile-name {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--fb-text);
+        margin: 0 0 2px;
+        line-height: 1.2;
+    }
+    .profile-email {
+        font-size: 0.88rem;
+        color: var(--fb-muted);
+        margin: 0;
+    }
+    .profile-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 8px;
+    }
+    .profile-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 700;
+    }
+    .badge-google  { background: #fef3f2; color: #ea4335; border: 1px solid #fecaca; }
+    .badge-fb      { background: #eff6ff; color: #1877f2; border: 1px solid #bfdbfe; }
+    .badge-regular { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .badge-admin   { background: #fef9c3; color: #ca8a04; border: 1px solid #fde047; }
+
+    .btn-logout-fb {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 20px;
+        border-radius: 8px;
+        background: #e4e6eb;
+        color: var(--fb-text);
+        font-weight: 600;
+        font-size: 0.88rem;
+        border: none;
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+    }
+    .btn-logout-fb:hover {
+        background: #d8dadf;
+        color: var(--fb-text);
+        transform: translateY(-1px);
+    }
+
+    /* ===== STATS ROW ===== */
+    .profile-stats {
+        display: flex;
+        gap: 0;
+        border-top: 1px solid var(--fb-border);
+        padding: 0 28px;
+    }
+    .stat-item {
+        flex: 1;
+        text-align: center;
+        padding: 14px 10px;
+        border-right: 1px solid var(--fb-border);
+        cursor: default;
+        transition: background 0.15s;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-item:hover { background: #f5f6f7; border-radius: 8px; }
+    .stat-num {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--fb-blue);
+        display: block;
+        line-height: 1.1;
+    }
+    .stat-label {
+        font-size: 0.72rem;
+        color: var(--fb-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* ===== TABS ===== */
+    .fb-tabs {
+        background: var(--fb-card);
+        border-radius: var(--fb-radius);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        display: flex;
+        gap: 0;
+        overflow: hidden;
+        margin-bottom: 1.25rem;
+    }
+    .fb-tab-btn {
+        flex: 1;
+        padding: 14px 10px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--fb-muted);
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+    }
+    .fb-tab-btn:hover { background: #f5f6f7; color: var(--fb-text); }
+    .fb-tab-btn.active {
+        color: var(--fb-blue);
+        border-bottom-color: var(--fb-blue);
+        background: #eff4ff;
+    }
+    .fb-tab-btn .tab-count {
+        background: var(--fb-blue);
+        color: white;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 1px 7px;
+        border-radius: 20px;
+        min-width: 20px;
+        text-align: center;
+    }
+    .fb-tab-btn:not(.active) .tab-count {
+        background: #d8dadf;
+        color: var(--fb-muted);
+    }
+
+    /* ===== CONTENT PANELS ===== */
+    .fb-panel { display: none; }
+    .fb-panel.active { display: block; }
+
+    .fb-card {
+        background: var(--fb-card);
+        border-radius: var(--fb-radius);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    .fb-card-header {
+        padding: 18px 20px 14px;
+        border-bottom: 1px solid var(--fb-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .fb-card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--fb-text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* ===== NEWS LIST ITEMS ===== */
+    .fb-news-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--fb-border);
+        text-decoration: none;
+        color: var(--fb-text);
+        transition: background 0.15s;
+    }
+    .fb-news-item:last-child { border-bottom: none; }
+    .fb-news-item:hover {
+        background: #f5f6f7;
+        color: var(--fb-text);
+    }
+    .fb-news-icon {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    .icon-bookmark { background: #eff6ff; color: #1877f2; }
+    .icon-like     { background: #fef2f2; color: #ef4444; }
+    .icon-history  { background: #f0fdf4; color: #16a34a; }
+
+    .fb-news-text { flex: 1; min-width: 0; }
+    .fb-news-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--fb-text);
+        margin: 0 0 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .fb-news-meta {
+        font-size: 0.75rem;
+        color: var(--fb-muted);
+    }
+    .fb-news-arrow {
+        color: var(--fb-muted);
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .fb-empty {
+        text-align: center;
+        padding: 3.5rem 1rem;
+        color: var(--fb-muted);
+    }
+    .fb-empty-icon {
+        width: 70px; height: 70px;
+        border-radius: 50%;
+        background: #f0f2f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-size: 1.8rem;
+        color: #bcc0c4;
+    }
+    .fb-empty h6 {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--fb-text);
+        margin-bottom: 4px;
+    }
+    .fb-empty p { font-size: 0.85rem; margin: 0; }
+
+    /* Responsive */
+    @media (max-width: 576px) {
+        .profile-info-row { padding: 56px 16px 16px; }
+        .profile-stats { padding: 0 8px; }
+        .stat-num { font-size: 1.1rem; }
+        .fb-tab-btn { font-size: 0.78rem; padding: 12px 6px; }
+        .fb-tab-btn span:not(.tab-count) { display: none; }
+    }
+</style>
+
+<div class="profile-page">
+    <div class="container" style="max-width: 720px;">
+
+        <!-- ===== PROFILE HEADER ===== -->
+        <div class="profile-header-card" data-aos="fade-up">
+            <div class="profile-cover">
+                <div class="profile-avatar-wrap">
+                    {% if current_user.avatar_url %}
+                        <img src="{{ current_user.avatar_url }}" alt="Avatar" class="profile-avatar">
+                    {% else %}
+                        <div class="profile-avatar-placeholder">
+                            {{ current_user.username[0].upper() if current_user.username else '?' }}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
-        </div>
 
-        <!-- User Info Sidebar (Right side) -->
-        <div class="col-lg-4 mb-4">
-            <div class="glass-card p-4 text-center sticky-top" style="top: 100px;">
-                {% if current_user.avatar_url %}
-                    <img src="{{ current_user.avatar_url }}" alt="Avatar" class="rounded-circle mb-3 border border-3 border-white shadow-sm" style="width: 120px; height: 120px; object-fit: cover;">
-                {% else %}
-                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 120px; height: 120px;">
-                        <i class="fas fa-user fs-1"></i>
+            <div class="profile-info-row">
+                <div>
+                    <h1 class="profile-name">{{ current_user.username }}</h1>
+                    {% if current_user.email %}
+                    <p class="profile-email">
+                        <i class="fas fa-envelope me-1"></i>{{ current_user.email }}
+                    </p>
+                    {% endif %}
+                    <div class="profile-badges mt-2">
+                        {% if current_user.google_id %}
+                            <span class="profile-badge badge-google">
+                                <svg width="10" height="10" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.5 1.2 8.9 3.2l6.6-6.6C35.6 2.5 30.2 0 24 0 14.7 0 6.7 5.5 2.8 13.5l7.7 6C12.4 13.1 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.6 24.5c0-1.7-.1-3.3-.4-4.9H24v9.3h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.2-10 7.2-17.4z"/><path fill="#FBBC05" d="M10.5 28.5c-.6-1.7-.9-3.5-.9-5.5s.3-3.8.9-5.5l-7.7-6C1 14.5 0 19.1 0 24s1 9.5 2.8 13.5l7.7-6z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.2-7.7 2.2-6.2 0-11.5-4.2-13.4-9.9l-7.7 6C6.7 42.5 14.7 48 24 48z"/></svg>
+                                Google
+                            </span>
+                        {% endif %}
+                        {% if current_user.facebook_id %}
+                            <span class="profile-badge badge-fb">
+                                <i class="fab fa-facebook-f"></i> Facebook
+                            </span>
+                        {% endif %}
+                        {% if not current_user.google_id and not current_user.facebook_id %}
+                            <span class="profile-badge badge-regular">
+                                <i class="fas fa-user"></i> Аккаунт
+                            </span>
+                        {% endif %}
+                        {% if current_user.is_admin %}
+                            <span class="profile-badge badge-admin">
+                                <i class="fas fa-crown"></i> Админ
+                            </span>
+                        {% endif %}
                     </div>
-                {% endif %}
-                <h4 class="fw-bold mb-1">{{ current_user.username }}</h4>
-                <p class="text-muted small mb-4">{{ current_user.email or 'Email көрсетілмеген' }}</p>
-                
-                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger rounded-pill px-4 btn-sm fw-bold">
-                    {{ _('logout') }} <i class="fas fa-sign-out-alt ms-1"></i>
+                </div>
+                <a href="{{ url_for('auth.logout') }}" class="btn-logout-fb">
+                    <i class="fas fa-sign-out-alt"></i> {{ _('logout') }}
                 </a>
             </div>
+
+            <!-- Stats -->
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <span class="stat-num">{{ bookmarks|length }}</span>
+                    <span class="stat-label">Сақталған</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num">{{ likes|length }}</span>
+                    <span class="stat-label">Ұнатқан</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num">{{ view_history|length }}</span>
+                    <span class="stat-label">Оқылған</span>
+                </div>
+            </div>
         </div>
+
+        <!-- ===== TABS ===== -->
+        <div class="fb-tabs" data-aos="fade-up" data-aos-delay="50">
+            <button class="fb-tab-btn active" onclick="switchTab('bookmarks', this)">
+                <i class="fas fa-bookmark"></i>
+                <span>{{ _('saved_news') }}</span>
+                <span class="tab-count">{{ bookmarks|length }}</span>
+            </button>
+            <button class="fb-tab-btn" onclick="switchTab('likes', this)">
+                <i class="fas fa-heart"></i>
+                <span>{{ _('liked_news') }}</span>
+                <span class="tab-count">{{ likes|length }}</span>
+            </button>
+            <button class="fb-tab-btn" onclick="switchTab('history', this)">
+                <i class="fas fa-clock-rotate-left"></i>
+                <span>Тарих</span>
+                <span class="tab-count">{{ view_history|length }}</span>
+            </button>
+        </div>
+
+        <!-- ===== BOOKMARKS PANEL ===== -->
+        <div class="fb-panel active" id="panel-bookmarks" data-aos="fade-up" data-aos-delay="80">
+            <div class="fb-card">
+                <div class="fb-card-header">
+                    <h2 class="fb-card-title">
+                        <i class="fas fa-bookmark text-primary"></i>
+                        {{ _('saved_news') }}
+                    </h2>
+                </div>
+                {% if bookmarks %}
+                    {% for b in bookmarks %}
+                        {% if b.news %}
+                        <a href="{{ url_for('main.news_detail', news_id=b.news.id) }}" class="fb-news-item">
+                            <div class="fb-news-icon icon-bookmark">
+                                <i class="fas fa-bookmark"></i>
+                            </div>
+                            <div class="fb-news-text">
+                                <p class="fb-news-title">{{ b.news['title_' + session.get('lang', 'ru')] }}</p>
+                                <span class="fb-news-meta">
+                                    <i class="far fa-clock me-1"></i>{{ b.created_at.strftime('%d.%m.%Y') }}
+                                    {% if b.news.source_name %}· {{ b.news.source_name }}{% endif %}
+                                </span>
+                            </div>
+                            <i class="fas fa-chevron-right fb-news-arrow"></i>
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <div class="fb-empty">
+                        <div class="fb-empty-icon"><i class="far fa-bookmark"></i></div>
+                        <h6>Сақталған жаңалықтар жоқ</h6>
+                        <p>{{ _('nothing_saved') }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ===== LIKES PANEL ===== -->
+        <div class="fb-panel" id="panel-likes">
+            <div class="fb-card">
+                <div class="fb-card-header">
+                    <h2 class="fb-card-title">
+                        <i class="fas fa-heart text-danger"></i>
+                        {{ _('liked_news') }}
+                    </h2>
+                </div>
+                {% if likes %}
+                    {% for l in likes %}
+                        {% if l.news %}
+                        <a href="{{ url_for('main.news_detail', news_id=l.news.id) }}" class="fb-news-item">
+                            <div class="fb-news-icon icon-like">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="fb-news-text">
+                                <p class="fb-news-title">{{ l.news['title_' + session.get('lang', 'ru')] }}</p>
+                                <span class="fb-news-meta">
+                                    <i class="fas fa-heart text-danger me-1"></i>{{ l.created_at.strftime('%d.%m.%Y') }}
+                                    {% if l.news.source_name %}· {{ l.news.source_name }}{% endif %}
+                                </span>
+                            </div>
+                            <i class="fas fa-chevron-right fb-news-arrow"></i>
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <div class="fb-empty">
+                        <div class="fb-empty-icon"><i class="far fa-heart"></i></div>
+                        <h6>Ұнатқан жаңалықтар жоқ</h6>
+                        <p>{{ _('nothing_liked') }}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ===== HISTORY PANEL ===== -->
+        <div class="fb-panel" id="panel-history">
+            <div class="fb-card">
+                <div class="fb-card-header">
+                    <h2 class="fb-card-title">
+                        <i class="fas fa-clock-rotate-left text-success"></i>
+                        Оқу тарихы
+                    </h2>
+                </div>
+                {% if view_history %}
+                    {% for h in view_history %}
+                        {% if h.news %}
+                        <a href="{{ url_for('main.news_detail', news_id=h.news.id) }}" class="fb-news-item">
+                            <div class="fb-news-icon icon-history">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="fb-news-text">
+                                <p class="fb-news-title">{{ h.news['title_' + session.get('lang', 'ru')] }}</p>
+                                <span class="fb-news-meta">
+                                    <i class="fas fa-eye text-success me-1"></i>{{ h.viewed_at.strftime('%d.%m.%Y %H:%M') }}
+                                    {% if h.news.source_name %}· {{ h.news.source_name }}{% endif %}
+                                </span>
+                            </div>
+                            <i class="fas fa-chevron-right fb-news-arrow"></i>
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <div class="fb-empty">
+                        <div class="fb-empty-icon"><i class="fas fa-history"></i></div>
+                        <h6>Оқу тарихы бос</h6>
+                        <p>Сіз әлі ештеңе оқыған жоқсыз</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
     </div>
 </div>
+
+<script>
+function switchTab(tab, btn) {
+    // Hide all panels
+    document.querySelectorAll('.fb-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.fb-tab-btn').forEach(b => b.classList.remove('active'));
+    // Show selected
+    document.getElementById('panel-' + tab).classList.add('active');
+    btn.classList.add('active');
+}
+</script>
 {% endblock %}
