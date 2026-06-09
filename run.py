@@ -9,8 +9,8 @@ app = create_app()
 scheduler = BackgroundScheduler()
 # Запуск парсера сразу при старте
 scheduler.add_job(func=fetch_rss_feeds, trigger="date")
-# Затем каждые 30 минут
-scheduler.add_job(func=fetch_rss_feeds, trigger="interval", minutes=30)
+# Затем каждые 5 минут
+scheduler.add_job(func=fetch_rss_feeds, trigger="interval", minutes=5)
 scheduler.start()
 
 # Shut down the scheduler when exiting the app

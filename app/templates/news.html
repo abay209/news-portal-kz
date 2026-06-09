@@ -493,19 +493,34 @@ function readArticle() {
 .article-content .tn-news-text-note,
 .article-content blockquote,
 .article-content quote {
-    background-color: rgba(15, 98, 254, 0.05); /* Light blue background */
-    border-left: 4px solid var(--primary); /* Blue left border */
-    padding: 15px 20px;
-    margin: 20px 0;
+    background-color: #0f62fe; /* Deep blue background like Tengrinews */
+    border-left: 5px solid #003bb3; /* Darker blue border */
+    padding: 20px 25px;
+    margin: 25px 0;
     display: block;
-    border-radius: 4px 8px 8px 4px;
-    font-weight: 500;
-    color: #1a1a1a;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #ffffff; /* White text */
+    font-size: 1.15rem;
+    line-height: 1.6;
+    box-shadow: 0 4px 15px rgba(15, 98, 254, 0.3);
+}
+.article-content .tn-news-text-note p,
+.article-content blockquote p,
+.article-content quote p {
+    color: #f0f6ff; /* White-blueish color */
 }
 .article-content .tn-news-text-note p:last-child,
 .article-content blockquote p:last-child,
 .article-content quote p:last-child {
     margin-bottom: 0;
+}
+.article-content .tn-news-text-note a,
+.article-content blockquote a,
+.article-content quote a {
+    color: #ffffff;
+    text-decoration: underline;
+    font-weight: bold;
 }
 .article-content a {
     color: var(--primary);

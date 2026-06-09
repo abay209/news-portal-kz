@@ -432,9 +432,7 @@ def download_image(image_url, upload_folder, source_url=None):
             if len(content) > 10 * 1024 * 1024:  # 10 MB max
                 break
 
-        # Ең болмаса 1 KB болу керек (валидті сурет)
-        if len(content) < 1024:
-            return None
+        # Сурет мөлшеріне шектеу жойылды
 
         # Magic bytes арқылы суретті тексеру
         if content[:4] == b'\x89PNG':
@@ -509,6 +507,14 @@ def extract_full_content(url):
             elif meta_tw and meta_tw.get('content'):
                 image_url = meta_tw.get('content')
                 
+            if not image_url:
+                # Fallback: find the first suitable image in the article body
+                for img in soup.find_all('img'):
+                    src = img.get('src') or img.get('data-src') or ''
+                    if src and not src.startswith('data:'):
+                        image_url = src
+                        break
+                
             # Extract YouTube iframes and append them to the content if they are missing
             iframes = soup.find_all('iframe')
             for iframe in iframes:
@@ -521,50 +527,36 @@ def extract_full_content(url):
         if content:
             soup_clean = BeautifulSoup(content, 'html.parser')
             
-            # Remove bad tags completely
-            for s in soup_clean(['script', 'style', 'meta', 'link', 'noscript', 'header', 'footer', 'nav', 'aside', 'form', 'button', 'svg', 'table']):
+            # Remove bad tags completely (but keep layout and content tags like table, div, span)
+            for s in soup_clean(['script', 'style', 'meta', 'link', 'noscript', 'header', 'footer', 'nav', 'aside', 'form', 'button', 'svg']):
                 s.decompose()
                 
-            # Unwrap layout tags that are unnecessary but keep their content
-            for tag in soup_clean.find_all(['div', 'span', 'article', 'section', 'main', 'time']):
-                tag.unwrap()
-                
-            # Allow only these tags
-            allowed_tags = ['p', 'b', 'strong', 'i', 'em', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'img', 'figure', 'figcaption', 'iframe', 'a', 'q']
-            
+            # KEEP ALL TAGS to preserve original text and photos
             for tag in soup_clean.find_all(True):
-                if tag.name not in allowed_tags:
-                    tag.unwrap()
-                else:
-                    # Clean attributes
-                    attrs = {}
-                    if tag.name == 'img':
-                        # Handle src and lazy loading
-                        src = tag.get('src') or tag.get('data-src') or ''
-                        if src:
-                            attrs['src'] = src
-                        if tag.has_attr('alt'):
-                            attrs['alt'] = tag['alt']
-                        # Add bootstrap styling for uniform images
-                        attrs['class'] = 'img-fluid rounded my-3 w-100 shadow-sm'
-                    elif tag.name == 'iframe':
-                        if tag.has_attr('src'):
-                            attrs['src'] = tag['src']
-                        attrs['allowfullscreen'] = 'true'
-                        attrs['class'] = 'w-100 rounded my-3'
-                        attrs['style'] = 'min-height: 400px;'
-                    elif tag.name == 'a':
-                        if tag.has_attr('href'):
-                            attrs['href'] = tag['href']
-                        attrs['target'] = '_blank'
-                    elif tag.name == 'figcaption':
-                        attrs['class'] = 'text-muted small text-center mt-2 fst-italic'
-                    elif tag.name == 'blockquote':
-                        attrs['class'] = 'border-start border-4 border-primary ps-4 my-4 py-3 bg-primary bg-opacity-10 rounded-end fst-italic text-dark'
-                        attrs['style'] = 'border-left-color: #0f62fe !important; font-size: 1.05rem;'
+                # Clean/enhance specific attributes without unwrapping other tags
+                if tag.name == 'img':
+                    # Handle src and lazy loading
+                    src = tag.get('src') or tag.get('data-src') or ''
+                    if src:
+                        tag['src'] = src
+                    # Add bootstrap styling for uniform images
+                    tag['class'] = 'img-fluid rounded my-3 w-100 shadow-sm'
+                elif tag.name == 'iframe':
+                    if tag.has_attr('src'):
+                        tag['src'] = tag['src']
+                    tag['allowfullscreen'] = 'true'
+                    tag['class'] = 'w-100 rounded my-3'
+                    tag['style'] = 'min-height: 400px;'
+                elif tag.name == 'a':
+                    if tag.has_attr('href'):
+                        tag['href'] = tag['href']
+                    tag['target'] = '_blank'
+                elif tag.name == 'figcaption':
+                    tag['class'] = 'text-muted small text-center mt-2 fst-italic'
+                elif tag.name == 'blockquote':
+                    tag['class'] = 'border-start border-4 border-primary ps-4 my-4 py-3 bg-primary bg-opacity-10 rounded-end fst-italic text-dark'
+                    tag['style'] = 'border-left-color: #0f62fe !important; font-size: 1.05rem;'
                         
-                    tag.attrs = attrs
-                    
             import re
             clean_html = str(soup_clean)
             # Remove empty paragraphs
@@ -620,28 +612,23 @@ def process_source(source_data, app, cats):
                 # Make sure the fallback text is formatted properly without losing tags
                 if full_text:
                     soup_fallback = BeautifulSoup(full_text, 'html.parser')
-                    for s in soup_fallback(['script', 'style', 'meta', 'link', 'noscript', 'table']):
+                    for s in soup_fallback(['script', 'style', 'meta', 'link', 'noscript']):
                         s.decompose()
                     
-                    allowed_tags = ['p', 'b', 'strong', 'i', 'em', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'img', 'figure', 'figcaption', 'iframe', 'a', 'q', 'div']
+                    # KEEP ALL TAGS to preserve original structure
                     for tag in soup_fallback.find_all(True):
-                        if tag.name not in allowed_tags:
-                            tag.unwrap()
-                        else:
-                            attrs = {}
-                            if tag.name == 'img':
-                                src = tag.get('src') or tag.get('data-src') or ''
-                                if src: attrs['src'] = src
-                                attrs['class'] = 'img-fluid rounded my-3 w-100 shadow-sm'
-                            elif tag.name == 'iframe':
-                                if tag.has_attr('src'): attrs['src'] = tag['src']
-                                attrs['allowfullscreen'] = 'true'
-                                attrs['class'] = 'w-100 rounded my-3'
-                                attrs['style'] = 'min-height: 400px;'
-                            elif tag.name == 'blockquote':
-                                attrs['class'] = 'border-start border-4 border-primary ps-4 my-4 py-3 bg-primary bg-opacity-10 rounded-end fst-italic text-dark'
-                                attrs['style'] = 'border-left-color: #0f62fe !important; font-size: 1.05rem;'
-                            tag.attrs = attrs
+                        if tag.name == 'img':
+                            src = tag.get('src') or tag.get('data-src') or ''
+                            if src: tag['src'] = src
+                            tag['class'] = 'img-fluid rounded my-3 w-100 shadow-sm'
+                        elif tag.name == 'iframe':
+                            if tag.has_attr('src'): tag['src'] = tag['src']
+                            tag['allowfullscreen'] = 'true'
+                            tag['class'] = 'w-100 rounded my-3'
+                            tag['style'] = 'min-height: 400px;'
+                        elif tag.name == 'blockquote':
+                            tag['class'] = 'border-start border-4 border-primary ps-4 my-4 py-3 bg-primary bg-opacity-10 rounded-end fst-italic text-dark'
+                            tag['style'] = 'border-left-color: #0f62fe !important; font-size: 1.05rem;'
                     
                     import re
                     clean_html = str(soup_fallback)
