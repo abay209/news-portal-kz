@@ -13,13 +13,13 @@
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ request.url }}">
     {% if news.image_filename %}
-    <meta property="og:image" content="{{ news.image_filename, _external=True | image_url }}">
+    <meta property="og:image" content="{{ news.image_filename | image_url }}">
     {% endif %}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ title }}">
     <meta name="twitter:description" content="{{ summary[:150] }}...">
     {% if news.image_filename %}
-    <meta name="twitter:image" content="{{ news.image_filename, _external=True | image_url }}">
+    <meta name="twitter:image" content="{{ news.image_filename | image_url }}">
     {% endif %}
 {% endblock %}
 
