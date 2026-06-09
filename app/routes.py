@@ -3,8 +3,15 @@ from flask_login import current_user
 from app.models import News, Category, Comment, Bookmark, Like, Setting
 from app import db
 from sqlalchemy import or_
+import traceback
 
 main = Blueprint('main', __name__)
+
+@main.app_errorhandler(500)
+def handle_500(e):
+    # This will print the error on the webpage so the user can see it!
+    error_trace = traceback.format_exc()
+    return f"<h1>Нақты Қате (Detailed Error):</h1><pre>{error_trace}</pre>", 500
 
 @main.route('/fix-news')
 def fix_news():
