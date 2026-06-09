@@ -296,6 +296,23 @@ def news_fetch_rss():
         flash(f'Ошибка: {e}', 'error')
     return redirect(url_for('admin.news_list'))
 
+@admin_bp.route('/news/clear_bad_and_fetch')
+@admin_required
+def news_clear_bad_and_fetch():
+    from rss_parser import fetch_rss_feeds
+    try:
+        bad_news = News.query.filter((News.image_filename == None) | (News.image_filename == '')).all()
+        count = len(bad_news)
+        for n in bad_news:
+            db.session.delete(n)
+        db.session.commit()
+        
+        fetch_rss_feeds()
+        flash(f'Удалено {count} плохих новостей (без фото). Ленты обновлены!', 'success')
+    except Exception as e:
+        flash(f'Ошибка: {e}', 'error')
+    return redirect(url_for('admin.news_list'))
+
 @admin_bp.route('/settings', methods=['GET', 'POST'])
 @admin_required
 def settings():

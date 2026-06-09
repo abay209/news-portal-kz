@@ -560,7 +560,8 @@ def extract_full_content(url):
                     elif tag.name == 'figcaption':
                         attrs['class'] = 'text-muted small text-center mt-2 fst-italic'
                     elif tag.name == 'blockquote':
-                        attrs['class'] = 'border-start border-4 border-primary ps-3 my-4 py-2 bg-light rounded-end fst-italic'
+                        attrs['class'] = 'border-start border-4 border-primary ps-4 my-4 py-3 bg-primary bg-opacity-10 rounded-end fst-italic text-dark'
+                        attrs['style'] = 'border-left-color: #0f62fe !important; font-size: 1.05rem;'
                         
                     tag.attrs = attrs
                     
