@@ -666,8 +666,16 @@ def process_source(source_data, app, cats):
                 import calendar
                 import datetime as dt
 
-                # Fix: Always use current time so that newly scraped news is always at the top of the main page!
                 pub_date = dt.datetime.utcnow()
+                if hasattr(entry, 'published_parsed') and entry.published_parsed:
+                    try:
+                        # feedparser's published_parsed is always in UTC struct_time
+                        parsed_time = dt.datetime(*entry.published_parsed[:6])
+                        # Use parsed time only if it's within a reasonable range (not broken)
+                        if dt.datetime.utcnow() - dt.timedelta(days=7) <= parsed_time <= dt.datetime.utcnow() + dt.timedelta(hours=2):
+                            pub_date = parsed_time
+                    except Exception as e:
+                        print(f"    ! Date Parse Error: {e}")
 
                 item_dict = {
                     'category_id': cat_id,
