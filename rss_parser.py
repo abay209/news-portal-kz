@@ -355,6 +355,7 @@ def download_image(image_url, upload_folder, source_url=None):
     - Content-type тексеруі жұмсартылған (200 болса — сақтайды)
     """
     try:
+        os.makedirs(upload_folder, exist_ok=True)
         if not image_url:
             return None
 
