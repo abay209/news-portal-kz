@@ -13,13 +13,13 @@
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ request.url }}">
     {% if news.image_filename %}
-    <meta property="og:image" content="{{ url_for('static', filename='images/uploads/' + news.image_filename, _external=True) }}">
+    <meta property="og:image" content="{{ news.image_filename, _external=True | image_url }}">
     {% endif %}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ title }}">
     <meta name="twitter:description" content="{{ summary[:150] }}...">
     {% if news.image_filename %}
-    <meta name="twitter:image" content="{{ url_for('static', filename='images/uploads/' + news.image_filename, _external=True) }}">
+    <meta name="twitter:image" content="{{ news.image_filename, _external=True | image_url }}">
     {% endif %}
 {% endblock %}
 
@@ -85,7 +85,7 @@
 
             {% if news.image_filename %}
             <div class="featured-image mb-4 rounded-4 overflow-hidden shadow">
-                <img src="{{ url_for('static', filename='images/uploads/' + news.image_filename) }}" class="w-100" alt="{{ news['title_' + session.get('lang', 'ru')] }}">
+                <img src="{{ news.image_filename | image_url }}" class="w-100" alt="{{ news['title_' + session.get('lang', 'ru')] }}">
             </div>
             {% else %}
             <div class="featured-image mb-4 rounded-4 overflow-hidden shadow d-flex align-items-center justify-content-center" style="height:320px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
@@ -266,7 +266,7 @@
                         <a href="{{ url_for('main.news_detail', news_id=rn.id) }}" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm shadow-hover">
                                 {% if rn.image_filename %}
-                                <img src="{{ url_for('static', filename='images/uploads/' + rn.image_filename) }}" class="card-img-top" style="height: 160px; object-fit: cover;" alt="{{ rn['title_' + session.get('lang', 'ru')] }}">
+                                <img src="{{ rn.image_filename | image_url }}" class="card-img-top" style="height: 160px; object-fit: cover;" alt="{{ rn['title_' + session.get('lang', 'ru')] }}">
                                 {% else %}
                                 <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 160px; background: #e2e8f0;">
                                     <i class="fas fa-newspaper text-muted opacity-50 fs-1"></i>

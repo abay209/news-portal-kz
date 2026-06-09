@@ -27,7 +27,7 @@
         <div id="imageInputContainer">
             {% if news and news.image_filename %}
             <div style="margin-bottom: 10px;">
-                <img src="{{ url_for('static', filename='images/uploads/' ~ news.image_filename) }}" style="max-height: 100px;">
+                <img src="{{ news.image_filename | image_url }}" style="max-height: 100px;">
             </div>
             {% endif %}
             <input type="file" name="image" id="imageInput" accept="image/*" style="width: 100%;">

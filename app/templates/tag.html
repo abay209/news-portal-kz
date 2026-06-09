@@ -16,7 +16,7 @@
                     <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="text-decoration-none">
                         {% if item.image_filename %}
                         <div class="card-img-wrapper position-relative" style="height: 200px;">
-                            <img src="{{ url_for('static', filename='images/uploads/' + item.image_filename) }}" class="w-100 h-100 object-fit-cover" alt="">
+                            <img src="{{ item.image_filename | image_url }}" class="w-100 h-100 object-fit-cover" alt="">
                             <span class="badge bg-primary position-absolute top-0 start-0 m-3 shadow-sm">{{ _(item.category.code) }}</span>
                         </div>
                         {% endif %}

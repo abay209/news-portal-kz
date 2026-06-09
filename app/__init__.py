@@ -86,6 +86,14 @@ def create_app(config_class=Config):
     def page_not_found(e):
         return render_template('404.html'), 404
 
+    @app.template_filter('image_url')
+    def get_image_url(filename):
+        if not filename: return ''
+        if filename.startswith('http://') or filename.startswith('https://'):
+            return filename
+        from flask import url_for
+        return url_for('static', filename='images/uploads/' + filename)
+
     # Template context processors
     from app.translations import get_translation
     

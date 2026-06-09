@@ -608,23 +608,47 @@ def process_source(source_data, app, cats):
                     # 1. RSS-тің ішіндегі жасырын толық контентті көру ("content:encoded")
                     if 'content' in entry and len(entry.content) > 0:
                         rss_content = entry.content[0].value
-                        cleaned_rss = BeautifulSoup(rss_content, "html.parser").get_text(separator='\n\n', strip=True)
-                        if len(cleaned_rss) > 150:
-                            full_text = cleaned_rss
+                        if len(rss_content) > 150:
+                            full_text = rss_content
                     
                     # 2. Ол да болмаса, жай ғана сипаттамасына қарау
                     if not full_text or len(full_text) < 150:
                         summary_text = entry.get('summary', '') or entry.get('description', '') or ""
                         if summary_text:
-                            full_text = BeautifulSoup(summary_text, "html.parser").get_text(separator='\n\n', strip=True)
+                            full_text = summary_text
 
-                # Make sure the fallback text is also formatted uniformly
-                if full_text and not full_text.startswith('<p>') and not full_text.startswith('<'):
-                    lines = [line.strip() for line in full_text.split('\n') if line.strip()]
-                    clean_html = ""
-                    for line in lines:
-                        if len(line) > 2:
-                            clean_html += f"<p>{line}</p>\n"
+                # Make sure the fallback text is formatted properly without losing tags
+                if full_text:
+                    soup_fallback = BeautifulSoup(full_text, 'html.parser')
+                    for s in soup_fallback(['script', 'style', 'meta', 'link', 'noscript', 'table']):
+                        s.decompose()
+                    
+                    allowed_tags = ['p', 'b', 'strong', 'i', 'em', 'br', 'ul', 'ol', 'li', 'h2', 'h3', 'h4', 'blockquote', 'img', 'figure', 'figcaption', 'iframe', 'a', 'q', 'div']
+                    for tag in soup_fallback.find_all(True):
+                        if tag.name not in allowed_tags:
+                            tag.unwrap()
+                        else:
+                            attrs = {}
+                            if tag.name == 'img':
+                                src = tag.get('src') or tag.get('data-src') or ''
+                                if src: attrs['src'] = src
+                                attrs['class'] = 'img-fluid rounded my-3 w-100 shadow-sm'
+                            elif tag.name == 'iframe':
+                                if tag.has_attr('src'): attrs['src'] = tag['src']
+                                attrs['allowfullscreen'] = 'true'
+                                attrs['class'] = 'w-100 rounded my-3'
+                                attrs['style'] = 'min-height: 400px;'
+                            elif tag.name == 'blockquote':
+                                attrs['class'] = 'border-start border-4 border-primary ps-4 my-4 py-3 bg-primary bg-opacity-10 rounded-end fst-italic text-dark'
+                                attrs['style'] = 'border-left-color: #0f62fe !important; font-size: 1.05rem;'
+                            tag.attrs = attrs
+                    
+                    import re
+                    clean_html = str(soup_fallback)
+                    clean_html = re.sub(r'<p>\s*</p>', '', clean_html)
+                    # Wrap loose text in paragraphs
+                    if not clean_html.startswith('<') and len(clean_html.strip()) > 0:
+                        clean_html = f"<p>{clean_html}</p>"
                     full_text = clean_html
 
                 if not full_text:
@@ -641,6 +665,10 @@ def process_source(source_data, app, cats):
                 # web сурет жүктелмесе, RSS суретті жеке байқап көру
                 if not local_img and rss_image and rss_image != web_image:
                     local_img = download_image(rss_image, app.config['UPLOAD_FOLDER'], source_url=link)
+                
+                # Eger juktey almasa, original url saktaymiz
+                if not local_img and image_to_download:
+                    local_img = image_to_download
 
                 
                 from app.services.ai_service import AIService

@@ -10,7 +10,7 @@
             <div class="main-news-card glass-card h-100 overflow-hidden">
                 <a href="{{ url_for('main.news_detail', news_id=hero_news[0].id) }}" class="text-decoration-none">
                     <div class="card-img-wrapper position-relative" style="height: 450px;">
-                        <img src="{{ url_for('static', filename='images/uploads/' + hero_news[0].image_filename) }}" class="w-100 h-100 object-fit-cover" alt="">
+                        <img src="{{ hero_news[0].image_filename | image_url }}" class="w-100 h-100 object-fit-cover" alt="">
                         <div class="card-img-overlay d-flex flex-column justify-content-end p-4 text-white">
                             <span class="badge bg-primary mb-2 align-self-start">{{ _(hero_news[0].category.code) }}</span>
                             <h1 class="display-6 fw-bold mb-2">{{ hero_news[0]['title_' + session.get('lang', 'ru')] }}</h1>
@@ -26,7 +26,7 @@
                 <div class="sub-news-card glass-card flex-fill overflow-hidden position-relative">
                     <a href="{{ url_for('main.news_detail', news_id=hero_news[1].id) }}" class="text-decoration-none">
                         <div class="card-img-wrapper" style="height: 213px;">
-                            <img src="{{ url_for('static', filename='images/uploads/' + hero_news[1].image_filename) }}" class="w-100 h-100 object-fit-cover" alt="">
+                            <img src="{{ hero_news[1].image_filename | image_url }}" class="w-100 h-100 object-fit-cover" alt="">
                             <div class="card-img-overlay d-flex flex-column justify-content-end p-3 text-white">
                                 <span class="badge bg-info mb-1 align-self-start">{{ _(hero_news[1].category.code) }}</span>
                                 <h5 class="fw-bold mb-0 text-truncate-2">{{ hero_news[1]['title_' + session.get('lang', 'ru')] }}</h5>
@@ -39,7 +39,7 @@
                 <div class="sub-news-card glass-card flex-fill overflow-hidden position-relative">
                     <a href="{{ url_for('main.news_detail', news_id=hero_news[2].id) }}" class="text-decoration-none">
                         <div class="card-img-wrapper" style="height: 213px;">
-                            <img src="{{ url_for('static', filename='images/uploads/' + hero_news[2].image_filename) }}" class="w-100 h-100 object-fit-cover" alt="">
+                            <img src="{{ hero_news[2].image_filename | image_url }}" class="w-100 h-100 object-fit-cover" alt="">
                             <div class="card-img-overlay d-flex flex-column justify-content-end p-3 text-white">
                                 <span class="badge bg-success mb-1 align-self-start">{{ _(hero_news[2].category.code) }}</span>
                                 <h5 class="fw-bold mb-0 text-truncate-2">{{ hero_news[2]['title_' + session.get('lang', 'ru')] }}</h5>
@@ -71,7 +71,7 @@
                         <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="text-decoration-none">
                             {% if item.image_filename %}
                             <div class="card-img-wrapper position-relative" style="height: 200px;">
-                                <img src="{{ url_for('static', filename='images/uploads/' + item.image_filename) }}" class="w-100 h-100 object-fit-cover" alt="">
+                                <img src="{{ item.image_filename | image_url }}" class="w-100 h-100 object-fit-cover" alt="">
                                 <span class="badge bg-primary position-absolute top-0 start-0 m-3 shadow-sm">{{ _(item.category.code) }}</span>
                             </div>
                             {% endif %}
@@ -141,7 +141,7 @@
                             <a href="{{ url_for('main.news_detail', news_id=item.id) }}" class="text-decoration-none text-dark">
                                 {% if item.image_filename %}
                                 <div class="img-wrapper rounded-3 mb-3 overflow-hidden shadow-sm shadow-hover" style="height: 160px;">
-                                    <img src="{{ url_for('static', filename='images/uploads/' + item.image_filename) }}" class="w-100 h-100 object-fit-cover transition-transform" alt="">
+                                    <img src="{{ item.image_filename | image_url }}" class="w-100 h-100 object-fit-cover transition-transform" alt="">
                                 </div>
                                 {% endif %}
                                 <h6 class="fw-bold mb-2 line-clamp-3">{{ item['title_' + session.get('lang', 'ru')] }}</h6>

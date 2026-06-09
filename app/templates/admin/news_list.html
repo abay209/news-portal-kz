@@ -37,7 +37,7 @@
                     <td>
                         <div class="d-flex align-items-center">
                             {% if item.image_filename %}
-                            <img src="{{ url_for('static', filename='images/uploads/' + item.image_filename) }}" class="rounded me-3 shadow-sm" style="width: 44px; height: 44px; object-fit: cover;">
+                            <img src="{{ item.image_filename | image_url }}" class="rounded me-3 shadow-sm" style="width: 44px; height: 44px; object-fit: cover;">
                             {% else %}
                             <div class="rounded me-3 bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center text-muted shadow-sm" style="width: 44px; height: 44px;">
                                 <i class="fas fa-image"></i>
