@@ -30,6 +30,10 @@ def index():
     
     query = News.query.order_by(News.created_at.desc())
     
+    # Басты бетте тек фотосы бар жаңалықтарды қалдыру
+    if not category_code and not search_query:
+        query = query.filter(News.image_filename.isnot(None), News.image_filename != '')
+    
     if category_code:
         cat = Category.query.filter_by(code=category_code).first()
         if cat:
@@ -61,7 +65,9 @@ def index():
         for cat in categories:
             # Get latest 4 news for each category
             news_by_category[cat.code] = News.query.filter(
-                News.category_id == cat.id
+                News.category_id == cat.id,
+                News.image_filename.isnot(None),
+                News.image_filename != ''
             ).order_by(News.created_at.desc()).limit(4).all()
     
     # Hero section үшін тек фотолы жаңалықтар
@@ -264,6 +270,57 @@ def api_search():
         'date': n.created_at.strftime('%d.%m %H:%M')
     } for n in results])
 
+import os
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import threading
+
+def send_subscription_email_async(to_email):
+    sender_email = os.environ.get('SMTP_EMAIL')
+    sender_password = os.environ.get('SMTP_PASSWORD')
+    
+    if not sender_email or not sender_password:
+        print(f"[Email] Skipping email to {to_email} because SMTP variables are not set.")
+        return
+        
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "Welcome to NewsKZ! 🎉"
+        msg["From"] = f"NewsKZ Portal <{sender_email}>"
+        msg["To"] = to_email
+        
+        html = """
+        <html>
+          <body style="font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px;">
+            <div style="max-width: 600px; background-color: #ffffff; padding: 30px; border-radius: 10px; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+              <h2 style="color: #0f62fe;">NewsKZ Порталына қош келдіңіз!</h2>
+              <p style="font-size: 16px; color: #333;">Құрметті оқырман,</p>
+              <p style="font-size: 16px; color: #333;">Біздің порталға сәтті жазылғаныңызды растаймыз. Енді сіз ең маңызды жаңалықтарды бірінші болып білетін боласыз!</p>
+              <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+              <h3 style="color: #0f62fe;">Добро пожаловать в NewsKZ!</h3>
+              <p style="font-size: 16px; color: #333;">Уважаемый читатель,</p>
+              <p style="font-size: 16px; color: #333;">Мы подтверждаем вашу успешную подписку на наш портал. Теперь вы будете узнавать самые важные новости первыми!</p>
+              <br>
+              <p style="font-size: 14px; color: #777; text-align: center;">© 2026 NewsKZ. Барлық құқықтар қорғалған.</p>
+            </div>
+          </body>
+        </html>
+        """
+        
+        part = MIMEText(html, "html")
+        msg.attach(part)
+        
+        # Connect to Gmail SMTP (port 587)
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, to_email, msg.as_string())
+        server.quit()
+        print(f"[Email] Successfully sent subscription email to {to_email}")
+    except Exception as e:
+        print(f"[Email] Failed to send email to {to_email}: {e}")
+
 @main.route('/subscribe', methods=['POST'])
 def subscribe():
     email = request.form.get('email')
@@ -278,6 +335,10 @@ def subscribe():
             new_sub = Subscriber(email=email)
             db.session.add(new_sub)
             db.session.commit()
+            
+            # Send real email in background
+            threading.Thread(target=send_subscription_email_async, args=(email,)).start()
+            
             flash('Сәтті жазылдыңыз! (Вы успешно подписались!)', 'success')
         else:
             flash('Бұл пошта тіркеліп қойған. (Этот email уже зарегистрирован.)', 'info')

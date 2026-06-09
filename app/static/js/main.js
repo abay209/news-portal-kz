@@ -215,10 +215,15 @@ document.addEventListener('DOMContentLoaded', () => {
 window.showToast = function(message, type = 'primary') {
     const toastEl = document.getElementById('liveToast');
     const toastMsg = document.getElementById('toastMessage');
+    const toastAudio = document.getElementById('toastSound');
     if (toastEl && toastMsg) {
         toastMsg.innerText = message;
-        toastEl.className = `toast align-items-center text-white border-0 bg-${type}`;
-        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+        toastEl.className = `toast align-items-center border-0 win11-toast`;
+        const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
         toast.show();
+        if (toastAudio) {
+            toastAudio.currentTime = 0;
+            toastAudio.play().catch(e => console.log('Audio auto-play prevented'));
+        }
     }
 };

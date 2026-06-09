@@ -454,6 +454,23 @@
         .alert {
             animation: pageFadeIn 0.4s ease both;
         }
+        
+        /* ===== WINDOWS 11 STYLE TOASTS ===== */
+        .win11-toast {
+            background: rgba(15, 98, 254, 0.85) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255,255,255,0.15) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important;
+            color: #ffffff !important;
+            font-weight: 500;
+            padding: 8px;
+        }
+        .win11-toast .toast-body {
+            font-size: 0.95rem;
+            letter-spacing: 0.2px;
+        }
     </style>
 </head>
 <body>
@@ -617,12 +634,21 @@
     </div>
 
     <!-- Global Toast Container -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+    <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 1100;">
+        <div id="liveToast" class="toast align-items-center border-0 win11-toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center">
+                    <i class="fas fa-bell text-white me-3 fs-5" style="opacity:0.9;"></i>
+                    <span id="toastMessage"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
     </div>
     
     <!-- Notification Sound -->
     <audio id="toastSound" preload="auto">
-        <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+        <source src="https://assets.mixkit.co/active_storage/sfx/1114/1114-preview.mp3" type="audio/mpeg">
     </audio>
 
     <footer>
