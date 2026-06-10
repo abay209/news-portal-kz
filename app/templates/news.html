@@ -500,25 +500,30 @@ function readArticle() {
 .article-content .tn-news-text-note,
 .article-content blockquote,
 .article-content quote {
-    background-color: #f9f9f9;
-    border-left: 3px solid #ccc;
-    padding: 15px 20px;
-    margin: 20px 0;
+    background-color: rgba(30, 120, 220, 0.07) !important;
+    border-left: 4px solid rgba(30, 120, 220, 0.6) !important;
+    border-radius: 0 6px 6px 0 !important;
+    margin: 1.2rem 0 !important;
+    padding: 14px 18px !important;
+    font-style: italic !important;
+    color: var(--text-color, #2c2c2c) !important;
+    font-size: 0.97rem !important;
+    line-height: 1.7 !important;
     display: block;
-    font-style: italic;
-    color: inherit;
-    font-size: 1.15rem;
-    line-height: 1.6;
+}
+
+[data-bs-theme="dark"] .article-content .tn-news-text-note,
+[data-bs-theme="dark"] .article-content blockquote,
+[data-bs-theme="dark"] .article-content quote {
+    background-color: rgba(100, 160, 255, 0.1) !important;
+    border-left: 4px solid rgba(100, 160, 255, 0.5) !important;
+    color: #e2e8f0 !important;
 }
 .article-content .tn-news-text-note p,
 .article-content blockquote p,
 .article-content quote p {
     color: inherit;
-}
-.article-content .tn-news-text-note p:last-child,
-.article-content blockquote p:last-child,
-.article-content quote p:last-child {
-    margin-bottom: 0;
+    margin: 0 !important;
 }
 .article-content .tn-news-text-note a,
 .article-content blockquote a,
