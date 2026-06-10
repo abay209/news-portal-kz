@@ -14,7 +14,7 @@
                         <div class="card-img-overlay d-flex flex-column justify-content-end p-4 text-white">
                             <span class="badge bg-primary mb-2 align-self-start">{{ _(hero_news[0].category.code) }}</span>
                             <h1 class="display-6 fw-bold mb-2">{{ hero_news[0]['title_' + session.get('lang', 'ru')] }}</h1>
-                            <p class="mb-0 opacity-80 d-none d-md-block">{{ hero_news[0]['summary_' + session.get('lang', 'ru')] | truncate(150) }}</p>
+                            <p class="mb-0 opacity-80 d-none d-md-block">{{ hero_news[0]['summary_' + session.get('lang', 'ru')] | striptags | truncate(150) }}</p>
                         </div>
                     </div>
                 </a>
@@ -80,7 +80,7 @@
                                 <span class="badge bg-primary mb-2 d-inline-block">{{ _(item.category.code) }}</span>
                                 {% endif %}
                                 <h5 class="fw-bold mb-2 line-clamp-2">{{ item['title_' + session.get('lang', 'ru')] }}</h5>
-                                <p class="text-muted small mb-3">{{ item['summary_' + session.get('lang', 'ru')] | truncate(100) }}</p>
+                                <p class="text-muted small mb-3">{{ item['summary_' + session.get('lang', 'ru')] | striptags | truncate(100) }}</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="small text-muted"><i class="far fa-clock me-1"></i> <span class="local-time" data-timestamp="{{ item.created_at.isoformat() }}">{{ item.created_at.strftime('%d.%m %H:%M') }}</span></span>
                                     <span class="text-primary fw-bold small">{{ _('read_more') }} <i class="fas fa-chevron-right ms-1"></i></span>

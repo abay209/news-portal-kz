@@ -7,9 +7,9 @@
     {% set title = news['title_' ~ lang] %}
     {% set summary = news['summary_' ~ lang] %}
     <title>{{ title }} | NewsKZ</title>
-    <meta name="description" content="{{ summary[:150]|striptags }}...">
+    <meta name="description" content="{{ summary | striptags | truncate(150) }}">
     <meta property="og:title" content="{{ title }}">
-    <meta property="og:description" content="{{ summary[:150]|striptags }}...">
+    <meta property="og:description" content="{{ summary | striptags | truncate(150) }}">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ request.url }}">
     {% if news.image_filename %}
@@ -17,7 +17,7 @@
     {% endif %}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ title }}">
-    <meta name="twitter:description" content="{{ summary[:150]|striptags }}...">
+    <meta name="twitter:description" content="{{ summary | striptags | truncate(150) }}">
     {% if news.image_filename %}
     <meta name="twitter:image" content="{{ news.image_filename | image_url }}">
     {% endif %}
@@ -32,7 +32,7 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-decoration-none">{{ _('home') }}</a></li>
                 <li class="breadcrumb-item"><a href="{{ url_for('main.index', category=news.category.code) }}" class="text-decoration-none">{{ _(news.category.code) }}</a></li>
-                <li class="breadcrumb-item active" aria-current="page" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">{{ title }}</li>
+                <li class="breadcrumb-item active" aria-current="page" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ title | truncate(50) }}</li>
             </ol>
         </nav>
 
