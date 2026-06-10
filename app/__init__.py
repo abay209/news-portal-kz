@@ -94,6 +94,11 @@ def create_app(config_class=Config):
         from flask import url_for
         return url_for('static', filename='images/uploads/' + filename)
 
+    @app.template_filter('unescape')
+    def unescape_filter(s):
+        import html
+        return html.unescape(str(s)) if s else s
+
     # Template context processors
     from app.translations import get_translation
     

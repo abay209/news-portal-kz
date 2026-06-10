@@ -100,7 +100,7 @@
             </div>
 
             <div class="article-content mb-5" id="articleText" style="line-height: 1.9; color: #1a1a1a; font-family: 'Georgia', 'Times New Roman', serif; font-size: 1.25rem;">
-                {{ news['content_' + session.get('lang', 'ru')]|safe }}
+                {{ news['content_' + session.get('lang', 'ru')]|unescape|safe }}
             </div>
 
             {% if news.original_url %}
@@ -500,21 +500,20 @@ function readArticle() {
 .article-content .tn-news-text-note,
 .article-content blockquote,
 .article-content quote {
-    background-color: #f8f9fa;
-    border-left: 4px solid #ced4da;
+    background-color: #f9f9f9;
+    border-left: 3px solid #ccc;
     padding: 15px 20px;
     margin: 20px 0;
     display: block;
-    border-radius: 4px;
     font-style: italic;
-    color: #495057;
-    font-size: 1.1rem;
+    color: inherit;
+    font-size: 1.15rem;
     line-height: 1.6;
 }
 .article-content .tn-news-text-note p,
 .article-content blockquote p,
 .article-content quote p {
-    color: #495057;
+    color: inherit;
 }
 .article-content .tn-news-text-note p:last-child,
 .article-content blockquote p:last-child,
