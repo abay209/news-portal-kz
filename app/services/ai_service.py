@@ -11,60 +11,58 @@ class AIService:
         if not text:
             return ""
         
-        # deep-translator uses 'ru', 'kk', 'en' which matches our codes
         try:
-            # Split text if too long (Google has limits around 5k chars)
-            if len(text) > 4000:
-                text = text[:4000]
+            if len(text) <= 4000:
+                translated = GoogleTranslator(source=source_lang, target=target_lang).translate(text)
+                return translated if translated is not None else ""
+            else:
+                chunks = []
+                current_chunk = ""
+                for word in text.split(' '):
+                    if len(current_chunk) + len(word) > 3500:
+                        chunks.append(current_chunk)
+                        current_chunk = word + " "
+                    else:
+                        current_chunk += word + " "
+                if current_chunk:
+                    chunks.append(current_chunk)
                 
-            translated = GoogleTranslator(source=source_lang, target=target_lang).translate(text)
-            return translated if translated is not None else ""
+                translated_chunks = []
+                translator = GoogleTranslator(source=source_lang, target=target_lang)
+                for chunk in chunks:
+                    res = translator.translate(chunk)
+                    if res: translated_chunks.append(res)
+                return " ".join(translated_chunks)
         except Exception as e:
             print(f"[AI Service] Translation Error: {e}")
-            return f"{text[:200]}..." # Fallback: original partial text
+            return text
 
     @classmethod
     def translate_html(cls, html_content, target_lang='kk', source_lang='auto'):
         if not html_content:
             return ""
             
-        from bs4 import BeautifulSoup
-        soup = BeautifulSoup(html_content, 'html.parser')
+        import re
         
-        # Save media elements (images, iframes) to prepend them later
-        media_elements = []
-        for media in soup.find_all(['img', 'iframe', 'video', 'audio']):
-            media_elements.append(str(media))
-            media.decompose()
+        # Extract all HTML tags and replace them with placeholders
+        tags = re.findall(r'(<[^>]+>)', html_content)
+        text_with_placeholders = html_content
+        for i, tag in enumerate(tags):
+            text_with_placeholders = text_with_placeholders.replace(tag, f' [T{i}] ', 1)
             
-        # Get plain text without tags
-        text = soup.get_text(separator='\n\n', strip=True)
+        # Translate the text containing placeholders
+        translated = cls.translate_text(text_with_placeholders, target_lang, source_lang)
         
-        paragraphs = [p.strip() for p in text.split('\n\n') if p.strip()]
-        translated_paragraphs = []
-        
-        current_chunk = ""
-        for p in paragraphs:
-            if len(current_chunk) + len(p) > 3000:
-                translated_paragraphs.append(cls.translate_text(current_chunk, target_lang, source_lang))
-                current_chunk = p + "\n\n"
-            else:
-                current_chunk += p + "\n\n"
-        if current_chunk:
-            translated_paragraphs.append(cls.translate_text(current_chunk, target_lang, source_lang))
+        # Restore the HTML tags exactly as they were
+        for i, tag in enumerate(tags):
+            # Regex to match [T0], [ T0 ], [ T 0 ], etc. that the translator might produce
+            pattern = r'\[\s*[Tt]\s*' + str(i) + r'\s*\]'
+            translated = re.sub(pattern, tag, translated, count=1)
             
-        translated_text = "\n\n".join(translated_paragraphs)
+        # Clean up any leftover placeholders if translation messed them up
+        translated = re.sub(r'\[\s*[Tt]\s*\d+\s*\]', '', translated)
         
-        # Format text to HTML
-        final_html = ""
-        for m in media_elements:
-            final_html += f"<div class='my-3'>{m}</div>"
-            
-        for p in translated_text.split('\n\n'):
-            if p.strip():
-                final_html += f"<p>{p.strip()}</p>"
-                
-        return final_html
+        return translated
 
     @staticmethod
     def summarize_text(text, lang='ru'):

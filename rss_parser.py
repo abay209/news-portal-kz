@@ -477,9 +477,18 @@ def extract_full_content(url):
                 
         content = ""
         image_url = None
+        real_url = url
         
         if downloaded:
             soup = BeautifulSoup(downloaded, 'html.parser')
+            
+            # Extract canonical URL
+            canonical = soup.find('link', rel='canonical')
+            og_url = soup.find('meta', property='og:url')
+            if canonical and canonical.get('href'):
+                real_url = canonical.get('href')
+            elif og_url and og_url.get('content'):
+                real_url = og_url.get('content')
             
             # Custom Extraction for Tengrinews to preserve their specific formatting (blue notes)
             if 'tengrinews.kz' in url:
@@ -565,13 +574,14 @@ def extract_full_content(url):
             
             content = clean_html
             
+            
         if not content:
             content = ""
             
-        return content, image_url
+        return content, image_url, real_url
     except Exception as e:
         print(f"  [Error Scraper]: {e}")
-        return "", None
+        return "", None, url
 
 def process_source(source_data, app, cats):
     with app.app_context():
@@ -588,7 +598,7 @@ def process_source(source_data, app, cats):
                     continue
                 
                 print(f"  * Fetching: {str(entry.get('title', ''))[:40]}...")
-                full_text, web_image = extract_full_content(link)
+                full_text, web_image, real_url = extract_full_content(link)
                 rss_image = get_image_from_rss_entry(entry)
                 
                 
@@ -637,6 +647,10 @@ def process_source(source_data, app, cats):
                     if not clean_html.startswith('<') and len(clean_html.strip()) > 0:
                         clean_html = f"<p>{clean_html}</p>"
                     full_text = clean_html
+                
+                import re
+                # Issue 4: Remove the first image from content so it doesn't duplicate the hero image
+                full_text = re.sub(r'<img[^>]+>', '', full_text, count=1)
 
                 if not full_text:
                     print(f"    ! Skipping: Content is empty.")
@@ -705,7 +719,7 @@ def process_source(source_data, app, cats):
                     'summary_kk': ai_data['summary_kk'],
                     'summary_en': ai_data['summary_en'],
                     'source_name': source_data['name'],
-                    'original_url': link,
+                    'original_url': real_url,
                     'image_filename': local_img,
                     'created_at': pub_date
                 }
