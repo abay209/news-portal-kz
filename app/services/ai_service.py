@@ -23,6 +23,49 @@ class AIService:
             print(f"[AI Service] Translation Error: {e}")
             return f"{text[:200]}..." # Fallback: original partial text
 
+    @classmethod
+    def translate_html(cls, html_content, target_lang='kk', source_lang='auto'):
+        if not html_content:
+            return ""
+            
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(html_content, 'html.parser')
+        
+        # Save media elements (images, iframes) to prepend them later
+        media_elements = []
+        for media in soup.find_all(['img', 'iframe', 'video', 'audio']):
+            media_elements.append(str(media))
+            media.decompose()
+            
+        # Get plain text without tags
+        text = soup.get_text(separator='\n\n', strip=True)
+        
+        paragraphs = [p.strip() for p in text.split('\n\n') if p.strip()]
+        translated_paragraphs = []
+        
+        current_chunk = ""
+        for p in paragraphs:
+            if len(current_chunk) + len(p) > 3000:
+                translated_paragraphs.append(cls.translate_text(current_chunk, target_lang, source_lang))
+                current_chunk = p + "\n\n"
+            else:
+                current_chunk += p + "\n\n"
+        if current_chunk:
+            translated_paragraphs.append(cls.translate_text(current_chunk, target_lang, source_lang))
+            
+        translated_text = "\n\n".join(translated_paragraphs)
+        
+        # Format text to HTML
+        final_html = ""
+        for m in media_elements:
+            final_html += f"<div class='my-3'>{m}</div>"
+            
+        for p in translated_text.split('\n\n'):
+            if p.strip():
+                final_html += f"<p>{p.strip()}</p>"
+                
+        return final_html
+
     @staticmethod
     def summarize_text(text, lang='ru'):
         """
@@ -56,10 +99,10 @@ class AIService:
         title_kk = title if source_lang == 'kk' else cls.translate_text(title, 'kk', source_lang)
         title_en = title if source_lang == 'en' else cls.translate_text(title, 'en', source_lang)
 
-        # 2. Translate Content
-        content_ru = content if source_lang == 'ru' else cls.translate_text(content, 'ru', source_lang)
-        content_kk = content if source_lang == 'kk' else cls.translate_text(content, 'kk', source_lang)
-        content_en = content if source_lang == 'en' else cls.translate_text(content, 'en', source_lang)
+        # 2. Translate Content using translate_html to preserve images and avoid tag corruption
+        content_ru = content if source_lang == 'ru' else cls.translate_html(content, 'ru', source_lang)
+        content_kk = content if source_lang == 'kk' else cls.translate_html(content, 'kk', source_lang)
+        content_en = content if source_lang == 'en' else cls.translate_html(content, 'en', source_lang)
         
         # 3. Generate Summaries
         summary_ru = cls.summarize_text(content_ru, 'ru')

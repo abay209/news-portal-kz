@@ -7,9 +7,9 @@
     {% set title = news['title_' ~ lang] %}
     {% set summary = news['summary_' ~ lang] %}
     <title>{{ title }} | NewsKZ</title>
-    <meta name="description" content="{{ summary[:150] }}...">
+    <meta name="description" content="{{ summary[:150]|striptags }}...">
     <meta property="og:title" content="{{ title }}">
-    <meta property="og:description" content="{{ summary[:150] }}...">
+    <meta property="og:description" content="{{ summary[:150]|striptags }}...">
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ request.url }}">
     {% if news.image_filename %}
@@ -17,7 +17,7 @@
     {% endif %}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ title }}">
-    <meta name="twitter:description" content="{{ summary[:150] }}...">
+    <meta name="twitter:description" content="{{ summary[:150]|striptags }}...">
     {% if news.image_filename %}
     <meta name="twitter:image" content="{{ news.image_filename | image_url }}">
     {% endif %}
@@ -32,7 +32,7 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-decoration-none">{{ _('home') }}</a></li>
                 <li class="breadcrumb-item"><a href="{{ url_for('main.index', category=news.category.code) }}" class="text-decoration-none">{{ _(news.category.code) }}</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ _('article') }}</li>
+                <li class="breadcrumb-item active" aria-current="page" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;">{{ title }}</li>
             </ol>
         </nav>
 
@@ -85,7 +85,7 @@
 
             {% if news.image_filename %}
             <div class="featured-image mb-4 rounded-4 overflow-hidden shadow">
-                <img src="{{ news.image_filename | image_url }}" class="w-100" alt="{{ news['title_' + session.get('lang', 'ru')] }}">
+                <img src="{{ news.image_filename | image_url }}" class="w-100" alt="{{ news['title_' + session.get('lang', 'ru')] }}" referrerpolicy="no-referrer">
             </div>
             {% else %}
             <div class="featured-image mb-4 rounded-4 overflow-hidden shadow d-flex align-items-center justify-content-center" style="height:320px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
@@ -104,8 +104,15 @@
             </div>
 
             {% if news.original_url %}
-            <div style="margin-top: 20px; font-size: 0.9em; color: #666; border-left: 4px solid var(--primary); padding-left: 15px;">
-                Источник: <a href="{{ news.original_url }}" target="_blank" rel="noopener" style="color: var(--primary); font-weight: 600;">{{ news.source_name }}</a>
+            <div class="mt-4 p-4 rounded-3 d-flex align-items-center justify-content-between flex-wrap gap-3" style="background-color: #f8fafc; border: 1px solid #e2e8f0;">
+                <div>
+                    <span class="text-muted d-block mb-1 small">{% if session.get('lang', 'ru') == 'kk' %}Дереккөз:{% elif session.get('lang', 'ru') == 'en' %}Source:{% else %}Источник:{% endif %}</span>
+                    <span class="fw-bold">{{ news.source_name or 'Сайт' }}</span>
+                </div>
+                <a href="{{ news.original_url }}" target="_blank" rel="noopener" class="btn btn-primary fw-bold px-4 rounded-pill shadow-sm d-inline-flex align-items-center">
+                    {% if session.get('lang', 'ru') == 'kk' %}Толық мақаланы оқу{% elif session.get('lang', 'ru') == 'en' %}Read full article{% else %}Читать полную статью{% endif %}
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </a>
             </div>
             {% endif %}
 
@@ -266,7 +273,7 @@
                         <a href="{{ url_for('main.news_detail', news_id=rn.id) }}" class="text-decoration-none">
                             <div class="card h-100 border-0 shadow-sm shadow-hover">
                                 {% if rn.image_filename %}
-                                <img src="{{ rn.image_filename | image_url }}" class="card-img-top" style="height: 160px; object-fit: cover;" alt="{{ rn['title_' + session.get('lang', 'ru')] }}">
+                                <img src="{{ rn.image_filename | image_url }}" class="card-img-top" style="height: 160px; object-fit: cover;" alt="{{ rn['title_' + session.get('lang', 'ru')] }}" referrerpolicy="no-referrer">
                                 {% else %}
                                 <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 160px; background: #e2e8f0;">
                                     <i class="fas fa-newspaper text-muted opacity-50 fs-1"></i>
@@ -493,22 +500,21 @@ function readArticle() {
 .article-content .tn-news-text-note,
 .article-content blockquote,
 .article-content quote {
-    background-color: #0f62fe; /* Deep blue background like Tengrinews */
-    border-left: 5px solid #003bb3; /* Darker blue border */
-    padding: 20px 25px;
-    margin: 25px 0;
+    background-color: #f8f9fa;
+    border-left: 4px solid #ced4da;
+    padding: 15px 20px;
+    margin: 20px 0;
     display: block;
-    border-radius: 8px;
-    font-weight: 600;
-    color: #ffffff; /* White text */
-    font-size: 1.15rem;
+    border-radius: 4px;
+    font-style: italic;
+    color: #495057;
+    font-size: 1.1rem;
     line-height: 1.6;
-    box-shadow: 0 4px 15px rgba(15, 98, 254, 0.3);
 }
 .article-content .tn-news-text-note p,
 .article-content blockquote p,
 .article-content quote p {
-    color: #f0f6ff; /* White-blueish color */
+    color: #495057;
 }
 .article-content .tn-news-text-note p:last-child,
 .article-content blockquote p:last-child,
@@ -518,9 +524,8 @@ function readArticle() {
 .article-content .tn-news-text-note a,
 .article-content blockquote a,
 .article-content quote a {
-    color: #ffffff;
+    color: var(--primary);
     text-decoration: underline;
-    font-weight: bold;
 }
 .article-content a {
     color: var(--primary);

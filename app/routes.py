@@ -126,8 +126,22 @@ def news_detail(news_id):
         user_bookmarked = Bookmark.query.filter_by(user_id=current_user.id, news_id=news_id).first() is not None
         
     likes_count = Like.query.filter_by(news_id=news_id).count()
-    # Sidebar: latest 6 news (trending)
-    latest_news = News.query.filter(News.id != news_id).order_by(News.views.desc()).limit(6).all()
+    # Sidebar: latest 6 news (trending) - from the last 3 days
+    from datetime import datetime, timedelta
+    three_days_ago = datetime.utcnow() - timedelta(days=3)
+    latest_news = News.query.filter(
+        News.id != news_id,
+        News.created_at >= three_days_ago
+    ).order_by(News.views.desc()).limit(6).all()
+    
+    # Fallback if there are fewer than 6 news in the last 3 days
+    if len(latest_news) < 6:
+        fallback_news = News.query.filter(News.id != news_id).order_by(News.views.desc()).limit(6).all()
+        existing_ids = {n.id for n in latest_news}
+        for fn in fallback_news:
+            if fn.id not in existing_ids and len(latest_news) < 6:
+                latest_news.append(fn)
+
     related_news = News.query.filter(
         News.category_id == news_item.category_id,
         News.id != news_id
