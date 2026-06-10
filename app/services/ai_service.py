@@ -42,27 +42,37 @@ class AIService:
         if not html_content:
             return ""
             
+        from bs4 import BeautifulSoup, NavigableString
         import re
         
-        # Extract all HTML tags and replace them with placeholders
-        tags = re.findall(r'(<[^>]+>)', html_content)
-        text_with_placeholders = html_content
-        for i, tag in enumerate(tags):
-            text_with_placeholders = text_with_placeholders.replace(tag, f' [T{i}] ', 1)
-            
-        # Translate the text containing placeholders
-        translated = cls.translate_text(text_with_placeholders, target_lang, source_lang)
+        soup = BeautifulSoup(html_content, 'html.parser')
         
-        # Restore the HTML tags exactly as they were
-        for i, tag in enumerate(tags):
-            # Regex to match [T0], [ T0 ], [ T 0 ], etc. that the translator might produce
-            pattern = r'\[\s*[Tt]\s*' + str(i) + r'\s*\]'
-            translated = re.sub(pattern, tag, translated, count=1)
+        # 1. HTML -> тегтерді сақта, таза мәтін шығар
+        text_nodes = []
+        texts_to_translate = []
+        for element in soup.find_all(string=True):
+            if element.parent.name not in ['script', 'style'] and element.strip():
+                text_nodes.append(element)
+                # Remove newlines to avoid breaking the separator
+                clean_text = re.sub(r'\s+', ' ', element).strip()
+                texts_to_translate.append(clean_text)
+                
+        if not text_nodes:
+            return html_content
             
-        # Clean up any leftover placeholders if translation messed them up
-        translated = re.sub(r'\[\s*[Tt]\s*\d+\s*\]', '', translated)
+        # 2. Аудар (біріктіріп жібереміз)
+        separator = "\n\n"
+        full_text = separator.join(texts_to_translate)
+        translated_full = cls.translate_text(full_text, target_lang, source_lang)
         
-        return translated
+        # 3. Тегтерді қайта қос (split арқылы мәтіндерді орнына қою)
+        translated_texts = [t.strip() for t in re.split(r'\n+', translated_full)]
+        
+        for i, node in enumerate(text_nodes):
+            if i < len(translated_texts) and translated_texts[i].strip():
+                node.replace_with(NavigableString(translated_texts[i]))
+                
+        return str(soup)
 
     @staticmethod
     def summarize_text(text, lang='ru'):

@@ -13,8 +13,8 @@ def run_worker():
     # Run immediately on start
     scheduler.add_job(func=fetch_rss_feeds, trigger="date")
     
-    # Then every 5 minutes
-    scheduler.add_job(func=fetch_rss_feeds, trigger="interval", minutes=5)
+    # Then every 30 minutes
+    scheduler.add_job(func=fetch_rss_feeds, trigger="interval", minutes=30)
     
     try:
         scheduler.start()

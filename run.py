@@ -1,20 +1,9 @@
 from app import create_app
-from rss_parser import fetch_rss_feeds
-from apscheduler.schedulers.background import BackgroundScheduler
-import atexit
 
 app = create_app()
 
-# Initialize Scheduler
-scheduler = BackgroundScheduler()
-# Запуск парсера сразу при старте
-scheduler.add_job(func=fetch_rss_feeds, trigger="date")
-# Затем каждые 5 минут
-scheduler.add_job(func=fetch_rss_feeds, trigger="interval", minutes=5)
-scheduler.start()
-
-# Shut down the scheduler when exiting the app
-atexit.register(lambda: scheduler.shutdown())
+# Scheduler is now managed by a separate worker process (worker.py)
+# to avoid duplicate jobs when gunicorn spawns multiple workers.
 
 if __name__ == '__main__':
     # В Windows для продакшена лучше использовать waitress (указано в requirements.txt)

@@ -478,6 +478,7 @@ def extract_full_content(url):
         content = ""
         image_url = None
         real_url = url
+        image_list = []
         
         if downloaded:
             soup = BeautifulSoup(downloaded, 'html.parser')
@@ -523,16 +524,7 @@ def extract_full_content(url):
                     if src and not src.startswith('data:'):
                         image_url = src
                         break
-                
-            # Extract YouTube iframes and append them to the content if they are missing
-            iframes = soup.find_all('iframe')
-            for iframe in iframes:
-                src = iframe.get('src', '')
-                if 'youtube.com' in src or 'youtu.be' in src:
-                    # Check if it's already in the content
-                    if content and src not in content:
-                        iframe_html = f'<div class="ratio ratio-16x9 my-4"><iframe src="{src}" allowfullscreen></iframe></div>'
-                        content += iframe_html
+        
         if content:
             soup_clean = BeautifulSoup(content, 'html.parser')
             
@@ -563,25 +555,47 @@ def extract_full_content(url):
                 elif tag.name == 'figcaption':
                     tag['class'] = 'text-muted small text-center mt-2 fst-italic'
                 elif tag.name == 'blockquote':
-                    tag['class'] = 'border-start border-4 border-primary ps-4 my-4 py-3 bg-primary bg-opacity-10 rounded-end fst-italic text-dark'
-                    tag['style'] = 'border-left-color: #0f62fe !important; font-size: 1.05rem;'
+                    # Clear old styling and add basic blockquote for news.html to style
+                    tag.attrs.pop('class', None)
+                    tag.attrs.pop('style', None)
                         
             import re
+            
+            # YouTube video embedding
+            # Find any youtube URLs in the HTML string and append iframe if not exists
+            youtube_pattern = r'(?:https?://(?:www\.)?(?:youtube\.com/watch\?v=|youtu\.be/))([a-zA-Z0-9_-]{11})'
+            youtube_ids = re.findall(youtube_pattern, str(soup_clean) + " " + url)
+            added_videos = set()
+            for vid in youtube_ids:
+                if vid not in added_videos and f"embed/{vid}" not in str(soup_clean):
+                    iframe = soup_clean.new_tag('iframe', src=f"https://www.youtube.com/embed/{vid}", allowfullscreen="true", style="min-height: 400px;")
+                    iframe['class'] = 'w-100 rounded'
+                    div = soup_clean.new_tag('div')
+                    div['class'] = 'ratio ratio-16x9 my-4'
+                    div.append(iframe)
+                    soup_clean.append(div)
+                    added_videos.add(vid)
+                    
             clean_html = str(soup_clean)
             # Remove empty paragraphs
             clean_html = re.sub(r'<p>\s*</p>', '', clean_html)
-            # Add ratio for iframe if not wrapped (trafilatura sometimes keeps iframe alone)
+            
+            # Collect all image URLs for downloading
+            soup_for_images = BeautifulSoup(clean_html, 'html.parser')
+            for tag in soup_for_images.find_all('img'):
+                src = tag.get('src')
+                if src and not src.startswith('data:') and src not in image_list:
+                    image_list.append(src)
             
             content = clean_html
-            
             
         if not content:
             content = ""
             
-        return content, image_url, real_url
+        return content, image_url, real_url, image_list
     except Exception as e:
         print(f"  [Error Scraper]: {e}")
-        return "", None, url
+        return "", None, url, []
 
 def process_source(source_data, app, cats):
     with app.app_context():
@@ -591,16 +605,39 @@ def process_source(source_data, app, cats):
             processed = 0
             news_items = []
             
+            limit = 10
+            if source_data.get('last_fetched'):
+                from datetime import datetime, timedelta
+                delta = datetime.utcnow() - source_data['last_fetched']
+                if delta > timedelta(hours=1):
+                    limit = 20
+                elif delta < timedelta(minutes=30):
+                    limit = 5
+            
             for entry in feed.entries:
-                if processed >= 10: break # Max 10 per source per run
+                if processed >= limit: break # Dynamic limit based on last_fetched
                 link = entry.get('link')
                 if not link or News.query.filter_by(original_url=link).first(): 
                     continue
                 
                 print(f"  * Fetching: {str(entry.get('title', ''))[:40]}...")
-                full_text, web_image, real_url = extract_full_content(link)
+                full_text, web_image, real_url, content_images = extract_full_content(link)
                 rss_image = get_image_from_rss_entry(entry)
                 
+                # Process images
+                main_image_url = web_image or rss_image
+                local_img = download_image(main_image_url, app.config['UPLOAD_FOLDER'], source_url=link) if main_image_url else None
+                
+                # Download all images inside the article
+                for img_url in content_images:
+                    if img_url == main_image_url and local_img:
+                        # Already downloaded as hero image
+                        full_text = full_text.replace(img_url, f"/static/images/uploads/{local_img}")
+                        continue
+                        
+                    local_content_img = download_image(img_url, app.config['UPLOAD_FOLDER'], source_url=link)
+                    if local_content_img:
+                        full_text = full_text.replace(img_url, f"/static/images/uploads/{local_content_img}")
                 
                 # Make sure full_text is a string
                 if full_text is None: full_text = ""
@@ -786,7 +823,7 @@ def fetch_rss_feeds():
         db.session.commit()
         
         sources = Source.query.filter_by(is_active=True).all()
-        source_dicts = [{'id': s.id, 'name': s.name, 'url': s.url, 'language': s.language} for s in sources]
+        source_dicts = [{'id': s.id, 'name': s.name, 'url': s.url, 'language': s.language, 'last_fetched': s.last_fetched} for s in sources]
         cats = {c.code: c.id for c in Category.query.all()}
         
         total_added = 0
